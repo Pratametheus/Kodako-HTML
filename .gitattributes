@@ -1,0 +1,10 @@
+# Normalize line endings: store LF in git, check out LF everywhere.
+# Keeps `prettier --check` consistent across Windows/macOS/Linux and CI.
+* text=auto eol=lf
+
+# Explicitly binary (never touch):
+*.png binary
+*.ico binary
+*.icns binary
+*.woff binary
+*.woff2 binary
