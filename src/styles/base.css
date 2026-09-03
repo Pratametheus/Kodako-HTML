@@ -1,0 +1,31 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  color: #1e1e1e;
+  background: #f5f6f8;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+}
+.btn {
+  border: 1px solid #c8ccd4;
+  background: #fff;
+  border-radius: 8px;
+  padding: 8px 14px;
+}
+.btn-primary {
+  background: #4c97ff;
+  border-color: #4c97ff;
+  color: #fff;
+}
