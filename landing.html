@@ -6,13 +6,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Editor blok untuk belajar membuat animasi dan halaman web, ala Scratch, berbahasa Indonesia."
+      content="Editor blok berbahasa Indonesia untuk belajar membuat animasi dan halaman web, ala Scratch. Gratis, bisa dipakai offline."
     />
-    <title>Game HTML</title>
+    <meta property="og:title" content="Game HTML" />
+    <meta
+      property="og:description"
+      content="Belajar membuat animasi dan halaman web dengan blok, berbahasa Indonesia."
+    />
+    <meta property="og:image" content="/favicon.svg" />
+    <title>Game HTML — Belajar coding dengan blok</title>
     <link rel="stylesheet" href="/src/landing/landing.css" />
   </head>
   <body>
-    <main id="landing"><h1>Game HTML</h1></main>
+    <header class="hero">
+      <h1>Game HTML</h1>
+      <p class="hero__tagline">
+        Susun blok, buat animasi dan halaman web sendiri. Berbahasa Indonesia, bisa dipakai tanpa
+        internet.
+      </p>
+      <div class="hero__cta">
+        <a class="btn btn-primary" data-cta-editor href="/index.html">Mulai Buat</a>
+        <a class="btn" data-cta-download href="https://github.com/Pratametheus/game-html/releases"
+          >Unduh Aplikasi</a
+        >
+      </div>
+    </header>
+
+    <main class="landing">
+      <section>
+        <h2>Apa ini?</h2>
+        <p>
+          Game HTML adalah alat belajar pemrograman berbasis blok, mirip Scratch. Ada dua mode:
+          <strong>Mode Sprite</strong> untuk membuat animasi dan permainan sederhana, dan
+          <strong>Mode HTML</strong> untuk menyusun halaman web dan melihat kodenya.
+        </p>
+      </section>
+
+      <section>
+        <h2>Cara pakai</h2>
+        <ol>
+          <li>Buka editor dan buat project baru.</li>
+          <li>Seret blok dari palet, susun jadi program.</li>
+          <li>Klik bendera hijau atau lihat pratinjau, lalu simpan project-mu.</li>
+        </ol>
+      </section>
+
+      <section class="modes">
+        <article>
+          <h3>Mode Sprite</h3>
+          <p>
+            Gerakkan tokoh di panggung dengan blok: gerak, ulangi, jika, dan kejadian "saat bendera
+            hijau diklik".
+          </p>
+        </article>
+        <article>
+          <h3>Mode HTML</h3>
+          <p>
+            Susun judul, paragraf, gambar, dan warna. Lihat halaman jadi sungguhan lengkap dengan
+            panel "Lihat Kode".
+          </p>
+        </article>
+      </section>
+
+      <section id="guru">
+        <h2>Untuk Guru</h2>
+        <p>
+          Game HTML dibuat untuk modul ajar informatika tingkat SD. Modul ajar dan lembar kerja akan
+          tersedia di sini.
+        </p>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <p>&copy; <span data-year>2026</span> Game HTML. Kode sumber terbuka.</p>
+      <p>Aset gambar dan suara bawaan berlisensi CC0 / domain publik.</p>
+    </footer>
+
     <script type="module" src="/src/landing/landing.ts"></script>
   </body>
 </html>
