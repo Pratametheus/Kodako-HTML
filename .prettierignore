@@ -5,3 +5,7 @@ test-results
 src-tauri
 docs
 .superpowers
+
+# Upstream boilerplate — keep verbatim
+LICENSE.md
+README.md
