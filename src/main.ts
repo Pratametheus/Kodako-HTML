@@ -1,2 +1,5 @@
-// Wired to the app shell in Task 11.
-document.getElementById('app')!.textContent = 'Memuat…';
+import './styles/base.css';
+import { startApp } from './app/shell';
+import { getStorage } from './core/storage';
+
+startApp(document.getElementById('app')!, getStorage());
