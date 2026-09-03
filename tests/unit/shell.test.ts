@@ -47,6 +47,24 @@ describe('startApp', () => {
     expect(root.textContent).toContain('Project Saya');
   });
 
+  it('ignores a stale in-flight render when the route changes rapidly', async () => {
+    const storage = new WebStorage();
+    await storage.saveProject('proj_z', createEmptyProject('Cepat'), null);
+    window.location.hash = '#/editor/proj_z';
+    stop = startApp(root, storage);
+    // Fire two synchronous hashchanges before the first render's await resolves:
+    // editor -> home -> editor.
+    window.location.hash = '#/';
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    window.location.hash = '#/editor/proj_z';
+    window.dispatchEvent(new HashChangeEvent('hashchange'));
+    await flush();
+    await flush();
+    expect(root.querySelector<HTMLInputElement>('[data-name]')?.value).toBe('Cepat');
+    expect(root.querySelectorAll('[data-name]')).toHaveLength(1);
+    expect(root.querySelector('.home')).toBeNull();
+  });
+
   it('navigating back to Home from the editor swaps the view', async () => {
     const storage = new WebStorage();
     await storage.saveProject('proj_y', createEmptyProject('Y'), null);

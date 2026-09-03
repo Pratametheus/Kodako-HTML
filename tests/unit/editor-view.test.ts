@@ -65,6 +65,16 @@ describe('renderEditor', () => {
     expect(storage.saved.at(-1)!.activeMode).toBe('html');
   });
 
+  it('flushes a pending debounced save when the view is unmounted before the timer fires', () => {
+    const cleanup = renderEditor(root, { id: 'p1', project, storage, onBack: vi.fn() });
+    const input = root.querySelector<HTMLInputElement>('[data-name]')!;
+    input.value = 'Nama Tersimpan';
+    input.dispatchEvent(new Event('change'));
+    expect(storage.saved).toHaveLength(0); // still inside the 300 ms debounce window
+    cleanup(); // navigate away ("Kembali") before the timer fires
+    expect(storage.saved.at(-1)!.meta.name).toBe('Nama Tersimpan');
+  });
+
   it('Save writes immediately; Ekspor calls exportToFile; Kembali calls onBack', () => {
     const onBack = vi.fn();
     renderEditor(root, { id: 'p1', project, storage, onBack });

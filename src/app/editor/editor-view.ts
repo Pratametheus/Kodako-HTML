@@ -26,7 +26,10 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
   let timer: ReturnType<typeof setTimeout> | undefined;
   const scheduleSave = () => {
     if (timer) clearTimeout(timer);
-    timer = setTimeout(() => void storage.saveProject(id, project), AUTOSAVE_MS);
+    timer = setTimeout(() => {
+      timer = undefined;
+      void storage.saveProject(id, project).catch((err) => console.error(err));
+    }, AUTOSAVE_MS);
   };
 
   const cleanupHeader = renderHeader(root.querySelector<HTMLElement>('[data-header]')!, {
@@ -44,13 +47,17 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
       scheduleSave();
     },
     onBack: deps.onBack,
-    onSave: () => void storage.saveProject(id, project),
+    onSave: () => void storage.saveProject(id, project).catch((err) => console.error(err)),
     onOpen: () => console.info('Buka project dari editor: menyusul pada fase berikutnya.'),
-    onExport: () => void storage.exportToFile(project),
+    onExport: () => void storage.exportToFile(project).catch((err) => console.error(err)),
   });
 
   return () => {
-    if (timer) clearTimeout(timer);
+    if (timer) {
+      clearTimeout(timer);
+      timer = undefined;
+      void storage.saveProject(id, project).catch((err) => console.error(err));
+    }
     cleanupHeader();
     root.innerHTML = '';
   };

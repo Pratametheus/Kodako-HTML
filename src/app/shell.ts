@@ -7,8 +7,11 @@ import { renderEditor } from './editor/editor-view';
 export function startApp(root: HTMLElement, storage: Storage): () => void {
   const manager = new ProjectManager(storage);
   let cleanupView: (() => void) | undefined;
+  let generation = 0;
 
   const render = async (route: Route) => {
+    const myGeneration = ++generation;
+
     cleanupView?.();
     cleanupView = undefined;
 
@@ -23,6 +26,7 @@ export function startApp(root: HTMLElement, storage: Storage): () => void {
     if (route.name === 'editor') {
       try {
         const project = await storage.loadProject(route.id);
+        if (myGeneration !== generation) return;
         cleanupView = renderEditor(root, {
           id: route.id,
           project,
@@ -30,6 +34,7 @@ export function startApp(root: HTMLElement, storage: Storage): () => void {
           onBack: () => navigate({ name: 'home' }),
         });
       } catch (err) {
+        if (myGeneration !== generation) return;
         console.error(err);
         navigate({ name: 'home' });
       }

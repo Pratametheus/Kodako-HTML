@@ -36,16 +36,45 @@ function triggerDownload(filename: string, text: string, mime: string): void {
   URL.revokeObjectURL(url);
 }
 
+function loadFromTmp(id: string): Project | null {
+  const tmp = localStorage.getItem(STORAGE_KEYS.tmp(id));
+  if (tmp === null) return null;
+  const res = parseProjectText(tmp);
+  return res.ok ? res.project : null;
+}
+
 function pickTextFile(accept: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = accept;
+
+    let settled = false;
+    const done = (fn: () => void) => {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener('focus', onFocus);
+      fn();
+    };
+
+    const onFocus = () => {
+      // The dialog closed and the window regained focus. Give `change` one tick
+      // to fire; if no file landed, treat it as a cancel.
+      setTimeout(() => {
+        if (settled) return;
+        if (!input.files || input.files.length === 0) {
+          done(() => reject(new Error('Tidak ada file yang dipilih.')));
+        }
+      }, 0);
+    };
+
     input.addEventListener('change', () => {
       const file = input.files?.[0];
-      if (!file) return reject(new Error('Tidak ada file yang dipilih.'));
-      file.text().then(resolve, () => reject(new Error('Gagal membaca file.')));
+      if (!file) return done(() => reject(new Error('Tidak ada file yang dipilih.')));
+      done(() => file.text().then(resolve, () => reject(new Error('Gagal membaca file.'))));
     });
+
+    window.addEventListener('focus', onFocus);
     input.click();
   });
 }
@@ -57,10 +86,20 @@ export class WebStorage implements Storage {
 
   async loadProject(id: string): Promise<Project> {
     const raw = localStorage.getItem(STORAGE_KEYS.project(id));
-    if (raw === null) throw new Error(`Project "${id}" tidak ditemukan.`);
-    const res = parseProjectText(raw);
-    if (!res.ok) throw new Error(`Project rusak: ${res.errors.join(' ')}`);
-    return res.project;
+    if (raw !== null) {
+      const res = parseProjectText(raw);
+      if (res.ok) return res.project;
+
+      // Real key present but unparseable: try the crash-safe tmp slot before giving up.
+      const recovered = loadFromTmp(id);
+      if (recovered) return recovered;
+      throw new Error(`Project rusak: ${res.errors.join(' ')}`);
+    }
+
+    // Real key missing (e.g. a crash between the tmp write and the real write).
+    const recovered = loadFromTmp(id);
+    if (recovered) return recovered;
+    throw new Error(`Project "${id}" tidak ditemukan.`);
   }
 
   async saveProject(
