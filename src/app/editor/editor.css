@@ -1,0 +1,43 @@
+.editor {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+.editor__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #d7dbe2;
+  background: #fff;
+}
+.editor__name {
+  font: inherit;
+  font-weight: 600;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-width: 180px;
+}
+.editor__name:hover,
+.editor__name:focus {
+  border-color: #c8ccd4;
+}
+.editor__spacer {
+  flex: 1;
+}
+.editor__modes {
+  display: flex;
+  gap: 4px;
+}
+.editor__modes .btn[aria-pressed='true'] {
+  background: #4c97ff;
+  border-color: #4c97ff;
+  color: #fff;
+}
+.editor__workspace {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  color: #6b7280;
+}
