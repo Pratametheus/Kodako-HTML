@@ -14,5 +14,9 @@ export default defineConfig({
     environment: 'jsdom',
     globals: true,
     include: ['tests/unit/**/*.test.ts'],
+    alias: {
+      '@tauri-apps/plugin-dialog': resolve(__dirname, 'tests/stubs/tauri-dialog.ts'),
+      '@tauri-apps/plugin-fs': resolve(__dirname, 'tests/stubs/tauri-fs.ts'),
+    },
   },
 });

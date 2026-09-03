@@ -26,3 +26,10 @@ export const STORAGE_KEYS = {
 export function isTauri(): boolean {
   return typeof window !== 'undefined' && '__TAURI_INTERNALS__' in window;
 }
+
+import { WebStorage } from './web-storage';
+import { TauriStorage } from './tauri-storage';
+
+export function getStorage(): Storage {
+  return isTauri() ? new TauriStorage() : new WebStorage();
+}
