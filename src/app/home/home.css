@@ -1,0 +1,42 @@
+.home {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.home__actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.home__list {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+}
+.card {
+  border: 1px solid #d7dbe2;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fff;
+}
+.card__name {
+  font-weight: 600;
+  margin: 0 0 4px;
+}
+.card__date {
+  color: #6b7280;
+  font-size: 12px;
+  margin: 0 0 10px;
+}
+.card__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.card__buttons .btn {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+.home__empty {
+  color: #6b7280;
+}
