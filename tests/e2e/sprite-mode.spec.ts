@@ -13,6 +13,8 @@ test('green flag runs a script and the sprite moves; workspace persists', async 
 
   // Build a script by dropping blocks from the flyout via Blockly's API
   // (dragging is flaky in CI; use an eval hook that appends a known workspace).
+  // Net-displacement script: sprite starts at x 0 dir 90 -> `gerak 50 langkah`
+  // ends at x ~= 50, y ~= 0 (unlike a repeat that returns to the origin).
   await page.evaluate(() => {
     const w = window as unknown as { Blockly?: any };
     const B = w.Blockly ?? (window as any).__kodakoBlockly;
@@ -28,23 +30,9 @@ test('green flag runs a script and the sprite moves; workspace persists', async 
               y: 20,
               next: {
                 block: {
-                  type: 'sprite_repeat',
+                  type: 'sprite_move',
                   inputs: {
-                    TIMES: { shadow: { type: 'math_number', fields: { NUM: 4 } } },
-                    DO: {
-                      block: {
-                        type: 'sprite_turn_right',
-                        inputs: { DEG: { shadow: { type: 'math_number', fields: { NUM: 90 } } } },
-                        next: {
-                          block: {
-                            type: 'sprite_move',
-                            inputs: {
-                              STEPS: { shadow: { type: 'math_number', fields: { NUM: 30 } } },
-                            },
-                          },
-                        },
-                      },
-                    },
+                    STEPS: { shadow: { type: 'math_number', fields: { NUM: 50 } } },
                   },
                 },
               },
@@ -57,21 +45,28 @@ test('green flag runs a script and the sprite moves; workspace persists', async 
   });
 
   const before = await page.evaluate(() => (window as any).__kodakoStage.spriteState()[0]);
+  expect(Math.abs(before.x)).toBeLessThan(1);
   await page.getByRole('button', { name: 'Jalankan' }).click();
   await page.waitForFunction(() => (window as any).__kodakoStage.isRunning() === false, null, {
     timeout: 5000,
   });
   const after = await page.evaluate(() => (window as any).__kodakoStage.spriteState()[0]);
-  // 4×(turn 90, move 30) returns to start-ish; assert it actually executed by direction wrapping back
-  expect(after).not.toEqual(before);
+  // The live debug hook reads runtimeContext, so `after` reflects the executed move.
+  expect(Math.abs(after.x - 50)).toBeLessThan(1);
+  expect(Math.abs(after.y)).toBeLessThan(1);
 
-  await page.getByRole('button', { name: 'Stop' }).click();
+  await page.getByRole('button', { name: 'Berhenti' }).click();
   await page.waitForTimeout(500); // debounced autosave
   await page.reload();
   await expect(page.locator('#blocklyDiv')).toBeVisible();
-  const blockCount = await page.evaluate(() => {
+  const reloaded = await page.evaluate(() => {
     const B = (window as any).__kodakoBlockly;
-    return B.getMainWorkspace().getAllBlocks(false).length;
+    const blocks = B.getMainWorkspace().getAllBlocks(false);
+    return {
+      count: blocks.length,
+      hasMove: blocks.some((b: any) => b.type === 'sprite_move'),
+    };
   });
-  expect(blockCount).toBeGreaterThan(3);
+  expect(reloaded.count).toBeGreaterThanOrEqual(2);
+  expect(reloaded.hasMove).toBe(true);
 });

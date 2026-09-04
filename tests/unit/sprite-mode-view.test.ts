@@ -22,6 +22,19 @@ function scriptWithWait(): Record<string, unknown> {
   return json;
 }
 
+function scriptWithMove(steps: string): Record<string, unknown> {
+  const workspace = new Blockly.Workspace();
+  const hat = workspace.newBlock('sprite_hat_green_flag');
+  const move = workspace.newBlock('sprite_move');
+  const n = workspace.newBlock('math_number');
+  n.setFieldValue(steps, 'NUM');
+  move.getInput('STEPS')!.connection!.connect(n.outputConnection!);
+  hat.nextConnection!.connect(move.previousConnection!);
+  const json = Blockly.serialization.workspaces.save(workspace);
+  workspace.dispose();
+  return json;
+}
+
 describe('renderSpriteMode', () => {
   beforeEach(() => {
     setSpriteWorkspaceFactoryForTests(() => {
@@ -73,10 +86,21 @@ describe('renderSpriteMode', () => {
     cleanup();
   });
 
-  it('starts and stops a green-flag program', () => {
+  it('runs a green-flag program to completion and moves the sprite', () => {
+    // Drive the rAF loop deterministically: capture the callbacks and flush them.
+    const rafCbs: FrameRequestCallback[] = [];
+    vi.spyOn(window, 'requestAnimationFrame').mockImplementation((cb) => {
+      rafCbs.push(cb);
+      return rafCbs.length;
+    });
+    vi.spyOn(window, 'cancelAnimationFrame').mockImplementation(() => {});
+    const flush = (): void => {
+      for (const cb of rafCbs.splice(0)) cb(0);
+    };
+
     const host = document.createElement('div');
     const project = createEmptyProject('X');
-    project.sprite.sprites[0]!.script = scriptWithWait();
+    project.sprite.sprites[0]!.script = scriptWithMove('20');
     const cleanup = renderSpriteMode(host, {
       project,
       markDirty: vi.fn(),
@@ -84,9 +108,13 @@ describe('renderSpriteMode', () => {
     });
 
     host.querySelector<HTMLButtonElement>('[data-green-flag]')!.click();
-    expect(__spriteModeHandle.current?.isRunning()).toBe(true);
-    host.querySelector<HTMLButtonElement>('[data-stop]')!.click();
+    expect(__spriteModeHandle.current?.isRunning()).toBe(true); // thread queued, not yet ticked
+    flush(); // scheduler.tick: `gerak 20 langkah` executes, thread finishes
+
     expect(__spriteModeHandle.current?.isRunning()).toBe(false);
+    expect(project.sprite.sprites[0]!.x).toBeCloseTo(20);
+
+    host.querySelector<HTMLButtonElement>('[data-stop]')!.click();
     cleanup();
   });
 
