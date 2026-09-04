@@ -1,4 +1,5 @@
 import { directionToRadians, STAGE, type Sprite } from './sprite';
+import { colorsMatch } from './sensing';
 
 export type Scene = {
   sprites: Sprite[];
@@ -9,6 +10,11 @@ export type Scene = {
 export type Stage = {
   render(): void;
   hitTest(clientX: number, clientY: number): string | null;
+  setPointer(clientX: number, clientY: number, down: boolean): void;
+  pointer(): { x: number; y: number; down: boolean };
+  colorUnderSprite(spriteId: string, hex: string, tolerance?: number): boolean;
+  showAsk(question: string, onSubmit: (answer: string) => void): void;
+  hideAsk(): void;
   thumbnail(maxW?: number): string;
   setNeedsResize(): void;
   dispose(): void;
@@ -22,6 +28,8 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
   let needsResize = true;
   let disposed = false;
   let redrawQueued = false;
+  let pointerState = { x: 0, y: 0, down: false };
+  let askOverlay: HTMLFormElement | null = null;
 
   const scheduleRedraw = (): void => {
     if (disposed || redrawQueued) return;
@@ -45,48 +53,66 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
   const ready = (image: HTMLImageElement): boolean =>
     image.complete && image.naturalWidth > 0 && image.naturalHeight > 0;
 
-  const drawBackdrop = (url: string): void => {
+  const drawBackdrop = (target: CanvasRenderingContext2D, url: string): void => {
     const image = imageFor(url);
     if (!ready(image)) return;
     const scale = Math.max(STAGE.width / image.naturalWidth, STAGE.height / image.naturalHeight);
     const width = image.naturalWidth * scale;
     const height = image.naturalHeight * scale;
-    context.drawImage(image, (STAGE.width - width) / 2, (STAGE.height - height) / 2, width, height);
+    target.drawImage(image, (STAGE.width - width) / 2, (STAGE.height - height) / 2, width, height);
   };
 
-  const drawBubble = (sprite: Sprite, imageHeight: number): void => {
+  const drawBubble = (
+    target: CanvasRenderingContext2D,
+    sprite: Sprite,
+    imageHeight: number,
+  ): void => {
     if (!sprite.bubble) return;
     const text = sprite.bubble.text;
-    const width = Math.max(54, context.measureText(text).width + 20);
+    const width = Math.max(54, target.measureText(text).width + 20);
     const x = -width / 2;
     const y = -imageHeight / 2 - 42;
-    context.beginPath();
-    context.roundRect(x, y, width, 30, 10);
-    context.fillStyle = '#ffffff';
-    context.fill();
-    context.strokeStyle = '#64748b';
-    context.lineWidth = 1;
-    context.stroke();
-    context.fillStyle = '#1f2937';
-    context.font = '14px system-ui, sans-serif';
-    context.fillText(text, x + 10, y + 20);
+    target.beginPath();
+    target.roundRect(x, y, width, 30, 10);
+    target.fillStyle = '#ffffff';
+    target.fill();
+    target.strokeStyle = '#64748b';
+    target.lineWidth = 1;
+    target.stroke();
+    target.fillStyle = '#1f2937';
+    target.font = '14px system-ui, sans-serif';
+    target.fillText(text, x + 10, y + 20);
   };
 
   // Pixel-accurate rotation and bubble layout are covered by the manual checklist and E2E.
-  const drawSprite = (sprite: Sprite, costumeUrl: string): void => {
+  const drawSprite = (
+    target: CanvasRenderingContext2D,
+    sprite: Sprite,
+    costumeUrl: string,
+    includeBubble = true,
+  ): void => {
     const image = imageFor(costumeUrl);
     if (!ready(image)) return;
     const scale = sprite.size / 100;
     const width = image.naturalWidth * scale;
     const height = image.naturalHeight * scale;
-    context.save();
-    context.translate(STAGE.width / 2 + sprite.x, STAGE.height / 2 - sprite.y);
+    target.save();
+    target.translate(STAGE.width / 2 + sprite.x, STAGE.height / 2 - sprite.y);
     // Canvas rotate() is clockwise with y-down; directionToRadians is CCW math
     // convention, so negate it to draw the costume facing its Scratch direction.
-    context.rotate(-directionToRadians(sprite.direction));
-    context.drawImage(image, -width / 2, -height / 2, width, height);
-    drawBubble(sprite, height);
-    context.restore();
+    target.rotate(-directionToRadians(sprite.direction));
+    target.drawImage(image, -width / 2, -height / 2, width, height);
+    if (includeBubble) drawBubble(target, sprite, height);
+    target.restore();
+  };
+
+  const clientToStage = (clientX: number, clientY: number): { x: number; y: number } | null => {
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width <= 0 || rect.height <= 0) return null;
+    return {
+      x: ((clientX - rect.left) / rect.width) * STAGE.width - STAGE.width / 2,
+      y: STAGE.height / 2 - ((clientY - rect.top) / rect.height) * STAGE.height,
+    };
   };
 
   const stage: Stage = {
@@ -107,18 +133,17 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       context.clearRect(0, 0, STAGE.width, STAGE.height);
 
       const scene = getScene();
-      if (scene.backdropUrl) drawBackdrop(scene.backdropUrl);
+      if (scene.backdropUrl) drawBackdrop(context, scene.backdropUrl);
       for (const sprite of scene.sprites) {
         if (!sprite.visible) continue;
         const url = scene.costumeUrlFor(sprite);
-        if (url) drawSprite(sprite, url);
+        if (url) drawSprite(context, sprite, url);
       }
     },
     hitTest(clientX, clientY): string | null {
-      const rect = canvas.getBoundingClientRect();
-      if (rect.width <= 0 || rect.height <= 0) return null;
-      const stageX = ((clientX - rect.left) / rect.width) * STAGE.width - STAGE.width / 2;
-      const stageY = STAGE.height / 2 - ((clientY - rect.top) / rect.height) * STAGE.height;
+      const point = clientToStage(clientX, clientY);
+      if (!point) return null;
+      const { x: stageX, y: stageY } = point;
       const scene = getScene();
       for (let index = scene.sprites.length - 1; index >= 0; index--) {
         const sprite = scene.sprites[index]!;
@@ -140,6 +165,100 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       }
       return null;
     },
+    setPointer(clientX, clientY, down): void {
+      const point = clientToStage(clientX, clientY);
+      if (!point) {
+        pointerState = { ...pointerState, down };
+        return;
+      }
+      pointerState = { ...point, down };
+    },
+    pointer(): { x: number; y: number; down: boolean } {
+      return { ...pointerState };
+    },
+    colorUnderSprite(spriteId, hex, tolerance = 24): boolean {
+      const scene = getScene();
+      const sprite = scene.sprites.find((candidate) => candidate.id === spriteId);
+      if (!sprite || !sprite.visible) return false;
+      const costumeUrl = scene.costumeUrlFor(sprite);
+      if (!costumeUrl) return false;
+      const image = images.get(costumeUrl);
+      if (!image || !ready(image)) return false;
+
+      const scale = sprite.size / 100;
+      const halfWidth = (image.naturalWidth * scale) / 2;
+      const halfHeight = (image.naturalHeight * scale) / 2;
+      const left = Math.max(0, Math.floor(STAGE.width / 2 + sprite.x - halfWidth));
+      const right = Math.min(STAGE.width, Math.ceil(STAGE.width / 2 + sprite.x + halfWidth));
+      const top = Math.max(0, Math.floor(STAGE.height / 2 - sprite.y - halfHeight));
+      const bottom = Math.min(STAGE.height, Math.ceil(STAGE.height / 2 - sprite.y + halfHeight));
+      const width = right - left;
+      const height = bottom - top;
+      if (width <= 0 || height <= 0) return false;
+
+      const offscreen = document.createElement('canvas');
+      offscreen.width = STAGE.width;
+      offscreen.height = STAGE.height;
+      const offscreenContext = offscreen.getContext('2d');
+      if (!offscreenContext) return false;
+      offscreenContext.clearRect(0, 0, STAGE.width, STAGE.height);
+      if (scene.backdropUrl) drawBackdrop(offscreenContext, scene.backdropUrl);
+      for (const other of scene.sprites) {
+        if (!other.visible || other.id === spriteId) continue;
+        const otherUrl = scene.costumeUrlFor(other);
+        if (otherUrl) drawSprite(offscreenContext, other, otherUrl, false);
+      }
+
+      try {
+        const pixels = offscreenContext.getImageData(left, top, width, height).data;
+        // MVP simplification: any matching scene-minus-self pixel inside the AABB counts.
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (
+            (pixels[index + 3] ?? 0) > 0 &&
+            colorsMatch(
+              pixels[index] ?? 0,
+              pixels[index + 1] ?? 0,
+              pixels[index + 2] ?? 0,
+              hex,
+              tolerance,
+            )
+          ) {
+            return true;
+          }
+        }
+      } catch {
+        return false;
+      }
+      return false;
+    },
+    showAsk(question, onSubmit): void {
+      stage.hideAsk();
+      const form = document.createElement('form');
+      form.className = 'sprite-ask';
+      const label = document.createElement('label');
+      label.textContent = question;
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Ketik jawabanmu…';
+      const button = document.createElement('button');
+      button.type = 'submit';
+      button.textContent = 'Kirim';
+      label.append(input);
+      form.append(label, button);
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const answer = input.value;
+        stage.hideAsk();
+        onSubmit(answer);
+      });
+      (canvas.parentElement ?? document.body).append(form);
+      askOverlay = form;
+      input.focus();
+    },
+    hideAsk(): void {
+      askOverlay?.remove();
+      askOverlay = null;
+    },
     thumbnail(maxW = 160): string {
       const output = document.createElement('canvas');
       output.width = maxW;
@@ -153,6 +272,7 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
     },
     dispose(): void {
       disposed = true;
+      stage.hideAsk();
       for (const image of images.values()) {
         image.onload = null;
         image.onerror = null;
