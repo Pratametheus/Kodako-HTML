@@ -4,6 +4,7 @@ import type { Storage } from '../../core/storage';
 import { renderHeader, type EditorMode } from './header';
 import { renderHtmlMode } from './html-mode/html-mode';
 import { renderSpriteMode } from './sprite-mode/sprite-mode';
+import { renderHelpPanel } from '../help/help-panel';
 
 export type EditorDeps = {
   id: string;
@@ -35,6 +36,8 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
         .catch((err) => console.error(err));
     }, AUTOSAVE_MS);
   };
+
+  const helpPanel = renderHelpPanel(root);
 
   const workspaceEl = root.querySelector<HTMLElement>('[data-workspace]')!;
   let cleanupMode: (() => void) | undefined;
@@ -82,6 +85,7 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
         .catch((err) => console.error(err)),
     onOpen: () => console.info('Buka project dari editor: menyusul pada fase berikutnya.'),
     onExport: () => void storage.exportToFile(project).catch((err) => console.error(err)),
+    onHelp: () => helpPanel.open(),
   });
 
   renderMode();
@@ -96,6 +100,7 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
     }
     cleanupMode?.();
     cleanupHeader();
+    helpPanel.dispose();
     root.innerHTML = '';
   };
 }

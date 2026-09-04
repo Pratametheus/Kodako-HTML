@@ -11,6 +11,7 @@ export type HeaderDeps = {
   onSave: () => void;
   onOpen: () => void;
   onExport: () => void;
+  onHelp: () => void;
 };
 
 export function renderHeader(root: HTMLElement, deps: HeaderDeps): () => void {
@@ -26,6 +27,7 @@ export function renderHeader(root: HTMLElement, deps: HeaderDeps): () => void {
         <button class="btn" role="tab" data-mode="sprite">${t('editor.mode.sprite')}</button>
         <button class="btn" role="tab" data-mode="html">${t('editor.mode.html')}</button>
       </div>
+      <button class="btn" data-help>${t('help.open')}</button>
     </header>
   `;
 
@@ -60,13 +62,14 @@ export function renderHeader(root: HTMLElement, deps: HeaderDeps): () => void {
   const onChange = () => deps.onNameChange(nameInput.value.trim());
   const onClick = (ev: MouseEvent) => {
     const el = (ev.target as HTMLElement).closest<HTMLElement>(
-      '[data-action],[data-back],[data-save],[data-open],[data-export],[data-mode]',
+      '[data-action],[data-back],[data-save],[data-open],[data-export],[data-help],[data-mode]',
     );
     if (!el) return;
     if (el.hasAttribute('data-back')) deps.onBack();
     else if (el.hasAttribute('data-save')) deps.onSave();
     else if (el.hasAttribute('data-open')) deps.onOpen();
     else if (el.hasAttribute('data-export')) deps.onExport();
+    else if (el.hasAttribute('data-help')) deps.onHelp();
     else if (el.dataset.mode === 'sprite' || el.dataset.mode === 'html') {
       paintModes(el.dataset.mode);
       deps.onModeChange(el.dataset.mode);

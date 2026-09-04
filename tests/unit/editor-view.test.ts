@@ -95,4 +95,12 @@ describe('renderEditor', () => {
     root.querySelector<HTMLButtonElement>('[data-back]')!.click();
     expect(onBack).toHaveBeenCalledOnce();
   });
+
+  it('clicking Bantuan opens the help panel', () => {
+    renderEditor(root, { id: 'p1', project, storage, onBack: vi.fn() });
+    const dialog = root.querySelector<HTMLElement>('[role="dialog"]')!;
+    expect(dialog.hasAttribute('hidden')).toBe(true);
+    root.querySelector<HTMLButtonElement>('[data-help]')!.click();
+    expect(dialog.hasAttribute('hidden')).toBe(false);
+  });
 });
