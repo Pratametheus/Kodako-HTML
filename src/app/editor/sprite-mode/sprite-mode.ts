@@ -274,6 +274,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     getSelectedSprite: currentSprite,
     onAddBuiltin: (assetId) => {
       currentSprite().costumes.push({ assetId });
+      costumePanel.refresh();
       deps.markDirty();
       stage.render();
     },
@@ -281,11 +282,13 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
       const assetId = newId('asset');
       project.assets[assetId] = { kind: 'image', name, source: 'embedded', ref: dataUrl };
       currentSprite().costumes.push({ assetId });
+      costumePanel.refresh();
       deps.markDirty();
       stage.render();
     },
     onPick: (index) => {
       currentSprite().currentCostume = index;
+      costumePanel.refresh();
       deps.markDirty();
       stage.render();
     },
