@@ -12,6 +12,9 @@ describe('HTML document wrapper', () => {
     expect(documentHtml).toContain('<!doctype html>');
     expect(documentHtml).toContain('<title>A &amp; B</title>');
     expect(documentHtml).toContain('<p>x</p>');
+    expect(documentHtml).toContain(
+      "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'none'; object-src 'none'; base-uri 'none'\">",
+    );
     expect(documentHtml).not.toContain('<script');
   });
 });

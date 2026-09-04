@@ -45,7 +45,6 @@
   "editor.html.uploadTooBig": "Gambar terlalu besar (maks 2 MB).",
   "editor.html.uploadNotImage": "File itu bukan gambar.",
   "editor.html.previewTitle": "Pratinjau",
-  "editor.html.emptyHint": "Seret blok dari kategori Struktur untuk mulai.",
   "error.spriteRunFailed": "Ada kesalahan saat menjalankan skrip.",
   "error.htmlExportFailed": "Gagal mengekspor halaman HTML.",
   "error.lastSprite": "Tidak bisa menghapus sprite terakhir.",

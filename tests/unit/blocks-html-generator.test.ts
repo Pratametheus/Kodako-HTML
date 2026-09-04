@@ -135,6 +135,74 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<a href="https://a.b">klik</a>\n');
   });
 
+  it.each([
+    ['javascript:alert(1)', ''],
+    ['data:text/html,x', ''],
+    ['https://a.b/c', 'https://a.b/c'],
+    ['mailto:a@b.c', 'mailto:a@b.c'],
+    ['/page', '/page'],
+    ['#top', '#top'],
+  ])('allows only safe link URLs: %s', (url, expected) => {
+    const page = statement(workspace, 'html_page');
+    const link = statement(workspace, 'html_link');
+    link.setFieldValue(url, 'URL');
+    link.setFieldValue('klik', 'LABEL');
+    connectStatement(page, 'BODY', link);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(`<a href="${expected}">klik</a>\n`);
+  });
+
+  it.each([
+    ['javascript:alert(1)', ''],
+    ['data:text/html,x', ''],
+    ['https://a.b/c', 'https://a.b/c'],
+    ['mailto:a@b.c', 'mailto:a@b.c'],
+    ['/page', '/page'],
+    ['#top', '#top'],
+  ])('allows only safe remote image URLs: %s', (url, expected) => {
+    const page = statement(workspace, 'html_page');
+    const image = statement(workspace, 'html_image_url');
+    image.setFieldValue(url, 'URL');
+    image.setFieldValue('gambar', 'ALT');
+    connectStatement(page, 'BODY', image);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(`<img src="${expected}" alt="gambar">\n`);
+  });
+
+  it('trims leading whitespace and control characters before checking URL schemes', () => {
+    const page = statement(workspace, 'html_page');
+    const link = statement(workspace, 'html_link');
+    link.setFieldValue('\u0000 \tJaVaScRiPt:alert(1)', 'URL');
+    link.setFieldValue('klik', 'LABEL');
+    connectStatement(page, 'BODY', link);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<a href="">klik</a>\n');
+  });
+
+  it('escapes quotes and angle brackets in link fields', () => {
+    const page = statement(workspace, 'html_page');
+    const link = statement(workspace, 'html_link');
+    link.setFieldValue('https://a.b/?q="<', 'URL');
+    link.setFieldValue('"<', 'LABEL');
+    connectStatement(page, 'BODY', link);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<a href="https://a.b/?q=&quot;&lt;">&quot;&lt;</a>\n',
+    );
+  });
+
+  it('escapes quotes and angle brackets in remote image fields', () => {
+    const page = statement(workspace, 'html_page');
+    const image = statement(workspace, 'html_image_url');
+    image.setFieldValue('https://a.b/"<', 'URL');
+    image.setFieldValue('" onerror="<', 'ALT');
+    connectStatement(page, 'BODY', image);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<img src="https://a.b/&quot;&lt;" alt="&quot; onerror=&quot;&lt;">\n',
+    );
+  });
+
   it('uses only the first page root', () => {
     const firstPage = statement(workspace, 'html_page');
     const firstParagraph = statement(workspace, 'html_paragraph');

@@ -46,6 +46,9 @@ describe('standalone HTML export', () => {
     expect(html).toContain('<!doctype html>');
     expect(html).toContain('<title>Judul</title>');
     expect(html).toContain('<p>hi</p>');
+    expect(html).toContain(
+      "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'none'; object-src 'none'; base-uri 'none'\">",
+    );
   });
 
   it('inlines embedded image assets', () => {

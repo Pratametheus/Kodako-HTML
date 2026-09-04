@@ -44,6 +44,24 @@ function textInput(block: Blockly.Block, inputName: string): string {
   return escapeHtmlText(value);
 }
 
+function safeUrl(raw: string): string {
+  let start = 0;
+  while (start < raw.length) {
+    const character = raw[start] ?? '';
+    const code = raw.charCodeAt(start);
+    const isControl = code <= 0x20 || (code >= 0x7f && code <= 0x9f);
+    if (!isControl && !/\s/u.test(character)) break;
+    start += 1;
+  }
+  const value = raw.slice(start);
+  if (/^(?:https?|mailto):/i.test(value)) return value;
+  if (value.startsWith('/') || value.startsWith('#')) return value;
+
+  const delimiterIndex = value.search(/[/?#]/);
+  const schemeCandidate = delimiterIndex === -1 ? value : value.slice(0, delimiterIndex);
+  return schemeCandidate.includes(':') ? '' : value;
+}
+
 function withStyle(html: string, fragment: string): string {
   const openingTag = /^(\s*<[a-z][\w-]*)([^>]*)(>)/i;
   return html.replace(openingTag, (_match, start: string, attributes: string, end: string) => {
@@ -131,9 +149,9 @@ function emitBlock(block: Blockly.Block, depth: number, assetIds: string[]): str
       return `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`;
     }
     case 'html_image_url':
-      return `${prefix}<img src="${escapeHtmlAttr(field(block, 'URL'))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`;
+      return `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`;
     case 'html_link':
-      return `${prefix}<a href="${escapeHtmlAttr(field(block, 'URL'))}">${escapeHtmlText(field(block, 'LABEL'))}</a>\n`;
+      return `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}">${escapeHtmlText(field(block, 'LABEL'))}</a>\n`;
     case 'html_button':
       return `${prefix}<button type="button">${textInput(block, 'TEXT')}</button>\n`;
     case 'html_hr':
