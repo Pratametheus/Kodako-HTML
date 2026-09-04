@@ -1,7 +1,16 @@
 import * as Blockly from 'blockly/core';
 
 export const CATEGORY_COLORS: Record<
-  'events' | 'motion' | 'looks' | 'control' | 'operators' | 'sensing' | 'variables',
+  | 'events'
+  | 'motion'
+  | 'looks'
+  | 'control'
+  | 'operators'
+  | 'sensing'
+  | 'variables'
+  | 'structure'
+  | 'content'
+  | 'style',
   string
 > = {
   events: '#FFBF00',
@@ -11,6 +20,9 @@ export const CATEGORY_COLORS: Record<
   operators: '#59C059',
   sensing: '#5CB1D6',
   variables: '#FF8C1A',
+  structure: '#1E88E5',
+  content: '#43A047',
+  style: '#8E24AA',
 };
 
 export const spriteTheme = Blockly.Theme.defineTheme('kodako-sprite', {
@@ -24,6 +36,9 @@ export const spriteTheme = Blockly.Theme.defineTheme('kodako-sprite', {
     operators_blocks: { colourPrimary: CATEGORY_COLORS.operators },
     sensing_blocks: { colourPrimary: CATEGORY_COLORS.sensing },
     variables_blocks: { colourPrimary: CATEGORY_COLORS.variables },
+    structure_blocks: { colourPrimary: CATEGORY_COLORS.structure },
+    content_blocks: { colourPrimary: CATEGORY_COLORS.content },
+    style_blocks: { colourPrimary: CATEGORY_COLORS.style },
   },
   categoryStyles: {
     events_category: { colour: CATEGORY_COLORS.events },
@@ -33,6 +48,9 @@ export const spriteTheme = Blockly.Theme.defineTheme('kodako-sprite', {
     operators_category: { colour: CATEGORY_COLORS.operators },
     sensing_category: { colour: CATEGORY_COLORS.sensing },
     variables_category: { colour: CATEGORY_COLORS.variables },
+    structure_category: { colour: CATEGORY_COLORS.structure },
+    content_category: { colour: CATEGORY_COLORS.content },
+    style_category: { colour: CATEGORY_COLORS.style },
   },
   fontStyle: { family: 'system-ui, sans-serif', size: 13 },
   componentStyles: {},
