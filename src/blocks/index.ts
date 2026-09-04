@@ -7,6 +7,8 @@ import { spriteTheme } from './theme';
 
 export { Blockly, spriteTheme };
 export { setCostumeOptionsProvider } from './sprite/blocks';
+export { generateThreads } from './sprite/generator';
+export type { ThreadCode } from './sprite/generator';
 export const BLOCKLY_LOCALE = 'id';
 
 let installed = false;
