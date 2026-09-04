@@ -6,6 +6,7 @@ import { registerSpriteGenerators } from './sprite/generator';
 import { spriteTheme } from './theme';
 
 export { Blockly, spriteTheme };
+export { setCostumeOptionsProvider } from './sprite/blocks';
 export const BLOCKLY_LOCALE = 'id';
 
 let installed = false;

@@ -1,0 +1,96 @@
+import type * as Blockly from 'blockly/core';
+
+const num = (n: number) => ({ shadow: { type: 'math_number', fields: { NUM: n } } });
+const txt = (s: string) => ({ shadow: { type: 'text', fields: { TEXT: s } } });
+
+export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
+  kind: 'categoryToolbox',
+  contents: [
+    {
+      kind: 'category',
+      name: 'Kejadian',
+      categorystyle: 'events_category',
+      contents: [
+        { kind: 'block', type: 'sprite_hat_green_flag' },
+        { kind: 'block', type: 'sprite_hat_clicked' },
+        { kind: 'block', type: 'sprite_hat_key' },
+        { kind: 'block', type: 'sprite_hat_receive' },
+        { kind: 'block', type: 'sprite_broadcast' },
+        { kind: 'block', type: 'sprite_broadcast_wait' },
+      ],
+    },
+    {
+      kind: 'category',
+      name: 'Gerak',
+      categorystyle: 'motion_category',
+      contents: [
+        { kind: 'block', type: 'sprite_move', inputs: { STEPS: num(10) } },
+        { kind: 'block', type: 'sprite_turn_right', inputs: { DEG: num(15) } },
+        { kind: 'block', type: 'sprite_turn_left', inputs: { DEG: num(15) } },
+        { kind: 'block', type: 'sprite_goto_xy', inputs: { X: num(0), Y: num(0) } },
+        { kind: 'block', type: 'sprite_change_x', inputs: { DX: num(10) } },
+        { kind: 'block', type: 'sprite_change_y', inputs: { DY: num(10) } },
+        { kind: 'block', type: 'sprite_point_direction', inputs: { DIR: num(90) } },
+        { kind: 'block', type: 'sprite_glide', inputs: { SECS: num(1), X: num(0), Y: num(0) } },
+        { kind: 'block', type: 'sprite_bounce_edge' },
+      ],
+    },
+    {
+      kind: 'category',
+      name: 'Tampilan',
+      categorystyle: 'looks_category',
+      contents: [
+        { kind: 'block', type: 'sprite_say', inputs: { TEXT: txt('Halo!') } },
+        { kind: 'block', type: 'sprite_say_for', inputs: { TEXT: txt('Halo!'), SECS: num(2) } },
+        { kind: 'block', type: 'sprite_say_clear' },
+        { kind: 'block', type: 'sprite_switch_costume' },
+        { kind: 'block', type: 'sprite_next_costume' },
+        { kind: 'block', type: 'sprite_change_size', inputs: { DELTA: num(10) } },
+        { kind: 'block', type: 'sprite_set_size', inputs: { PCT: num(100) } },
+        { kind: 'block', type: 'sprite_show' },
+        { kind: 'block', type: 'sprite_hide' },
+      ],
+    },
+    {
+      kind: 'category',
+      name: 'Kontrol',
+      categorystyle: 'control_category',
+      contents: [
+        { kind: 'block', type: 'sprite_wait', inputs: { SECS: num(1) } },
+        { kind: 'block', type: 'sprite_repeat', inputs: { TIMES: num(10) } },
+        { kind: 'block', type: 'sprite_forever' },
+        { kind: 'block', type: 'sprite_if' },
+        { kind: 'block', type: 'sprite_if_else' },
+        { kind: 'block', type: 'sprite_wait_until' },
+        { kind: 'block', type: 'sprite_stop' },
+      ],
+    },
+    {
+      kind: 'category',
+      name: 'Operator',
+      categorystyle: 'operators_category',
+      contents: [
+        { kind: 'block', type: 'sprite_op_arith', inputs: { A: num(1), B: num(1) } },
+        { kind: 'block', type: 'sprite_op_mod', inputs: { A: num(7), B: num(2) } },
+        { kind: 'block', type: 'sprite_op_compare', inputs: { A: num(1), B: num(1) } },
+        { kind: 'block', type: 'sprite_op_and' },
+        { kind: 'block', type: 'sprite_op_or' },
+        { kind: 'block', type: 'sprite_op_not' },
+        { kind: 'block', type: 'sprite_op_random', inputs: { FROM: num(1), TO: num(10) } },
+        { kind: 'block', type: 'sprite_op_join', inputs: { A: txt('apel '), B: txt('jeruk') } },
+        { kind: 'block', type: 'sprite_op_length', inputs: { A: txt('halo') } },
+      ],
+    },
+    {
+      kind: 'category',
+      name: 'Sensor',
+      categorystyle: 'sensing_category',
+      contents: [
+        { kind: 'block', type: 'sprite_sensing_key' },
+        { kind: 'block', type: 'sprite_sensing_timer' },
+        { kind: 'block', type: 'sprite_sensing_reset_timer' },
+      ],
+    },
+    { kind: 'category', name: 'Variabel', categorystyle: 'variables_category', custom: 'VARIABLE' },
+  ],
+};
