@@ -1,4 +1,5 @@
 import { Blockly, generateHtml, installHtmlBlockly } from '../../blocks';
+import { htmlWorkspaceJson } from '../../core/html-project';
 import type { Project } from '../../core/project';
 import type { Storage } from '../../core/storage';
 import { resolveAssetUrl } from '../sprite/assets';
@@ -25,7 +26,7 @@ export async function exportHtmlProject(project: Project, storage: Storage): Pro
   installHtmlBlockly();
   const workspace = new Blockly.Workspace();
   try {
-    Blockly.serialization.workspaces.load(project.html.workspace, workspace);
+    Blockly.serialization.workspaces.load(htmlWorkspaceJson(project), workspace);
     const { bodyHtml } = generateHtml(workspace);
     const html = buildStandaloneDocument(project.meta.name, bodyHtml, project.assets);
     await storage.exportHtml(project.meta.name, html);
