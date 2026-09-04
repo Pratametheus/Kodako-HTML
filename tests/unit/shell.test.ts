@@ -2,6 +2,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createEmptyProject } from '../../src/core/project';
 import { WebStorage } from '../../src/core/web-storage';
 import { startApp } from '../../src/app/shell';
+import { t } from '../../src/app/i18n';
+import { showToast } from '../../src/app/toast';
 
 vi.mock('../../src/app/editor/html-mode/html-mode', () => ({
   renderHtmlMode: (host: HTMLElement) => {
@@ -10,6 +12,11 @@ vi.mock('../../src/app/editor/html-mode/html-mode', () => ({
       host.textContent = '';
     };
   },
+}));
+
+vi.mock('../../src/app/toast', () => ({
+  showToast: vi.fn(),
+  clearToasts: vi.fn(),
 }));
 
 let root: HTMLElement;
@@ -60,6 +67,15 @@ describe('startApp', () => {
     await flush();
     expect(window.location.hash).toBe('#/');
     expect(root.textContent).toContain('Project Saya');
+  });
+
+  it('shows an error toast before redirecting a missing editor route', async () => {
+    vi.mocked(showToast).mockClear();
+    window.location.hash = '#/editor/ghost';
+    stop = startApp(root, new WebStorage());
+    await flush();
+    await flush();
+    expect(showToast).toHaveBeenCalledWith(t('error.loadProject'), { kind: 'error' });
   });
 
   it('ignores a stale in-flight render when the route changes rapidly', async () => {

@@ -15,6 +15,7 @@ import { exportHtmlProject } from '../../../runtime/html/export';
 import { createHtmlPreview } from '../../../runtime/html/preview';
 import { BUILTIN_COSTUMES, loadUploadedImage } from '../../../runtime/sprite/assets';
 import { t } from '../../i18n';
+import { showToast } from '../../toast';
 import { renderCodePanel } from './code-panel';
 
 export type HtmlModeDeps = {
@@ -151,6 +152,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       console.error(error);
       errorElement.textContent = t('error.htmlExportFailed');
       errorElement.hidden = false;
+      showToast(t('error.htmlExportFailed'), { kind: 'error' });
     });
   };
   exportButton.addEventListener('click', onExport);

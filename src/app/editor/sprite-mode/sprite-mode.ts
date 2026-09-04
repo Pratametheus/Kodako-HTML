@@ -29,6 +29,7 @@ import {
 import { createScheduler, type Scheduler } from '../../../runtime/sprite/scheduler';
 import { createStage, type Stage } from '../../../runtime/sprite/stage';
 import { t } from '../../i18n';
+import { showToast } from '../../toast';
 import { renderCostumePanel } from './costume-panel';
 import { renderSoundPanel } from './sound-panel';
 import { renderSpritePanel } from './sprite-panel';
@@ -153,6 +154,19 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   );
 
   const audioEngine = deps.audioEngine ?? createAudioEngine();
+  const audioGlobals = globalThis as typeof globalThis & {
+    webkitAudioContext?: typeof AudioContext;
+  };
+  const audioUnavailable =
+    !deps.audioEngine &&
+    typeof audioGlobals.AudioContext === 'undefined' &&
+    typeof audioGlobals.webkitAudioContext === 'undefined';
+  let audioWarned = false;
+  const warnAudioIfUnavailable = (): void => {
+    if (!audioUnavailable || audioWarned) return;
+    audioWarned = true;
+    showToast(t('error.audioUnavailable'));
+  };
   let lastSoundId: string | null = null;
   const rememberSound = (url: string): void => {
     lastSoundId =
@@ -163,10 +177,12 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   const audio: AudioEngine = {
     play: (url, spriteId) => {
       rememberSound(url);
+      warnAudioIfUnavailable();
       audioEngine.play(url, spriteId);
     },
     playUntilDone: (url, spriteId) => {
       rememberSound(url);
+      warnAudioIfUnavailable();
       return audioEngine.playUntilDone(url, spriteId);
     },
     stopAll: () => audioEngine.stopAll(),
@@ -413,16 +429,37 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
 
   const greenButton = host.querySelector<HTMLButtonElement>('[data-green-flag]')!;
   const stopButton = host.querySelector<HTMLButtonElement>('[data-stop]')!;
+  let runErrorReported = false;
+  const guardedAnimationWindow = {
+    requestAnimationFrame: (callback: FrameRequestCallback): number =>
+      window.requestAnimationFrame((time) => {
+        try {
+          callback(time);
+        } catch (err) {
+          console.error(err);
+          if (!runErrorReported) {
+            runErrorReported = true;
+            showToast(t('error.spriteRunFailed'), { kind: 'error' });
+          }
+          scheduler.stopAll();
+          audio.stopAll();
+          if (runActive) finishRun();
+        }
+      }),
+    cancelAnimationFrame: (handle: number): void => window.cancelAnimationFrame(handle),
+    performance: window.performance,
+  };
   const onGreenFlag = (): void => {
     persistWorkspace();
     lastSoundId = null;
+    runErrorReported = false;
     makeRuntime();
     rebuildPrograms();
     events.greenFlag();
     runActive = scheduler.isRunning();
     stage.render();
     if (runActive && typeof window.requestAnimationFrame === 'function') {
-      detachAnimation = scheduler.attach(window);
+      detachAnimation = scheduler.attach(guardedAnimationWindow);
     }
   };
   const onStop = (): void => {

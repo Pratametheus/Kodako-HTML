@@ -3,6 +3,8 @@ import { currentRoute, navigate, onRouteChange, type Route } from './router';
 import { ProjectManager } from './home/project-manager';
 import { renderHome } from './home/home-view';
 import { renderEditor } from './editor/editor-view';
+import { t } from './i18n';
+import { showToast } from './toast';
 
 export function startApp(root: HTMLElement, storage: Storage): () => void {
   const manager = new ProjectManager(storage);
@@ -36,6 +38,7 @@ export function startApp(root: HTMLElement, storage: Storage): () => void {
       } catch (err) {
         if (myGeneration !== generation) return;
         console.error(err);
+        showToast(t('error.loadProject'), { kind: 'error' });
         navigate({ name: 'home' });
       }
       return;

@@ -1,5 +1,6 @@
 import './home.css';
 import { formatDate, t } from '../i18n';
+import { showToast } from '../toast';
 import type { ProjectManager } from './project-manager';
 
 type Deps = { manager: ProjectManager; onOpen: (id: string) => void };
@@ -84,6 +85,7 @@ export function renderHome(root: HTMLElement, deps: Deps): () => void {
       }
     } catch (err) {
       console.error(err);
+      if (action === 'open-file') showToast(t('error.importFile'), { kind: 'error' });
     }
   };
 
