@@ -1,3 +1,5 @@
+import { readFile, stat } from 'node:fs/promises';
+import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   BUILTIN_BACKDROPS,
@@ -13,12 +15,60 @@ import {
 
 describe('sprite asset catalog', () => {
   it('contains unique builtin costumes and backdrops', () => {
-    expect(BUILTIN_COSTUMES).toHaveLength(9);
-    expect(BUILTIN_BACKDROPS).toHaveLength(4);
+    expect(BUILTIN_COSTUMES).toHaveLength(15);
+    expect(BUILTIN_BACKDROPS).toHaveLength(6);
     const ids = [...BUILTIN_COSTUMES, ...BUILTIN_BACKDROPS].map(({ id }) => id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids.every((id) => id.startsWith('builtin:'))).toBe(true);
     expect(BUILTIN_BY_ID.get('builtin:cat')?.name).toBe('Kucing');
+  });
+
+  it.each([
+    ['builtin:robot', 'Robot'],
+    ['builtin:cloud', 'Awan'],
+    ['builtin:flower', 'Bunga'],
+    ['builtin:fish', 'Ikan'],
+    ['builtin:rocket', 'Roket'],
+    ['builtin:apple', 'Apel'],
+    ['builtin:bg-room', 'Ruangan'],
+    ['builtin:bg-space', 'Antariksa'],
+  ])('resolves new polished asset %s', (id, name) => {
+    expect(BUILTIN_BY_ID.get(id)?.name).toBe(name);
+    expect(resolveAssetUrl(id, {})).toBeTruthy();
+  });
+
+  it('keeps every bundled SVG small and free of executable or external content', async () => {
+    const costumes = [
+      'cat',
+      'ball',
+      'arrow',
+      'square',
+      'star',
+      'circle',
+      'triangle',
+      'bug',
+      'heart',
+      'robot',
+      'cloud',
+      'flower',
+      'fish',
+      'rocket',
+      'apple',
+    ];
+    const backdrops = ['bg-plain', 'bg-sky', 'bg-grid', 'bg-sunset', 'bg-room', 'bg-space'];
+
+    for (const [name, viewBox] of [
+      ...costumes.map((name) => [name, '0 0 100 100'] as const),
+      ...backdrops.map((name) => [name, '0 0 480 360'] as const),
+    ]) {
+      const file = resolve(process.cwd(), 'src/runtime/sprite/assets', `${name}.svg`);
+      const source = await readFile(file, 'utf8');
+      expect((await stat(file)).size, name).toBeLessThan(3072);
+      expect(source, name).toContain(`viewBox="${viewBox}"`);
+      expect(source.toLowerCase(), name).not.toContain('<script');
+      const withoutSvgNamespace = source.replace('http://www.w3.org/2000/svg', '');
+      expect(withoutSvgNamespace, name).not.toMatch(/https?:\/\//i);
+    }
   });
 
   it('rejects oversized and non-image uploads in Bahasa Indonesia', async () => {

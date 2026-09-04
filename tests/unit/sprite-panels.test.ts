@@ -54,7 +54,7 @@ describe('costume panel', () => {
     });
 
     const builtinTiles = host.querySelectorAll<HTMLButtonElement>('[data-builtin-costume]');
-    expect(builtinTiles).toHaveLength(9);
+    expect(builtinTiles).toHaveLength(15);
     builtinTiles[1]!.click();
     expect(onAddBuiltin).toHaveBeenCalledWith('builtin:ball');
 

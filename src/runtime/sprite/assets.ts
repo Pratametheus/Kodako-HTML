@@ -1,13 +1,21 @@
 import arrowUrl from './assets/arrow.svg?url';
+import appleUrl from './assets/apple.svg?url';
 import ballUrl from './assets/ball.svg?url';
 import bgGridUrl from './assets/bg-grid.svg?url';
 import bgPlainUrl from './assets/bg-plain.svg?url';
+import bgRoomUrl from './assets/bg-room.svg?url';
 import bgSkyUrl from './assets/bg-sky.svg?url';
+import bgSpaceUrl from './assets/bg-space.svg?url';
 import bgSunsetUrl from './assets/bg-sunset.svg?url';
 import bugUrl from './assets/bug.svg?url';
 import catUrl from './assets/cat.svg?url';
 import circleUrl from './assets/circle.svg?url';
+import cloudUrl from './assets/cloud.svg?url';
+import fishUrl from './assets/fish.svg?url';
+import flowerUrl from './assets/flower.svg?url';
 import heartUrl from './assets/heart.svg?url';
+import robotUrl from './assets/robot.svg?url';
+import rocketUrl from './assets/rocket.svg?url';
 import squareUrl from './assets/square.svg?url';
 import starUrl from './assets/star.svg?url';
 import triangleUrl from './assets/triangle.svg?url';
@@ -37,6 +45,12 @@ export const BUILTIN_COSTUMES: readonly BuiltinAsset[] = [
   { id: 'builtin:triangle', kind: 'costume', name: 'Segitiga', url: triangleUrl },
   { id: 'builtin:bug', kind: 'costume', name: 'Kumbang', url: bugUrl },
   { id: 'builtin:heart', kind: 'costume', name: 'Hati', url: heartUrl },
+  { id: 'builtin:robot', kind: 'costume', name: 'Robot', url: robotUrl },
+  { id: 'builtin:cloud', kind: 'costume', name: 'Awan', url: cloudUrl },
+  { id: 'builtin:flower', kind: 'costume', name: 'Bunga', url: flowerUrl },
+  { id: 'builtin:fish', kind: 'costume', name: 'Ikan', url: fishUrl },
+  { id: 'builtin:rocket', kind: 'costume', name: 'Roket', url: rocketUrl },
+  { id: 'builtin:apple', kind: 'costume', name: 'Apel', url: appleUrl },
 ];
 
 export const BUILTIN_BACKDROPS: readonly BuiltinAsset[] = [
@@ -44,6 +58,8 @@ export const BUILTIN_BACKDROPS: readonly BuiltinAsset[] = [
   { id: 'builtin:bg-sky', kind: 'backdrop', name: 'Langit', url: bgSkyUrl },
   { id: 'builtin:bg-grid', kind: 'backdrop', name: 'Kotak-kotak', url: bgGridUrl },
   { id: 'builtin:bg-sunset', kind: 'backdrop', name: 'Senja', url: bgSunsetUrl },
+  { id: 'builtin:bg-room', kind: 'backdrop', name: 'Ruangan', url: bgRoomUrl },
+  { id: 'builtin:bg-space', kind: 'backdrop', name: 'Antariksa', url: bgSpaceUrl },
 ];
 
 export const BUILTIN_SOUNDS: readonly BuiltinAsset[] = [
