@@ -21,8 +21,15 @@ describe('createEmptyProject', () => {
       direction: 90,
       size: 100,
       visible: true,
+      costumes: [{ assetId: 'builtin:cat' }],
+      currentCostume: 0,
     });
-    expect(p.assets).toEqual({});
+    expect(p.assets['builtin:cat']).toEqual({
+      kind: 'image',
+      name: 'Kucing',
+      source: 'builtin',
+      ref: 'builtin:cat',
+    });
   });
 });
 

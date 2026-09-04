@@ -53,7 +53,7 @@ export function createEmptyProject(name: string): Project {
           direction: 90,
           size: 100,
           visible: true,
-          costumes: [],
+          costumes: [{ assetId: 'builtin:cat' }],
           currentCostume: 0,
           sounds: [],
           script: {},
@@ -61,7 +61,14 @@ export function createEmptyProject(name: string): Project {
       ],
     },
     html: { workspace: {} },
-    assets: {},
+    assets: {
+      'builtin:cat': {
+        kind: 'image',
+        name: 'Kucing',
+        source: 'builtin',
+        ref: 'builtin:cat',
+      },
+    },
   };
 }
 
