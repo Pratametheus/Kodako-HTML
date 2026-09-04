@@ -1,6 +1,6 @@
 import type { DurationRequest } from './api';
 import type { ThreadInterpreter } from './interpreter';
-import type { RuntimeContext } from './runtime-context';
+import { setAnswer, type RuntimeContext } from './runtime-context';
 import { movedToXY, saidNothing } from './sprite';
 
 export type SchedulerThread = {
@@ -19,6 +19,8 @@ export type SchedulerThread = {
   };
   sayUntil?: number;
   waitingOnBroadcast?: string;
+  awaitingSound?: boolean;
+  awaitingAnswer?: boolean;
 };
 
 type AnimationWindow = Pick<Window, 'requestAnimationFrame' | 'cancelAnimationFrame'> & {
@@ -41,14 +43,60 @@ export function createScheduler(opts: {
   render: () => void;
   onHighlight: (blockId: string | null) => void;
   onBroadcastDone?: (message: string) => void;
+  playSound?: (soundUrl: string, spriteId: string) => Promise<void>;
+  onAsk?: (question: string, submit: (answer: string) => void) => void;
+  onAskCancel?: () => void;
   maxStepsPerFrame?: number;
 }): Scheduler {
   let threads: SchedulerThread[] = [];
   let sequence = 0;
   const maxSteps = opts.maxStepsPerFrame ?? 200_000;
   const broadcastReceivers = new Map<string, Set<string>>();
+  const askQueue: string[] = [];
+  let activeAskThreadId: string | undefined;
+
+  const openNextAsk = (): void => {
+    if (activeAskThreadId) return;
+    while (askQueue.length > 0) {
+      const threadId = askQueue.shift();
+      const thread = threads.find((candidate) => candidate.id === threadId);
+      if (!thread || !thread.awaitingAnswer || thread.interp.pending?.kind !== 'ask') continue;
+      activeAskThreadId = thread.id;
+      const submit = (answer: string): void => {
+        if (activeAskThreadId !== thread.id) return;
+        setAnswer(opts.ctx, answer);
+        thread.awaitingAnswer = false;
+        activeAskThreadId = undefined;
+        openNextAsk();
+      };
+      (opts.onAsk ?? ((_question, done) => done('')))(thread.interp.pending.question, submit);
+      return;
+    }
+  };
 
   const resumeTimedWork = (thread: SchedulerThread, nowMs: number): boolean => {
+    if (thread.awaitingSound) return false;
+    if (
+      thread.awaitingSound === false &&
+      thread.interp.state === 'parked' &&
+      thread.interp.pending?.kind === 'playUntilDone'
+    ) {
+      thread.awaitingSound = undefined;
+      thread.interp.resume();
+      return true;
+    }
+
+    if (thread.awaitingAnswer) return false;
+    if (
+      thread.awaitingAnswer === false &&
+      thread.interp.state === 'parked' &&
+      thread.interp.pending?.kind === 'ask'
+    ) {
+      thread.awaitingAnswer = undefined;
+      thread.interp.resume();
+      return true;
+    }
+
     if (thread.glide) {
       const glide = thread.glide;
       const elapsed = Math.max(0, nowMs - glide.start);
@@ -132,6 +180,31 @@ export function createScheduler(opts: {
         );
         break;
       }
+      case 'playUntilDone': {
+        thread.awaitingSound = true;
+        try {
+          const completion = (opts.playSound ?? (() => Promise.resolve()))(
+            request.soundUrl,
+            thread.spriteId,
+          );
+          void completion.then(
+            () => {
+              thread.awaitingSound = false;
+            },
+            () => {
+              thread.awaitingSound = false;
+            },
+          );
+        } catch {
+          thread.awaitingSound = false;
+        }
+        break;
+      }
+      case 'ask':
+        thread.awaitingAnswer = true;
+        askQueue.push(thread.id);
+        openNextAsk();
+        break;
       case 'yield':
         break;
     }
@@ -157,6 +230,9 @@ export function createScheduler(opts: {
     stopAll(): void {
       threads = [];
       broadcastReceivers.clear();
+      askQueue.length = 0;
+      activeAskThreadId = undefined;
+      opts.onAskCancel?.();
       opts.onHighlight(null);
     },
     tick(nowMs): void {
