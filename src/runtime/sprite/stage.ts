@@ -24,15 +24,6 @@ export type Stage = {
 
 type Bounds = { left: number; top: number; right: number; bottom: number };
 
-function intersectBounds(a: Bounds, b: Bounds): Bounds | null {
-  const left = Math.max(a.left, b.left);
-  const top = Math.max(a.top, b.top);
-  const right = Math.min(a.right, b.right);
-  const bottom = Math.min(a.bottom, b.bottom);
-  if (right <= left || bottom <= top) return null;
-  return { left, top, right, bottom };
-}
-
 export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): Stage {
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Canvas 2D tidak tersedia.');
@@ -44,27 +35,27 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
   let pointerState = { x: 0, y: 0, down: false };
   let askOverlay: HTMLFormElement | null = null;
 
-  // Colour-sensing perf cache: the backdrop rarely changes between frames, so it
-  // is rasterized onto a persistent offscreen canvas at most once per render()
-  // ("sceneVersion" bump), not once per colorUnderSprite() call. A tight
-  // `forever { jika menyentuh warna ... }` loop calling colorUnderSprite many
-  // times inside one frame reuses the same cached backdrop raster instead of
-  // re-drawing the whole 480x360 scene every call. Other sprites are excluded
-  // from the cached raster (so it stays valid regardless of which sprite is
-  // asking) and are instead walked analytically: only sprites whose bounding
-  // box actually overlaps the query's bounding box are rasterized at all, and
-  // only over that small overlap rectangle, on a separate un-cached scratch
-  // canvas that never touches the cached backdrop raster.
+  // Colour-sensing perf cache: colour occlusion is z-order-sensitive (an opaque
+  // sprite drawn on top of the backdrop or of another sprite hides whatever is
+  // underneath it), so correctness requires ONE ordered composite of
+  // backdrop + every other sprite, not independent backdrop/sprite tests. That
+  // full-scene composite is rasterized onto a persistent offscreen canvas at
+  // most once per (render() "sceneVersion" bump, querying-sprite id) pair, not
+  // once per colorUnderSprite() call -- a tight `forever { jika menyentuh
+  // warna ... }` loop calling colorUnderSprite many times for the SAME sprite
+  // inside one frame reuses the same cached raster instead of re-drawing the
+  // whole 480x360 scene every call. The querying sprite itself is excluded
+  // from the composite (colour-under-sprite asks what's underneath/around it,
+  // not about its own costume), which is why the cache key includes the
+  // excluded sprite id: a different querying sprite within the same frame
+  // rebuilds the raster once, then reuses it for its own repeated calls.
   let sceneVersion = 0;
   let senseRasterVersion = -1;
+  let senseRasterExcludedId: string | null = null;
   const senseCanvas = document.createElement('canvas');
   senseCanvas.width = STAGE.width;
   senseCanvas.height = STAGE.height;
   const senseContext = senseCanvas.getContext('2d');
-  const scratchCanvas = document.createElement('canvas');
-  scratchCanvas.width = STAGE.width;
-  scratchCanvas.height = STAGE.height;
-  const scratchContext = scratchCanvas.getContext('2d');
 
   const scheduleRedraw = (): void => {
     if (disposed || redrawQueued) return;
@@ -220,7 +211,7 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       if (!costumeUrl) return false;
       const image = images.get(costumeUrl);
       if (!image || !ready(image)) return false;
-      if (!senseContext || !scratchContext) return false;
+      if (!senseContext) return false;
 
       const scale = sprite.size / 100;
       const halfWidth = (image.naturalWidth * scale) / 2;
@@ -233,69 +224,52 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       };
       if (bounds.right <= bounds.left || bounds.bottom <= bounds.top) return false;
 
-      const pixelsMatch = (context: CanvasRenderingContext2D, region: Bounds): boolean => {
-        const width = region.right - region.left;
-        const height = region.bottom - region.top;
-        if (width <= 0 || height <= 0) return false;
-        try {
-          const pixels = context.getImageData(region.left, region.top, width, height).data;
-          // MVP simplification: any matching pixel inside the AABB counts.
-          for (let index = 0; index < pixels.length; index += 4) {
-            if (
-              (pixels[index + 3] ?? 0) > 0 &&
-              colorsMatch(
-                pixels[index] ?? 0,
-                pixels[index + 1] ?? 0,
-                pixels[index + 2] ?? 0,
-                hex,
-                tolerance,
-              )
-            ) {
-              return true;
-            }
-          }
-        } catch {
-          return false;
-        }
-        return false;
-      };
-
-      // Rasterize the backdrop-only scene at most once per render() frame.
-      if (senseRasterVersion !== sceneVersion) {
+      // Rasterize the full scene-minus-self (backdrop, then every OTHER sprite
+      // in project z-order, using the same drawSprite() helper render() uses)
+      // at most once per (frame, querying-sprite) pair. Drawing them onto ONE
+      // ordered canvas -- instead of testing the backdrop and each sprite
+      // independently -- is what makes occlusion correct: an opaque sprite
+      // drawn on top of the backdrop (or of another sprite) actually covers
+      // it in the composite, exactly as it does on the real stage.
+      if (senseRasterVersion !== sceneVersion || senseRasterExcludedId !== spriteId) {
         senseContext.clearRect(0, 0, STAGE.width, STAGE.height);
         if (scene.backdropUrl) drawBackdrop(senseContext, scene.backdropUrl);
+        for (const other of scene.sprites) {
+          if (!other.visible || other.id === spriteId) continue;
+          const otherUrl = scene.costumeUrlFor(other);
+          if (!otherUrl) continue;
+          const otherImage = images.get(otherUrl);
+          if (!otherImage || !ready(otherImage)) continue;
+          drawSprite(senseContext, other, otherUrl, false);
+        }
         senseRasterVersion = sceneVersion;
+        senseRasterExcludedId = spriteId;
       }
-      if (pixelsMatch(senseContext, bounds)) return true;
 
-      // Walk other sprites analytically: skip anything whose bounding box doesn't
-      // overlap the query bbox, and rasterize only the overlap on a throwaway
-      // scratch canvas that never pollutes the cached backdrop raster above.
-      for (const other of scene.sprites) {
-        if (!other.visible || other.id === spriteId) continue;
-        const otherUrl = scene.costumeUrlFor(other);
-        if (!otherUrl) continue;
-        const otherImage = images.get(otherUrl);
-        if (!otherImage || !ready(otherImage)) continue;
-        const otherScale = other.size / 100;
-        const otherHalfWidth = (otherImage.naturalWidth * otherScale) / 2;
-        const otherHalfHeight = (otherImage.naturalHeight * otherScale) / 2;
-        const otherBounds: Bounds = {
-          left: Math.max(0, Math.floor(STAGE.width / 2 + other.x - otherHalfWidth)),
-          right: Math.min(STAGE.width, Math.ceil(STAGE.width / 2 + other.x + otherHalfWidth)),
-          top: Math.max(0, Math.floor(STAGE.height / 2 - other.y - otherHalfHeight)),
-          bottom: Math.min(STAGE.height, Math.ceil(STAGE.height / 2 - other.y + otherHalfHeight)),
-        };
-        const overlap = intersectBounds(bounds, otherBounds);
-        if (!overlap) continue;
-        scratchContext.clearRect(
-          overlap.left,
-          overlap.top,
-          overlap.right - overlap.left,
-          overlap.bottom - overlap.top,
-        );
-        drawSprite(scratchContext, other, otherUrl, false);
-        if (pixelsMatch(scratchContext, overlap)) return true;
+      try {
+        const pixels = senseContext.getImageData(
+          bounds.left,
+          bounds.top,
+          bounds.right - bounds.left,
+          bounds.bottom - bounds.top,
+        ).data;
+        // MVP simplification: any matching pixel inside the AABB counts.
+        for (let index = 0; index < pixels.length; index += 4) {
+          if (
+            (pixels[index + 3] ?? 0) > 0 &&
+            colorsMatch(
+              pixels[index] ?? 0,
+              pixels[index + 1] ?? 0,
+              pixels[index + 2] ?? 0,
+              hex,
+              tolerance,
+            )
+          ) {
+            return true;
+          }
+        }
+      } catch {
+        return false;
       }
       return false;
     },
