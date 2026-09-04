@@ -96,7 +96,16 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     move: { scrollbars: true },
   });
 
-  (window as Window & { __kodakoBlockly?: typeof Blockly }).__kodakoBlockly = Blockly;
+  const debugWindow = window as Window & {
+    Blockly?: Partial<typeof Blockly> & { getMainWorkspace?: () => Blockly.WorkspaceSvg };
+    __kodakoBlockly?: typeof Blockly & { getMainWorkspace: () => Blockly.WorkspaceSvg };
+    __kodakoStage?: {
+      spriteState: () => { id: string; x: number; y: number; direction: number }[];
+      isRunning: () => boolean;
+    };
+  };
+  debugWindow.__kodakoBlockly = { ...Blockly, getMainWorkspace: () => workspace };
+  debugWindow.Blockly = Object.assign(debugWindow.Blockly ?? {}, debugWindow.__kodakoBlockly);
 
   const currentSprite = (): SpriteData =>
     project.sprite.sprites.find((sprite) => sprite.id === selectedSpriteId) ??
@@ -358,6 +367,11 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
 
   __spriteModeHandle.current = {
     workspace,
+    isRunning: () => scheduler.isRunning(),
+  };
+  debugWindow.__kodakoStage = {
+    spriteState: () =>
+      project.sprite.sprites.map(({ id, x, y, direction }) => ({ id, x, y, direction })),
     isRunning: () => scheduler.isRunning(),
   };
 
