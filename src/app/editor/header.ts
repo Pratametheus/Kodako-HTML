@@ -22,9 +22,9 @@ export function renderHeader(root: HTMLElement, deps: HeaderDeps): () => void {
       <button class="btn" data-open>${t('editor.open')}</button>
       <button class="btn" data-export>${t('editor.export')}</button>
       <span class="editor__spacer"></span>
-      <div class="editor__modes">
-        <button class="btn" data-mode="sprite">${t('editor.mode.sprite')}</button>
-        <button class="btn" data-mode="html">${t('editor.mode.html')}</button>
+      <div class="editor__modes" role="tablist" aria-label="${t('a11y.modeTablist')}">
+        <button class="btn" role="tab" data-mode="sprite">${t('editor.mode.sprite')}</button>
+        <button class="btn" role="tab" data-mode="html">${t('editor.mode.html')}</button>
       </div>
     </header>
   `;
@@ -32,12 +32,30 @@ export function renderHeader(root: HTMLElement, deps: HeaderDeps): () => void {
   const nameInput = root.querySelector<HTMLInputElement>('[data-name]')!;
   nameInput.value = deps.name;
 
+  const modeButtons = [...root.querySelectorAll<HTMLButtonElement>('[data-mode]')];
   const paintModes = (mode: EditorMode) => {
-    root.querySelectorAll<HTMLElement>('[data-mode]').forEach((b) => {
-      b.setAttribute('aria-pressed', String(b.dataset.mode === mode));
+    modeButtons.forEach((b) => {
+      const active = b.dataset.mode === mode;
+      b.setAttribute('aria-pressed', String(active));
+      b.setAttribute('aria-selected', String(active));
+      b.tabIndex = active ? 0 : -1;
     });
   };
   paintModes(deps.mode);
+
+  const onModeKeydown = (event: KeyboardEvent): void => {
+    if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+    event.preventDefault();
+    const index = modeButtons.indexOf(event.currentTarget as HTMLButtonElement);
+    if (index === -1) return;
+    const delta = event.key === 'ArrowRight' ? 1 : -1;
+    const next = modeButtons[(index + delta + modeButtons.length) % modeButtons.length]!;
+    const mode = next.dataset.mode as EditorMode;
+    paintModes(mode);
+    next.focus();
+    deps.onModeChange(mode);
+  };
+  modeButtons.forEach((button) => button.addEventListener('keydown', onModeKeydown));
 
   const onChange = () => deps.onNameChange(nameInput.value.trim());
   const onClick = (ev: MouseEvent) => {
@@ -61,6 +79,7 @@ export function renderHeader(root: HTMLElement, deps: HeaderDeps): () => void {
   return () => {
     nameInput.removeEventListener('change', onChange);
     root.removeEventListener('click', onClick);
+    modeButtons.forEach((button) => button.removeEventListener('keydown', onModeKeydown));
     root.innerHTML = '';
   };
 }

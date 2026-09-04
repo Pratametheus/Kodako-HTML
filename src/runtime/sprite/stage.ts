@@ -248,9 +248,12 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       const form = document.createElement('form');
       form.className = 'sprite-ask';
       const label = document.createElement('label');
+      const inputId = `sprite-ask-input-${Date.now()}`;
+      label.setAttribute('for', inputId);
       label.textContent = question;
       const input = document.createElement('input');
       input.type = 'text';
+      input.id = inputId;
       input.placeholder = t('editor.sprite.askPlaceholder');
       const button = document.createElement('button');
       button.type = 'submit';

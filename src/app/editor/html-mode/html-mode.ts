@@ -66,8 +66,8 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
           <div class="html-mode__tabs" role="tablist">
-            <button type="button" role="tab" data-tab="preview" aria-selected="true">${t('editor.html.tabPreview')}</button>
-            <button type="button" role="tab" data-tab="code" aria-selected="false">${t('editor.html.tabCode')}</button>
+            <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
+            <button type="button" role="tab" id="html-tab-code" data-tab="code" aria-selected="false" aria-controls="html-panel-code">${t('editor.html.tabCode')}</button>
           </div>
           <div class="html-mode__actions">
             <label class="html-mode__upload">
@@ -78,10 +78,10 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
           </div>
         </div>
         <p class="html-mode__error" data-html-error hidden></p>
-        <div class="html-mode__panel" data-panel="preview">
+        <div class="html-mode__panel" id="html-panel-preview" data-panel="preview" role="tabpanel" aria-labelledby="html-tab-preview">
           <iframe title="${t('editor.html.previewTitle')}"></iframe>
         </div>
-        <div class="html-mode__panel html-mode__code" data-panel="code" hidden></div>
+        <div class="html-mode__panel html-mode__code" id="html-panel-code" data-panel="code" role="tabpanel" aria-labelledby="html-tab-code" hidden></div>
       </aside>
     </div>
   `;

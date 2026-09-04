@@ -66,7 +66,7 @@
 .sprite-tabs button,
 .sprite-panel__add,
 .sprite-chip {
-  min-height: 36px;
+  min-height: 40px;
   border: 1px solid var(--sprite-line);
   border-radius: 9px;
   background: #fff;
@@ -184,6 +184,7 @@
 
 .sprite-properties input {
   min-width: 0;
+  min-height: 36px;
   padding: 7px 8px;
   border: 1px solid var(--sprite-line);
   border-radius: 7px;
@@ -209,7 +210,7 @@
 }
 
 .sprite-properties__remove {
-  min-height: 34px;
+  min-height: 40px;
   border: 1px solid #ef9a9a;
   border-radius: 8px;
   background: #fff5f5;

@@ -28,8 +28,8 @@ export function renderHome(root: HTMLElement, deps: Deps): () => void {
     listEl.innerHTML = summaries
       .map(
         (s) => `
-        <article class="card" data-card data-id="${s.id}">
-          <p class="card__name"></p>
+        <article class="card" data-card data-id="${s.id}" role="group" aria-labelledby="card-name-${s.id}">
+          <p class="card__name" id="card-name-${s.id}"></p>
           <p class="card__date">${formatDate(s.updatedAt)}</p>
           <div class="card__buttons">
             <button class="btn" data-action="open">${t('home.open')}</button>

@@ -76,21 +76,21 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
       </section>
       <aside class="sprite-mode__side">
         <section class="sprite-stage-card" aria-label="Panggung">
-          <canvas aria-label="Panggung sprite"></canvas>
+          <canvas aria-label="${t('editor.sprite.stageLabel')}" role="img"></canvas>
           <div class="sprite-stage-toolbar">
-            <button type="button" data-green-flag>▶ ${t('editor.sprite.run')}</button>
-            <button type="button" data-stop>■ ${t('editor.sprite.stop')}</button>
+            <button type="button" data-green-flag aria-label="${t('editor.sprite.run')}">▶ ${t('editor.sprite.run')}</button>
+            <button type="button" data-stop aria-label="${t('editor.sprite.stop')}">■ ${t('editor.sprite.stop')}</button>
           </div>
         </section>
         <section class="sprite-inspector">
           <div class="sprite-tabs" role="tablist">
-            <button type="button" role="tab" data-tab="sprite" aria-selected="true">${t('editor.sprite.tabSprite')}</button>
-            <button type="button" role="tab" data-tab="kostum" aria-selected="false">${t('editor.sprite.tabCostume')}</button>
-            <button type="button" role="tab" data-tab="suara" aria-selected="false">${t('editor.sprite.tabSound')}</button>
+            <button type="button" role="tab" id="sprite-tab-sprite" data-tab="sprite" aria-selected="true" aria-controls="sprite-panel-sprite">${t('editor.sprite.tabSprite')}</button>
+            <button type="button" role="tab" id="sprite-tab-kostum" data-tab="kostum" aria-selected="false" aria-controls="sprite-panel-kostum">${t('editor.sprite.tabCostume')}</button>
+            <button type="button" role="tab" id="sprite-tab-suara" data-tab="suara" aria-selected="false" aria-controls="sprite-panel-suara">${t('editor.sprite.tabSound')}</button>
           </div>
-          <div class="sprite-tab-panel" data-panel="sprite"></div>
-          <div class="sprite-tab-panel" data-panel="kostum" hidden></div>
-          <div class="sprite-tab-panel" data-panel="suara" hidden></div>
+          <div class="sprite-tab-panel" id="sprite-panel-sprite" data-panel="sprite" role="tabpanel" aria-labelledby="sprite-tab-sprite"></div>
+          <div class="sprite-tab-panel" id="sprite-panel-kostum" data-panel="kostum" role="tabpanel" aria-labelledby="sprite-tab-kostum" hidden></div>
+          <div class="sprite-tab-panel" id="sprite-panel-suara" data-panel="suara" role="tabpanel" aria-labelledby="sprite-tab-suara" hidden></div>
         </section>
       </aside>
     </div>
