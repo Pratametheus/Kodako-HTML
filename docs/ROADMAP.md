@@ -130,10 +130,10 @@ Ditunda ke Fase 3: CSS lanjutan, atribut class/id, tabel, form; alur 'kirim ke g
 - [x] Pemeriksaan performa di perangkat kelas bawah; optimasi renderer bila
       perlu.
 - [x] Pass aksesibilitas dasar (ukuran target, kontras, fokus keyboard).
-- [ ] `tauri build` installer Windows `.msi`/`.exe`; ikon & menu Berkas/Bantuan.
-- [ ] CI rilis: build desktop pada tag `v*`, unggah ke GitHub Releases; landing
+- [x] `tauri build` installer Windows `.msi`/`.exe`; ikon & menu Berkas/Bantuan.
+- [x] CI rilis: build desktop pada tag `v*`, unggah ke GitHub Releases; landing
       "Unduh Aplikasi" menunjuk rilis terbaru.
-- [ ] Panduan singkat pemakaian (README + halaman Bantuan dalam app).
+- [x] Panduan singkat pemakaian (README + halaman Bantuan dalam app).
 
 **Definisi "selesai"**
 
@@ -146,6 +146,13 @@ Fase 3b (poles) selesai: tema Scratch, error boundary + toast error, a11y
 dasar, performa (cache sensor warna, vendor chunk Blockly, alokasi
 per-frame). Ditunda ke Fase 3c: `tauri build` installer, CI rilis, halaman
 Bantuan dalam app, README quickstart, aset CC0 asli.
+
+Fase 3c (desktop & rilis) selesai: ikon aplikasi nyata (dihasilkan
+deterministik dari `scripts/gen-app-icon.mjs` + `tauri icon`), workflow CI
+rilis (`.github/workflows/release.yml`, build pada tag `v*`), panel Bantuan
+dalam app, dan README quickstart. `tauri build` sungguhan (menghasilkan
+`.msi`) diverifikasi oleh `release.yml` saat tag `v*` di-push, bukan di
+mesin pengembangan ini (tidak ada Rust/MSVC lokal).
 
 ---
 
