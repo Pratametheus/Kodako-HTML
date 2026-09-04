@@ -18,8 +18,8 @@ import {
   spriteWorkspaceJson,
   withSpriteWorkspace,
 } from '../../../core/sprite-project';
-import { BUILTIN_BY_ID, resolveAssetUrl } from '../../../runtime/sprite/assets';
-import { createAudioEngine } from '../../../runtime/sprite/audio';
+import { BUILTIN_BY_ID, BUILTIN_SOUNDS, resolveAssetUrl } from '../../../runtime/sprite/assets';
+import { createAudioEngine, type AudioEngine } from '../../../runtime/sprite/audio';
 import { createSpriteEvents, type SpriteEvents } from '../../../runtime/sprite/event-bus';
 import {
   createRuntimeContext,
@@ -110,9 +110,17 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     Blockly?: Partial<typeof Blockly> & { getMainWorkspace?: () => Blockly.WorkspaceSvg };
     __kodakoBlockly?: typeof Blockly & { getMainWorkspace: () => Blockly.WorkspaceSvg };
     __kodakoStage?: {
-      spriteState: () => { id: string; x: number; y: number; direction: number }[];
+      spriteState: () => {
+        id: string;
+        x: number;
+        y: number;
+        direction: number;
+        bubble: string | null;
+      }[];
       isRunning: () => boolean;
       pointer: () => { x: number; y: number; down: boolean };
+      lastSound: () => string | null;
+      answerValue: () => string;
     };
   };
   debugWindow.__kodakoBlockly = { ...Blockly, getMainWorkspace: () => workspace };
@@ -143,7 +151,29 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
       .map((sprite): [string, string] => [sprite.name, sprite.name]),
   );
 
-  const audio = createAudioEngine();
+  const audioEngine = createAudioEngine();
+  let lastSoundId: string | null = null;
+  const rememberSound = (url: string): void => {
+    lastSoundId =
+      BUILTIN_SOUNDS.find((sound) => sound.url === url)?.id ??
+      Object.entries(project.assets).find(([, asset]) => asset.ref === url)?.[0] ??
+      url;
+  };
+  const audio: AudioEngine = {
+    play: (url, spriteId) => {
+      rememberSound(url);
+      audioEngine.play(url, spriteId);
+    },
+    playUntilDone: (url, spriteId) => {
+      rememberSound(url);
+      return audioEngine.playUntilDone(url, spriteId);
+    },
+    stopAll: () => audioEngine.stopAll(),
+    changeVolume: (spriteId, delta) => audioEngine.changeVolume(spriteId, delta),
+    setVolume: (spriteId, percent) => audioEngine.setVolume(spriteId, percent),
+    getVolume: (spriteId) => audioEngine.getVolume(spriteId),
+    dispose: () => audioEngine.dispose(),
+  };
   let runtimeContext: RuntimeContext = createRuntimeContext(
     project.sprite.sprites.map(runtimeSpriteFrom),
     { audio, assets: project.assets },
@@ -383,6 +413,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   const stopButton = host.querySelector<HTMLButtonElement>('[data-stop]')!;
   const onGreenFlag = (): void => {
     persistWorkspace();
+    lastSoundId = null;
     makeRuntime();
     rebuildPrograms();
     events.greenFlag();
@@ -455,14 +486,17 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     // Read the live runtime context (mutated every frame by the scheduler) so the
     // hook reflects mid-run coordinates, not the pre-run snapshot in project data.
     spriteState: () =>
-      [...runtimeContext.sprites.values()].map(({ id, x, y, direction }) => ({
-        id,
-        x,
-        y,
-        direction,
+      [...runtimeContext.sprites.values()].map((sprite) => ({
+        id: sprite.id,
+        x: sprite.x,
+        y: sprite.y,
+        direction: sprite.direction,
+        bubble: sprite.bubble?.text ?? null,
       })),
     isRunning: () => scheduler.isRunning(),
     pointer: () => stage.pointer(),
+    lastSound: () => lastSoundId,
+    answerValue: () => runtimeContext.answer,
   };
 
   return () => {

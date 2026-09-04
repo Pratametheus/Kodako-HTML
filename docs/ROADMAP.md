@@ -118,9 +118,9 @@ Ditunda ke Fase 3: CSS lanjutan, atribut class/id, tabel, form; alur 'kirim ke g
 
 **Deliverable**
 
-- [ ] Kategori **Suara** penuh (mainkan suara, mainkan sampai selesai,
+- [x] Kategori **Suara** penuh (mainkan suara, mainkan sampai selesai,
       hentikan semua, volume) + ~8 efek suara CC0.
-- [ ] Kategori **Sensor** penuh (jarak ke, warna menyentuh warna, tanya/jawab).
+- [x] Kategori **Sensor** penuh (jarak ke, warna menyentuh warna, tanya/jawab).
 - [ ] Pustaka aset diperluas + layar pilih aset yang rapi.
 - [ ] Ekspor project Sprite sebagai halaman "pemutar" HTML mandiri (opsional
       bila memungkinkan tanpa lingkup besar; kalau tidak, tunda).
@@ -139,6 +139,9 @@ Ditunda ke Fase 3: CSS lanjutan, atribut class/id, tabel, form; alur 'kirim ke g
   memakai semua fitur.
 - Semua jalur error menampilkan pesan Bahasa Indonesia, bukan stack trace.
 - Suite test (unit + integrasi + E2E) hijau di CI.
+
+Ditunda ke 3b/3c: tema Scratch, aset asli, error boundary, a11y, performa,
+Tauri, CI rilis, Bantuan.
 
 ---
 
