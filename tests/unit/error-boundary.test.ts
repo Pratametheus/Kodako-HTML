@@ -46,6 +46,40 @@ describe('global error boundary', () => {
     expect(log).toHaveBeenCalledTimes(2);
   });
 
+  it('falls back to manual copy when clipboard.writeText rejects, without an unhandled rejection', async () => {
+    const root = document.createElement('div');
+    document.body.append(root);
+    const writeText = vi.fn(() => Promise.reject(new Error('denied')));
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    });
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const execCommand = vi.fn();
+    // jsdom does not implement execCommand; the fallback calls it optionally.
+    Object.defineProperty(document, 'execCommand', {
+      configurable: true,
+      value: execCommand,
+    });
+    const teardown = installErrorBoundary(root);
+
+    window.dispatchEvent(new ErrorEvent('error', { error: new Error('boom'), message: 'boom' }));
+    const copy = root.querySelector<HTMLButtonElement>('[data-action="copy"]');
+    copy?.click();
+
+    // Let the rejected writeText() promise settle and its .catch() fallback run.
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining('Error: boom'));
+    // The manual-copy fallback (hidden textarea + execCommand) ran instead of
+    // the rejection surfacing as an unhandled promise rejection.
+    expect(execCommand).toHaveBeenCalledWith('copy');
+
+    teardown();
+  });
+
   it('handles an unhandled rejection without creating a real rejected promise', () => {
     const root = document.createElement('div');
     const log = vi.spyOn(console, 'error').mockImplementation(() => {});

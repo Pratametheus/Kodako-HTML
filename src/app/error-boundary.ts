@@ -52,8 +52,11 @@ export function installErrorBoundary(mountInto: HTMLElement = document.body): ()
       .querySelector<HTMLButtonElement>('[data-action="copy"]')
       ?.addEventListener('click', () => {
         const detail = errorDetail(error);
-        if (navigator.clipboard?.writeText) void navigator.clipboard.writeText(detail);
-        else fallbackCopy(detail, overlay!);
+        if (navigator.clipboard?.writeText) {
+          navigator.clipboard.writeText(detail).catch(() => fallbackCopy(detail, overlay!));
+        } else {
+          fallbackCopy(detail, overlay!);
+        }
       });
     mountInto.append(overlay);
   };
