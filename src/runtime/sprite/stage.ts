@@ -81,7 +81,9 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
     const height = image.naturalHeight * scale;
     context.save();
     context.translate(STAGE.width / 2 + sprite.x, STAGE.height / 2 - sprite.y);
-    context.rotate(directionToRadians(sprite.direction));
+    // Canvas rotate() is clockwise with y-down; directionToRadians is CCW math
+    // convention, so negate it to draw the costume facing its Scratch direction.
+    context.rotate(-directionToRadians(sprite.direction));
     context.drawImage(image, -width / 2, -height / 2, width, height);
     drawBubble(sprite, height);
     context.restore();

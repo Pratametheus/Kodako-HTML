@@ -370,8 +370,15 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     isRunning: () => scheduler.isRunning(),
   };
   debugWindow.__kodakoStage = {
+    // Read the live runtime context (mutated every frame by the scheduler) so the
+    // hook reflects mid-run coordinates, not the pre-run snapshot in project data.
     spriteState: () =>
-      project.sprite.sprites.map(({ id, x, y, direction }) => ({ id, x, y, direction })),
+      [...runtimeContext.sprites.values()].map(({ id, x, y, direction }) => ({
+        id,
+        x,
+        y,
+        direction,
+      })),
     isRunning: () => scheduler.isRunning(),
   };
 

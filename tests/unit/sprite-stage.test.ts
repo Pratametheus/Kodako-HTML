@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createStage } from '../../src/runtime/sprite/stage';
-import { createSprite } from '../../src/runtime/sprite/sprite';
+import { createSprite, directionToRadians } from '../../src/runtime/sprite/sprite';
 
 class FakeImage {
   onload: (() => void) | null = null;
@@ -23,13 +23,14 @@ class FakeImage {
 describe('sprite stage', () => {
   const drawImage = vi.fn();
   const clearRect = vi.fn();
+  const rotate = vi.fn();
   const context = {
     clearRect,
     drawImage,
     save: vi.fn(),
     restore: vi.fn(),
     translate: vi.fn(),
-    rotate: vi.fn(),
+    rotate,
     scale: vi.fn(),
     setTransform: vi.fn(),
     beginPath: vi.fn(),
@@ -52,6 +53,7 @@ describe('sprite stage', () => {
     );
     drawImage.mockClear();
     clearRect.mockClear();
+    rotate.mockClear();
   });
 
   afterEach(() => vi.restoreAllMocks());
@@ -101,6 +103,29 @@ describe('sprite stage', () => {
 
     expect(stage.hitTest(240, 180)).toBe('s1');
     expect(stage.hitTest(10, 10)).toBeNull();
+  });
+
+  it('rotates costumes by the negated direction so dir 0 faces +x, not mirrored', () => {
+    const canvas = document.createElement('canvas');
+    const render = (direction: number): number => {
+      rotate.mockClear();
+      const sprite = createSprite({ id: 's1', name: 'Kucing', costumes: ['cat'], direction });
+      const stage = createStage(canvas, () => ({
+        sprites: [sprite],
+        backdropUrl: null,
+        costumeUrlFor: () => 'cat',
+      }));
+      stage.render();
+      const arg = rotate.mock.calls.at(-1)![0] as number;
+      stage.dispose();
+      return arg;
+    };
+
+    // Fixed code passes -directionToRadians(dir); directionToRadians(0) === +PI/2.
+    expect(render(0)).toBe(-directionToRadians(0));
+    expect(render(0)).toBeCloseTo(-Math.PI / 2);
+    // direction 90 (facing +x, the default) => no rotation.
+    expect(render(90)).toBeCloseTo(0);
   });
 
   it('creates a PNG thumbnail of the current canvas', () => {
