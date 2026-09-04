@@ -44,28 +44,30 @@ bergerak/berperilaku di panggung.
 
 **Deliverable**
 
-- [ ] Integrasi Blockly + locale `id` + tema "rasa Scratch" (`blocks/theme.ts`).
-- [ ] `blocks/sprite/blocks.ts` + `toolbox.ts`: kategori Kejadian, Gerak,
+- [x] Integrasi Blockly + locale `id` + tema "rasa Scratch" (`blocks/theme.ts`).
+- [x] `blocks/sprite/blocks.ts` + `toolbox.ts`: kategori Kejadian, Gerak,
       Tampilan, Kontrol, Operator, Variabel (set MVP di `Design.md` §4.3).
-- [ ] `blocks/sprite/generator.ts`: workspace → JS (pola `await api.*`,
-      `ulangi terus` dengan `frameYield`).
-- [ ] `runtime/sprite/sprite.ts`: model + operasi murni.
-- [ ] `runtime/sprite/stage.ts`: renderer Canvas (backdrop, sprite, rotasi,
+- [x] `blocks/sprite/generator.ts`: workspace → JS ES5 sinkron
+      (`ulangi terus` dengan `__yield__`).
+- [x] `runtime/sprite/sprite.ts`: model + operasi murni.
+- [x] `runtime/sprite/stage.ts`: renderer Canvas (backdrop, sprite, rotasi,
       skala, gelembung "katakan"), hit-test klik.
-- [ ] `runtime/sprite/interpreter.ts`: bungkus JS-Interpreter + API bindings +
+- [x] `runtime/sprite/interpreter.ts`: bungkus JS-Interpreter + API bindings +
       pemetaan node→blok.
-- [ ] `runtime/sprite/scheduler.ts`: loop thread per frame + pengaman
+- [x] `runtime/sprite/scheduler.ts`: loop thread per frame + pengaman
       loop tak-hingga + sorot blok aktif.
-- [ ] `runtime/sprite/api.ts`: gerak, tampilan, kontrol/kejadian, sensor ringan.
-- [ ] `runtime/sprite/event-bus.ts`: greenFlag, spriteClicked, keyPressed,
+- [x] `runtime/sprite/api.ts`: gerak, tampilan, kontrol/kejadian, sensor ringan.
+- [x] `runtime/sprite/event-bus.ts`: greenFlag, spriteClicked, keyPressed,
       broadcast + broadcastAndWait.
-- [ ] Editor mode Sprite: panel sprite (tambah/hapus/pilih, atur nama/posisi),
+- [x] Editor mode Sprite: panel sprite (tambah/hapus/pilih, atur nama/posisi),
       panel kostum (pilih dari pustaka + unggah), tombol Bendera Hijau & Stop.
 - [ ] `runtime/sprite/assets.ts` + `audio.ts`: ~10–15 kostum + beberapa
       backdrop CC0; unggah gambar (≤ 2 MB).
-- [ ] Autosave menyimpan skrip semua sprite + state; thumbnail panggung.
-- [ ] Test: unit generator (snapshot) + model; integrasi "fixture → jalankan N
+- [x] Autosave menyimpan skrip semua sprite + state; thumbnail panggung.
+- [x] Test: unit generator (snapshot) + model; integrasi "fixture → jalankan N
       frame → assert state"; E2E alur bendera hijau.
+
+Ditunda ke Fase 3: `audio.ts` + kategori Suara, Sensor tabrakan/mouse, tema Scratch penuh, aset CC0 asli.
 
 **Definisi "selesai"**
 

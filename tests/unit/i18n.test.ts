@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { formatDate, t } from '../../src/app/i18n';
+import dict from '../../src/app/i18n/id.json';
 
 describe('t', () => {
   it('returns the Indonesian string for a known key', () => {
@@ -10,6 +11,15 @@ describe('t', () => {
   });
   it('returns the key itself when missing', () => {
     expect(t('nope.missing.key')).toBe('nope.missing.key');
+  });
+  it('contains complete Bahasa Indonesia strings for sprite mode', () => {
+    expect(t('editor.sprite.run')).toBe('Jalankan');
+    expect(t('editor.sprite.stop')).toBe('Berhenti');
+    expect(t('editor.sprite.uploadTooBig')).toContain('2 MB');
+    const obviousEnglish = ['Run ', 'Stop', 'Costume', 'Upload', 'Delete', 'Backdrop'];
+    for (const value of Object.values(dict)) {
+      for (const word of obviousEnglish) expect(value).not.toContain(word);
+    }
   });
 });
 
