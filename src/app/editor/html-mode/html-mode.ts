@@ -189,9 +189,11 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   const debugWindow = window as Window & {
     Blockly?: Partial<typeof Blockly> & { getMainWorkspace?: () => Blockly.WorkspaceSvg };
     __kodakoBlockly?: typeof Blockly & { getMainWorkspace: () => Blockly.WorkspaceSvg };
+    __kodakoHtml?: { bodyHtml: () => string };
   };
   debugWindow.__kodakoBlockly = { ...Blockly, getMainWorkspace: () => workspace };
   debugWindow.Blockly = Object.assign(debugWindow.Blockly ?? {}, debugWindow.__kodakoBlockly);
+  debugWindow.__kodakoHtml = { bodyHtml: () => generateHtml(workspace).bodyHtml };
   __htmlModeHandle.current = { workspace };
   refresh();
 
@@ -206,6 +208,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     codePanel.dispose();
     workspace.dispose();
     setHtmlAssetOptionsProvider(() => [['(tidak ada gambar)', '']]);
+    delete debugWindow.__kodakoHtml;
     __htmlModeHandle.current = null;
     host.replaceChildren();
   };
