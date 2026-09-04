@@ -214,10 +214,13 @@ describe('HTML block generator', () => {
   it.each([
     ['javascript:alert(1)', ''],
     ['data:text/html,x', ''],
+    ['vbscript:msgbox(1)', ''],
+    ['http://a.b/c', 'http://a.b/c'],
     ['https://a.b/c', 'https://a.b/c'],
     ['mailto:a@b.c', 'mailto:a@b.c'],
     ['/page', '/page'],
     ['#top', '#top'],
+    ['docs/page.html', 'docs/page.html'],
   ])('allows only safe link URLs: %s', (url, expected) => {
     const page = statement(workspace, 'html_page');
     const link = statement(workspace, 'html_link');
@@ -231,10 +234,13 @@ describe('HTML block generator', () => {
   it.each([
     ['javascript:alert(1)', ''],
     ['data:text/html,x', ''],
+    ['vbscript:msgbox(1)', ''],
+    ['http://a.b/c.png', 'http://a.b/c.png'],
     ['https://a.b/c', 'https://a.b/c'],
     ['mailto:a@b.c', 'mailto:a@b.c'],
     ['/page', '/page'],
     ['#top', '#top'],
+    ['images/photo.png', 'images/photo.png'],
   ])('allows only safe remote image URLs: %s', (url, expected) => {
     const page = statement(workspace, 'html_page');
     const image = statement(workspace, 'html_image_url');

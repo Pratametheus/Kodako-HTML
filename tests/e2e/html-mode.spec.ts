@@ -33,9 +33,18 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
                     },
                     next: {
                       block: {
-                        type: 'html_paragraph',
+                        type: 'html_style_bold',
                         inputs: {
-                          TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Dunia' } } },
+                          BODY: {
+                            block: {
+                              type: 'html_paragraph',
+                              inputs: {
+                                TEXT: {
+                                  shadow: { type: 'html_text', fields: { VALUE: 'Dunia' } },
+                                },
+                              },
+                            },
+                          },
                         },
                         next: {
                           block: {
@@ -58,15 +67,25 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
 
   await page.waitForFunction(() => {
     const body = (window as any).__kodakoHtml.bodyHtml();
-    return body.includes('<h1>Halo</h1>') && body.includes('<p>Dunia</p>') && body.includes('<img');
+    return (
+      body.includes('<h1>Halo</h1>') &&
+      body.includes('<p style="font-weight:bold">Dunia</p>') &&
+      body.includes('<img')
+    );
   });
 
   await expect
     .poll(() => page.locator('.html-mode iframe').getAttribute('srcdoc'))
     .toContain('<h1>Halo</h1>');
+  await expect
+    .poll(() => page.locator('.html-mode iframe').getAttribute('srcdoc'))
+    .toContain('<p style="font-weight:bold">Dunia</p>');
 
   await page.getByRole('tab', { name: 'Lihat Kode' }).click();
   await expect(page.locator('[data-panel="code"]')).toContainText('<h1>Halo</h1>');
+  await expect(page.locator('[data-panel="code"]')).toContainText(
+    '<p style="font-weight:bold">Dunia</p>',
+  );
 
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: 'Ekspor HTML' }).click();
@@ -75,10 +94,14 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
   expect(downloadPath).not.toBeNull();
   const exported = await readFile(downloadPath!, 'utf8');
   expect(exported).toContain('<!doctype html>');
-  expect(exported).toContain('<p>Dunia</p>');
+  expect(exported).toContain('<p style="font-weight:bold">Dunia</p>');
 
   await page.getByRole('button', { name: 'Mode Sprite' }).click();
   await expect(page.locator('#blocklyDiv')).toBeVisible();
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.getMainWorkspace().newBlock('sprite_move');
+  });
   await page.getByRole('button', { name: 'Mode HTML' }).click();
   await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
   await page.waitForFunction(() => {
@@ -87,5 +110,11 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
       blocks.some((block: any) => block.type === 'html_heading') &&
       blocks.some((block: any) => block.type === 'html_paragraph')
     );
+  });
+  await page.getByRole('button', { name: 'Mode Sprite' }).click();
+  await expect(page.locator('#blocklyDiv')).toBeVisible();
+  await page.waitForFunction(() => {
+    const blocks = (window as any).__kodakoBlockly.getMainWorkspace().getAllBlocks(false);
+    return blocks.some((block: any) => block.type === 'sprite_move');
   });
 });
