@@ -11,10 +11,18 @@ import heartUrl from './assets/heart.svg?url';
 import squareUrl from './assets/square.svg?url';
 import starUrl from './assets/star.svg?url';
 import triangleUrl from './assets/triangle.svg?url';
+import beepSoundUrl from './assets/sounds/beep.wav?url';
+import boingSoundUrl from './assets/sounds/boing.wav?url';
+import chimeSoundUrl from './assets/sounds/chime.wav?url';
+import drumSoundUrl from './assets/sounds/drum.wav?url';
+import koinSoundUrl from './assets/sounds/koin.wav?url';
+import meongSoundUrl from './assets/sounds/meong.wav?url';
+import popSoundUrl from './assets/sounds/pop.wav?url';
+import whooshSoundUrl from './assets/sounds/whoosh.wav?url';
 
 export type BuiltinAsset = {
   id: string;
-  kind: 'costume' | 'backdrop';
+  kind: 'costume' | 'backdrop' | 'sound';
   name: string;
   url: string;
 };
@@ -38,8 +46,19 @@ export const BUILTIN_BACKDROPS: readonly BuiltinAsset[] = [
   { id: 'builtin:bg-sunset', kind: 'backdrop', name: 'Senja', url: bgSunsetUrl },
 ];
 
+export const BUILTIN_SOUNDS: readonly BuiltinAsset[] = [
+  { id: 'builtin:snd-pop', kind: 'sound', name: 'Pop', url: popSoundUrl },
+  { id: 'builtin:snd-beep', kind: 'sound', name: 'Bip', url: beepSoundUrl },
+  { id: 'builtin:snd-boing', kind: 'sound', name: 'Boing', url: boingSoundUrl },
+  { id: 'builtin:snd-meong', kind: 'sound', name: 'Meong', url: meongSoundUrl },
+  { id: 'builtin:snd-drum', kind: 'sound', name: 'Drum', url: drumSoundUrl },
+  { id: 'builtin:snd-chime', kind: 'sound', name: 'Lonceng', url: chimeSoundUrl },
+  { id: 'builtin:snd-whoosh', kind: 'sound', name: 'Wus', url: whooshSoundUrl },
+  { id: 'builtin:snd-koin', kind: 'sound', name: 'Koin', url: koinSoundUrl },
+];
+
 export const BUILTIN_BY_ID: ReadonlyMap<string, BuiltinAsset> = new Map(
-  [...BUILTIN_COSTUMES, ...BUILTIN_BACKDROPS].map((asset) => [asset.id, asset]),
+  [...BUILTIN_COSTUMES, ...BUILTIN_BACKDROPS, ...BUILTIN_SOUNDS].map((asset) => [asset.id, asset]),
 );
 
 export function isBuiltinAssetId(id: string): boolean {
@@ -47,6 +66,7 @@ export function isBuiltinAssetId(id: string): boolean {
 }
 
 export const MAX_UPLOAD_BYTES = 2 * 1024 * 1024;
+export const MAX_SOUND_UPLOAD_BYTES = 2 * 1024 * 1024;
 
 export function loadUploadedImage(file: File): Promise<{ dataUrl: string; name: string }> {
   if (file.size > MAX_UPLOAD_BYTES) {
@@ -62,6 +82,24 @@ export function loadUploadedImage(file: File): Promise<{ dataUrl: string; name: 
       else reject(new Error('Gambar tidak dapat dibaca.'));
     };
     reader.onerror = () => reject(new Error('Gambar tidak dapat dibaca.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+export function loadUploadedSound(file: File): Promise<{ dataUrl: string; name: string }> {
+  if (file.size > MAX_SOUND_UPLOAD_BYTES) {
+    return Promise.reject(new Error('Suara terlalu besar (maks 2 MB).'));
+  }
+  if (!file.type.startsWith('audio/')) {
+    return Promise.reject(new Error('File itu bukan suara.'));
+  }
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') resolve({ dataUrl: reader.result, name: file.name });
+      else reject(new Error('Suara tidak dapat dibaca.'));
+    };
+    reader.onerror = () => reject(new Error('Suara tidak dapat dibaca.'));
     reader.readAsDataURL(file);
   });
 }

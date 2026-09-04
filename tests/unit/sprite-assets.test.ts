@@ -3,7 +3,10 @@ import {
   BUILTIN_BACKDROPS,
   BUILTIN_BY_ID,
   BUILTIN_COSTUMES,
+  BUILTIN_SOUNDS,
   loadUploadedImage,
+  loadUploadedSound,
+  MAX_SOUND_UPLOAD_BYTES,
   MAX_UPLOAD_BYTES,
   resolveAssetUrl,
 } from '../../src/runtime/sprite/assets';
@@ -45,5 +48,36 @@ describe('sprite asset catalog', () => {
       'data:image/png;base64,eA==',
     );
     expect(resolveAssetUrl('missing', {})).toBeNull();
+  });
+
+  it('contains eight unique builtin sounds that resolve to bundled URLs', () => {
+    expect(BUILTIN_SOUNDS).toHaveLength(8);
+    const ids = BUILTIN_SOUNDS.map(({ id }) => id);
+    expect(new Set(ids).size).toBe(ids.length);
+    expect(ids.every((id) => id.startsWith('builtin:snd-'))).toBe(true);
+    expect(BUILTIN_SOUNDS.every(({ kind }) => kind === 'sound')).toBe(true);
+    expect(BUILTIN_BY_ID.get('builtin:snd-pop')?.name).toBe('Pop');
+    expect(resolveAssetUrl('builtin:snd-pop', {})).toBeTruthy();
+  });
+
+  it('rejects oversized and non-audio uploads in Bahasa Indonesia', async () => {
+    const oversized = new File([new Uint8Array(MAX_SOUND_UPLOAD_BYTES + 1)], 'besar.wav', {
+      type: 'audio/wav',
+    });
+    const text = new File(['halo'], 'catatan.txt', { type: 'text/plain' });
+
+    await expect(loadUploadedSound(oversized)).rejects.toThrow(/suara terlalu besar/i);
+    await expect(loadUploadedSound(text)).rejects.toThrow(/bukan suara/i);
+  });
+
+  it('loads a small sound as a data URL', async () => {
+    const file = new File([new Uint8Array([82, 73, 70, 70])], 'x.wav', {
+      type: 'audio/wav',
+    });
+
+    await expect(loadUploadedSound(file)).resolves.toEqual({
+      dataUrl: expect.stringMatching(/^data:audio\/wav;base64,/),
+      name: 'x.wav',
+    });
   });
 });
