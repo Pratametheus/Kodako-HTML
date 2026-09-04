@@ -68,5 +68,13 @@
   "toast.close": "Tutup pesan",
   "editor.sprite.stageLabel": "Panggung tempat sprite bergerak",
   "a11y.modeTablist": "Pilih mode editor",
-  "a11y.previewTablist": "Pratinjau atau kode"
+  "a11y.previewTablist": "Pratinjau atau kode",
+  "help.open": "Bantuan",
+  "help.title": "Bantuan",
+  "help.close": "Tutup",
+  "help.start": "Klik \"Project Baru\" di halaman depan untuk mulai. Pilih Mode Sprite untuk membuat animasi/permainan, atau Mode HTML untuk membuat halaman web.",
+  "help.sprite": "Seret blok dari kategori di kiri ke area kerja. Mulai dari blok \"saat bendera hijau diklik\", lalu sambungkan blok gerak/tampilan di bawahnya. Klik ▶ untuk menjalankan, ⏹ untuk berhenti. Tambah sprite baru dari panel Sprite di kanan bawah.",
+  "help.html": "Seret blok Struktur (judul, paragraf, gambar, daftar) ke dalam blok \"halaman\". Bungkus dengan blok Gaya untuk mengatur warna/ukuran. Lihat hasilnya di tab Pratinjau, atau kodenya di tab Lihat Kode.",
+  "help.save": "Project tersimpan otomatis di peramban ini. Gunakan tombol Simpan untuk menyimpan segera, atau Ekspor untuk mengunduh file project (.ghtml.json) atau halaman HTML mandiri.",
+  "help.trouble": "Blok tidak jalan? Pastikan tersambung di bawah blok \"saat bendera hijau diklik\". Suara tidak keluar? Sebagian peramban lama tidak mendukung suara. File project rusak? Buat project baru dan susun ulang bloknya."
 }
