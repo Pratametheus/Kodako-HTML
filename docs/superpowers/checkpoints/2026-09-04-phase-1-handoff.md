@@ -12,7 +12,7 @@ session.
 | Main worktree | `C:/Users/Predator/orca/projects/Game HTML` — on `main` |
 | Feature worktree | `C:/Users/Predator/orca/workspaces/Game HTML/emperor` — on `phase-1-sprite-mode` (Orca-managed; leave it in place) |
 | `main` HEAD | `802ddba` (Phase 0 merged as PR #1 + Phase 1 plan committed) — pushed |
-| `phase-1-sprite-mode` HEAD | **`abacf5c`** — 16 commits ahead of `802ddba` — **NOT pushed, NOT merged** |
+| `phase-1-sprite-mode` HEAD | **`abacf5c`** — 16 commits ahead of `802ddba` — **pushed to origin as a backup** (no PR, no merge) |
 
 ## Phase 0 — DONE (merged)
 
