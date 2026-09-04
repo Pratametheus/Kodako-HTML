@@ -3,6 +3,7 @@ import { t } from '../i18n';
 import type { Project } from '../../core/project';
 import type { Storage } from '../../core/storage';
 import { renderHeader, type EditorMode } from './header';
+import { renderSpriteMode } from './sprite-mode/sprite-mode';
 
 export type EditorDeps = {
   id: string;
@@ -24,12 +25,32 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
   `;
 
   let timer: ReturnType<typeof setTimeout> | undefined;
+  const getThumbnail: { current: (() => string | undefined) | null } = { current: null };
   const scheduleSave = () => {
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
       timer = undefined;
-      void storage.saveProject(id, project).catch((err) => console.error(err));
+      void storage
+        .saveProject(id, project, getThumbnail.current?.())
+        .catch((err) => console.error(err));
     }, AUTOSAVE_MS);
+  };
+
+  const workspaceEl = root.querySelector<HTMLElement>('[data-workspace]')!;
+  let cleanupMode: (() => void) | undefined;
+  const renderMode = (): void => {
+    cleanupMode?.();
+    cleanupMode = undefined;
+    if (project.activeMode === 'sprite') {
+      workspaceEl.textContent = '';
+      cleanupMode = renderSpriteMode(workspaceEl, {
+        project,
+        markDirty: scheduleSave,
+        getThumbnail,
+      });
+    } else {
+      workspaceEl.textContent = t('editor.workspacePlaceholder');
+    }
   };
 
   const cleanupHeader = renderHeader(root.querySelector<HTMLElement>('[data-header]')!, {
@@ -42,22 +63,33 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
       scheduleSave();
     },
     onModeChange: (mode: EditorMode) => {
+      cleanupMode?.();
+      cleanupMode = undefined;
       project.activeMode = mode;
       project.meta.updatedAt = new Date().toISOString();
+      renderMode();
       scheduleSave();
     },
     onBack: deps.onBack,
-    onSave: () => void storage.saveProject(id, project).catch((err) => console.error(err)),
+    onSave: () =>
+      void storage
+        .saveProject(id, project, getThumbnail.current?.())
+        .catch((err) => console.error(err)),
     onOpen: () => console.info('Buka project dari editor: menyusul pada fase berikutnya.'),
     onExport: () => void storage.exportToFile(project).catch((err) => console.error(err)),
   });
+
+  renderMode();
 
   return () => {
     if (timer) {
       clearTimeout(timer);
       timer = undefined;
-      void storage.saveProject(id, project).catch((err) => console.error(err));
+      void storage
+        .saveProject(id, project, getThumbnail.current?.())
+        .catch((err) => console.error(err));
     }
+    cleanupMode?.();
     cleanupHeader();
     root.innerHTML = '';
   };

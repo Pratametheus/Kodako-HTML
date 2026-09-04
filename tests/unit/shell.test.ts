@@ -22,6 +22,12 @@ function flush() {
   return new Promise((r) => setTimeout(r, 0));
 }
 
+function htmlProject(name: string) {
+  const project = createEmptyProject(name);
+  project.activeMode = 'html';
+  return project;
+}
+
 describe('startApp', () => {
   it('renders Home on the default route', async () => {
     stop = startApp(root, new WebStorage());
@@ -31,7 +37,7 @@ describe('startApp', () => {
 
   it('renders the Editor for an existing project route', async () => {
     const storage = new WebStorage();
-    await storage.saveProject('proj_x', createEmptyProject('Shell Test'), null);
+    await storage.saveProject('proj_x', htmlProject('Shell Test'), null);
     window.location.hash = '#/editor/proj_x';
     stop = startApp(root, storage);
     await flush();
@@ -49,7 +55,7 @@ describe('startApp', () => {
 
   it('ignores a stale in-flight render when the route changes rapidly', async () => {
     const storage = new WebStorage();
-    await storage.saveProject('proj_z', createEmptyProject('Cepat'), null);
+    await storage.saveProject('proj_z', htmlProject('Cepat'), null);
     window.location.hash = '#/editor/proj_z';
     stop = startApp(root, storage);
     // Fire two synchronous hashchanges before the first render's await resolves:
@@ -67,7 +73,7 @@ describe('startApp', () => {
 
   it('navigating back to Home from the editor swaps the view', async () => {
     const storage = new WebStorage();
-    await storage.saveProject('proj_y', createEmptyProject('Y'), null);
+    await storage.saveProject('proj_y', htmlProject('Y'), null);
     window.location.hash = '#/editor/proj_y';
     stop = startApp(root, storage);
     await flush();

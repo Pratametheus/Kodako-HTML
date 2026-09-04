@@ -34,6 +34,7 @@ beforeEach(() => {
   root = document.createElement('div');
   storage = new FakeStorage();
   project = createEmptyProject('Judul Awal');
+  project.activeMode = 'html';
 });
 
 afterEach(() => {
@@ -41,7 +42,7 @@ afterEach(() => {
 });
 
 describe('renderEditor', () => {
-  it('shows the project name and the Phase 1 placeholder', () => {
+  it('shows the project name and the HTML-mode placeholder', () => {
     renderEditor(root, { id: 'p1', project, storage, onBack: vi.fn() });
     expect(root.querySelector<HTMLInputElement>('[data-name]')!.value).toBe('Judul Awal');
     expect(root.textContent).toContain('Area kerja akan diisi pada Fase 1.');

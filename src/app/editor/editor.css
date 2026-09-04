@@ -37,7 +37,13 @@
 }
 .editor__workspace {
   flex: 1;
+  min-height: 0;
   display: grid;
   place-items: center;
   color: #6b7280;
+}
+
+.editor__workspace:has(.sprite-mode) {
+  place-items: stretch;
+  overflow: hidden;
 }

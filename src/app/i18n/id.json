@@ -21,6 +21,11 @@
   "editor.mode.sprite": "Mode Sprite",
   "editor.mode.html": "Mode HTML",
   "editor.workspacePlaceholder": "Area kerja akan diisi pada Fase 1.",
+  "editor.sprite.run": "Jalankan",
+  "editor.sprite.stop": "Stop",
+  "editor.sprite.tabSprite": "Sprite",
+  "editor.sprite.tabCostume": "Kostum",
+  "editor.sprite.addSprite": "+ Sprite",
   "confirm.delete": "Hapus project \"{name}\"? Tindakan ini tidak bisa dibatalkan.",
   "error.loadProject": "Gagal membuka project.",
   "error.importFile": "Gagal membuka file project."
