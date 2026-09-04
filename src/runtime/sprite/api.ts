@@ -56,6 +56,28 @@ type ApiHooks = {
 const numberArg = (value: unknown): number => Number(value) || 0;
 const stringArg = (value: unknown): string => String(value ?? '');
 
+type CompareOp = 'lt' | 'eq' | 'gt';
+
+/**
+ * Scratch-style comparison: coerce numerically when both operands look numeric,
+ * otherwise compare as strings. `eq` uses loose equality on the coerced values.
+ */
+export function cmp(a: unknown, b: unknown, op: CompareOp): boolean {
+  const na = Number(a);
+  const nb = Number(b);
+  if (Number.isFinite(na) && Number.isFinite(nb)) {
+    if (op === 'lt') return na < nb;
+    if (op === 'gt') return na > nb;
+    return na === nb;
+  }
+  const sa = String(a ?? '');
+  const sb = String(b ?? '');
+  if (op === 'lt') return sa < sb;
+  if (op === 'gt') return sa > sb;
+  // Both operands are already coerced to strings, so loose/strict are equivalent.
+  return sa === sb;
+}
+
 export function buildApi(ctx: RuntimeContext, spriteId: string, hooks: ApiHooks): SpriteApi {
   const current = (): Sprite => {
     const sprite = ctx.sprites.get(spriteId);
@@ -113,6 +135,7 @@ export function buildApi(ctx: RuntimeContext, spriteId: string, hooks: ApiHooks)
     isKeyPressed: (key) => isKeyDown(ctx, stringArg(key)),
     timer: () => timerSeconds(ctx),
     resetTimer: () => resetTimer(ctx),
+    cmp: (a, b, op) => cmp(a, b, stringArg(op) as CompareOp),
   };
 
   const async: SpriteApi['async'] = {

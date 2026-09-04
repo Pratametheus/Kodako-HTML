@@ -20,7 +20,7 @@ const HATS: Record<string, ThreadCode['hatType']> = {
 export function registerSpriteGenerators(): void {
   const g = javascriptGenerator;
   g.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
-  g.addReservedWords('highlightBlock,__yield__,api,Math');
+  g.addReservedWords('highlightBlock,__yield__,api,Math,cmp');
   (g as unknown as { INFINITE_LOOP_TRAP: string | null }).INFINITE_LOOP_TRAP = null;
 
   const valNum = (b: Blockly.Block, name: string) => g.valueToCode(b, name, Order.NONE) || '0';
@@ -65,8 +65,10 @@ export function registerSpriteGenerators(): void {
     `if (${valBool(b, 'COND')}) {\n${g.statementToCode(b, 'DO')}} else {\n${g.statementToCode(b, 'ELSE')}}\n`;
   g.forBlock['sprite_wait_until'] = (b) => `while (!(${valBool(b, 'COND')})) {\n__yield__();\n}\n`;
   g.forBlock['sprite_stop'] = (b) => {
-    const target = b.getFieldValue('TARGET');
-    return target === 'this' ? `stop('this');\nreturn;\n` : `stop(${JSON.stringify(target)});\n`;
+    // Scratch halts the calling script immediately for every target, so emit
+    // `return;` after the stop() call regardless of scope.
+    const target = b.getFieldValue('TARGET') as string;
+    return `stop('${target}');\nreturn;\n`;
   };
 
   g.forBlock['sprite_broadcast'] = (b) => `broadcast(${JSON.stringify(b.getFieldValue('MSG'))});\n`;
@@ -86,8 +88,9 @@ export function registerSpriteGenerators(): void {
   g.forBlock['sprite_op_compare'] = (b) => {
     const a = valAny(b, 'A');
     const c = valAny(b, 'B');
-    const op = { lt: '<', eq: '===', gt: '>' }[b.getFieldValue('OP') as string] ?? '===';
-    return [`((${a}) ${op} (${c}))`, Order.ATOMIC];
+    const op = { lt: 'lt', eq: 'eq', gt: 'gt' }[b.getFieldValue('OP') as string] ?? 'eq';
+    // cmp() coerces numerically when both sides look numeric (Scratch semantics).
+    return [`cmp((${a}), (${c}), '${op}')`, Order.ATOMIC];
   };
   g.forBlock['sprite_op_and'] = (b) => [
     `((${valBool(b, 'A')}) && (${valBool(b, 'B')}))`,

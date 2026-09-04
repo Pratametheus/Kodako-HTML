@@ -34,6 +34,9 @@ export function createThreadInterpreter(code: string, api: SpriteApi): ThreadInt
   const interpreter = new Interpreter(
     `${code}\n${entry}();`,
     (interp: Interpreter, scope: InterpreterObject) => {
+      // Every api.sync entry is registered here as a sync native, arity-agnostic:
+      // js-interpreter forwards all evaluated arguments regardless of fn.length,
+      // so multi-arg natives (gotoXY/2, cmp/3, ...) work without per-arity wrappers.
       for (const [name, fn] of Object.entries(api.sync)) {
         const wrapped = (...pseudoArgs: unknown[]): unknown => {
           const nativeArgs = pseudoArgs.map((arg) => interp.pseudoToNative(arg));

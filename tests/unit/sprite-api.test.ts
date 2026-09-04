@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest';
-import { buildApi } from '../../src/runtime/sprite/api';
+import { buildApi, cmp } from '../../src/runtime/sprite/api';
 import { createRuntimeContext } from '../../src/runtime/sprite/runtime-context';
 import { createSprite } from '../../src/runtime/sprite/sprite';
 
@@ -80,6 +80,23 @@ describe('buildApi', () => {
     expect(hooks.onBroadcast).toHaveBeenCalledWith('mulai');
     expect(hooks.onStop).toHaveBeenCalledWith('others', 's1');
     expect(hooks.onHighlight).toHaveBeenCalledWith('b1');
+  });
+
+  it('cmp() compares numerically when both sides look numeric, else as strings', () => {
+    expect(cmp('10', '9', 'gt')).toBe(true); // numeric: 10 > 9, not lexicographic
+    expect(cmp('10', 9, 'gt')).toBe(true);
+    expect(cmp('apel', 'jeruk', 'lt')).toBe(true); // string: 'a' < 'j'
+    expect(cmp('5', 5, 'eq')).toBe(true); // '5' == 5 after numeric coercion
+    expect(cmp('2', '10', 'lt')).toBe(true); // numeric, not '2' > '1'
+    expect(cmp('abc', 'abc', 'eq')).toBe(true);
+    expect(cmp('abc', 'abd', 'eq')).toBe(false);
+  });
+
+  it('exposes cmp through the sync API', () => {
+    const { api } = setup();
+    expect(api.sync.cmp!('10', '9', 'gt')).toBe(true);
+    expect(api.sync.cmp!('apel', 'jeruk', 'lt')).toBe(true);
+    expect(api.sync.cmp!('5', 5, 'eq')).toBe(true);
   });
 
   it('returns duration requests and captures glide origin', () => {
