@@ -25,6 +25,8 @@ import {
   updateSprite,
   type RuntimeContext,
 } from './runtime-context';
+import { BUILTIN_SOUNDS, resolveAssetUrl } from './assets';
+import { aabbOverlap, distance, pointInBounds, spriteBounds, touchesEdge } from './sensing';
 
 export type DurationRequest =
   | { kind: 'wait'; seconds: number }
@@ -38,7 +40,9 @@ export type DurationRequest =
     }
   | { kind: 'sayFor'; seconds: number }
   | { kind: 'yield' }
-  | { kind: 'broadcastWait'; message: string };
+  | { kind: 'broadcastWait'; message: string }
+  | { kind: 'playUntilDone'; soundUrl: string }
+  | { kind: 'ask'; question: string };
 
 export type StopScope = 'all' | 'this' | 'others';
 
@@ -47,10 +51,17 @@ export type SpriteApi = {
   async: Record<string, (...args: unknown[]) => DurationRequest>;
 };
 
-type ApiHooks = {
+export type ApiHooks = {
   onBroadcast: (message: string) => void;
   onStop: (scope: StopScope, spriteId: string) => void;
   onHighlight: (blockId: string) => void;
+  onPlaySound?: (soundUrl: string, spriteId: string) => void;
+  onStopAllSounds?: () => void;
+  onVolumeChange?: (spriteId: string, percent: number) => void;
+  onAsk?: (question: string) => void;
+  costumeNaturalOf?: (spriteId: string) => { width: number; height: number };
+  spriteByName?: (name: string) => Sprite | null;
+  colorUnderSprite?: (spriteId: string, hex: string) => boolean;
 };
 
 const numberArg = (value: unknown): number => Number(value) || 0;
@@ -88,6 +99,21 @@ export function buildApi(ctx: RuntimeContext, spriteId: string, hooks: ApiHooks)
     updateSprite(ctx, spriteId, operation(current()));
   };
   const say = (text: unknown): void => mutate((sprite) => saidText(sprite, stringArg(text)));
+  const naturalOf = (id: string): { width: number; height: number } =>
+    hooks.costumeNaturalOf?.(id) ?? { width: 0, height: 0 };
+  const spriteNamed = (name: string): Sprite | null =>
+    hooks.spriteByName?.(name) ??
+    [...ctx.sprites.values()].find((sprite) => sprite.name === name) ??
+    null;
+  const soundUrl = (selection: unknown): string => {
+    const value = stringArg(selection);
+    const builtin = BUILTIN_SOUNDS.find((sound) => sound.id === value || sound.name === value);
+    if (builtin) return builtin.url;
+    const selectedId =
+      Object.entries(ctx.assets).find(([id, asset]) => id === value || asset.name === value)?.[0] ??
+      value;
+    return resolveAssetUrl(selectedId, ctx.assets) ?? '';
+  };
 
   const sync: SpriteApi['sync'] = {
     highlightBlock: (id) => hooks.onHighlight(stringArg(id)),
@@ -136,6 +162,41 @@ export function buildApi(ctx: RuntimeContext, spriteId: string, hooks: ApiHooks)
     timer: () => timerSeconds(ctx),
     resetTimer: () => resetTimer(ctx),
     cmp: (a, b, op) => cmp(a, b, stringArg(op) as CompareOp),
+    playSound: (selection) => {
+      const url = soundUrl(selection);
+      if (url) (hooks.onPlaySound ?? ((sound, id) => ctx.audio.play(sound, id)))(url, spriteId);
+    },
+    stopAllSounds: () => (hooks.onStopAllSounds ?? (() => ctx.audio.stopAll()))(),
+    changeVolume: (delta) => {
+      ctx.audio.changeVolume(spriteId, numberArg(delta));
+      hooks.onVolumeChange?.(spriteId, ctx.audio.getVolume(spriteId));
+    },
+    setVolume: (percent) => {
+      ctx.audio.setVolume(spriteId, Math.min(100, Math.max(0, numberArg(percent))));
+      hooks.onVolumeChange?.(spriteId, ctx.audio.getVolume(spriteId));
+    },
+    isTouching: (target) => {
+      const self = current();
+      const selfBounds = spriteBounds(self, naturalOf(spriteId));
+      const value = stringArg(target);
+      if (value === 'edge') return touchesEdge(selfBounds);
+      if (value === 'pointer') return pointInBounds(ctx.mouse.x, ctx.mouse.y, selfBounds);
+      const other = spriteNamed(value);
+      return other ? aabbOverlap(selfBounds, spriteBounds(other, naturalOf(other.id))) : false;
+    },
+    isTouchingColor: (hex) => hooks.colorUnderSprite?.(spriteId, stringArg(hex)) ?? false,
+    isMouseDown: () => ctx.mouse.down,
+    mouseX: () => ctx.mouse.x,
+    mouseY: () => ctx.mouse.y,
+    distanceTo: (target) => {
+      const self = current();
+      if (stringArg(target) === 'pointer') {
+        return distance(self.x, self.y, ctx.mouse.x, ctx.mouse.y);
+      }
+      const other = spriteNamed(stringArg(target));
+      return other ? distance(self.x, self.y, other.x, other.y) : 0;
+    },
+    answer: () => ctx.answer,
   };
 
   const async: SpriteApi['async'] = {
@@ -161,6 +222,11 @@ export function buildApi(ctx: RuntimeContext, spriteId: string, hooks: ApiHooks)
       kind: 'broadcastWait',
       message: stringArg(message),
     }),
+    playSoundUntilDone: (selection) => ({
+      kind: 'playUntilDone',
+      soundUrl: soundUrl(selection),
+    }),
+    ask: (question) => ({ kind: 'ask', question: stringArg(question) }),
   };
 
   return { sync, async };

@@ -2,19 +2,45 @@ import { describe, expect, it, vi } from 'vitest';
 import { buildApi, cmp } from '../../src/runtime/sprite/api';
 import { createRuntimeContext } from '../../src/runtime/sprite/runtime-context';
 import { createSprite } from '../../src/runtime/sprite/sprite';
+import type { AudioEngine } from '../../src/runtime/sprite/audio';
 
 function setup() {
   let now = 1000;
+  const volumes = new Map<string, number>();
+  const audio: AudioEngine = {
+    play: vi.fn(),
+    playUntilDone: vi.fn(async () => undefined),
+    stopAll: vi.fn(),
+    changeVolume: vi.fn((id, delta) => volumes.set(id, (volumes.get(id) ?? 100) + delta)),
+    setVolume: vi.fn((id, percent) => volumes.set(id, percent)),
+    getVolume: vi.fn((id) => volumes.get(id) ?? 100),
+    dispose: vi.fn(),
+  };
   const sprite = createSprite({
     id: 's1',
     name: 'Kucing',
     costumes: ['cat', 'ball', 'star'],
   });
-  const ctx = createRuntimeContext([sprite], () => now);
+  const other = createSprite({ id: 's2', name: 'Sprite 2', x: 20, y: 0 });
+  const ctx = createRuntimeContext([sprite, other], {
+    now: () => now,
+    audio,
+    assets: { 'uploaded-sound': { name: 'Rekam', ref: 'data:audio/wav;base64,UklGRg==' } },
+  });
   const hooks = {
     onBroadcast: vi.fn(),
     onStop: vi.fn(),
     onHighlight: vi.fn(),
+    onPlaySound: vi.fn(),
+    onStopAllSounds: vi.fn(),
+    onVolumeChange: vi.fn(),
+    onAsk: vi.fn(),
+    costumeNaturalOf: vi.fn(() => ({ width: 80, height: 80 })),
+    spriteByName: vi.fn(
+      (name: string) =>
+        [...ctx.sprites.values()].find((candidate) => candidate.name === name) ?? null,
+    ),
+    colorUnderSprite: vi.fn(() => true),
   };
   const api = buildApi(ctx, 's1', hooks);
   return { api, ctx, hooks, setNow: (value: number) => (now = value) };
@@ -117,5 +143,57 @@ describe('buildApi', () => {
       kind: 'broadcastWait',
       message: 'go',
     });
+  });
+
+  it('plays resolved sounds and applies clamped per-sprite volume', () => {
+    const { api, ctx, hooks } = setup();
+
+    api.sync.playSound!('builtin:snd-pop');
+    expect(hooks.onPlaySound).toHaveBeenCalledWith(expect.any(String), 's1');
+    expect(hooks.onPlaySound.mock.calls[0]?.[0]).not.toBe('');
+    api.sync.playSound!('Rekam');
+    expect(hooks.onPlaySound).toHaveBeenLastCalledWith('data:audio/wav;base64,UklGRg==', 's1');
+    api.sync.stopAllSounds!();
+    expect(hooks.onStopAllSounds).toHaveBeenCalledOnce();
+
+    api.sync.setVolume!(50);
+    expect(ctx.audio.getVolume('s1')).toBe(50);
+    expect(hooks.onVolumeChange).toHaveBeenLastCalledWith('s1', 50);
+    api.sync.changeVolume!(-30);
+    expect(ctx.audio.getVolume('s1')).toBe(20);
+    expect(hooks.onVolumeChange).toHaveBeenLastCalledWith('s1', 20);
+
+    const request = api.async.playSoundUntilDone!('builtin:snd-pop');
+    expect(request).toMatchObject({ kind: 'playUntilDone', soundUrl: expect.any(String) });
+    expect((request as { soundUrl: string }).soundUrl).not.toBe('');
+  });
+
+  it('reads edge, pointer, sprite, color, mouse, distance, and answer sensing state', () => {
+    const { api, ctx, hooks } = setup();
+    const self = ctx.sprites.get('s1')!;
+    ctx.sprites.set('s1', { ...self, x: 240 });
+    expect(api.sync.isTouching!('edge')).toBe(true);
+
+    ctx.mouse = { x: 240, y: 0, down: true };
+    expect(api.sync.isTouching!('pointer')).toBe(true);
+    expect(api.sync.isTouching!('Sprite 2')).toBe(false);
+    ctx.sprites.set('s1', { ...self, x: 0, y: 0 });
+    expect(api.sync.isTouching!('Sprite 2')).toBe(true);
+    expect(api.sync.isTouchingColor!('#000000')).toBe(true);
+    expect(hooks.colorUnderSprite).toHaveBeenCalledWith('s1', '#000000');
+    expect(api.sync.isMouseDown!()).toBe(true);
+    ctx.mouse = { x: 3, y: 4, down: false };
+    expect(api.sync.mouseX!()).toBe(3);
+    expect(api.sync.mouseY!()).toBe(4);
+    expect(api.sync.distanceTo!('pointer')).toBe(5);
+    ctx.answer = 'Budi';
+    expect(api.sync.answer!()).toBe('Budi');
+    expect(api.sync.distanceTo!('tidak ada')).toBe(0);
+  });
+
+  it('returns an ask duration request without opening UI in the API layer', () => {
+    const { api, hooks } = setup();
+    expect(api.async.ask!('Nama?')).toEqual({ kind: 'ask', question: 'Nama?' });
+    expect(hooks.onAsk).not.toHaveBeenCalled();
   });
 });

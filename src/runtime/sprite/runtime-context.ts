@@ -10,11 +10,13 @@ export type RuntimeContext = {
   mouse: { x: number; y: number; down: boolean };
   answer: string;
   audio: AudioEngine;
+  assets: Record<string, { name?: string; ref: string }>;
 };
 
 export type RuntimeContextOptions = {
   now?: () => number;
   audio?: AudioEngine;
+  assets?: Record<string, { name?: string; ref: string }>;
 };
 
 function normalizeKey(key: string): string {
@@ -46,6 +48,7 @@ export function createRuntimeContext(
     mouse: { x: 0, y: 0, down: false },
     answer: '',
     audio: options.audio ?? createNoopAudioEngine(),
+    assets: options.assets ?? {},
   };
 }
 
