@@ -1,8 +1,8 @@
 import './editor.css';
-import { t } from '../i18n';
 import type { Project } from '../../core/project';
 import type { Storage } from '../../core/storage';
 import { renderHeader, type EditorMode } from './header';
+import { renderHtmlMode } from './html-mode/html-mode';
 import { renderSpriteMode } from './sprite-mode/sprite-mode';
 
 export type EditorDeps = {
@@ -20,7 +20,7 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
   root.innerHTML = `
     <div class="editor">
       <div data-header></div>
-      <div class="editor__workspace" data-workspace>${t('editor.workspacePlaceholder')}</div>
+      <div class="editor__workspace" data-workspace></div>
     </div>
   `;
 
@@ -49,7 +49,12 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
         getThumbnail,
       });
     } else {
-      workspaceEl.textContent = t('editor.workspacePlaceholder');
+      workspaceEl.textContent = '';
+      cleanupMode = renderHtmlMode(workspaceEl, {
+        project,
+        storage,
+        markDirty: scheduleSave,
+      });
     }
   };
 

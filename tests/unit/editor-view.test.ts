@@ -3,6 +3,15 @@ import { createEmptyProject, type Project } from '../../src/core/project';
 import type { ProjectSummary, Storage } from '../../src/core/storage';
 import { renderEditor } from '../../src/app/editor/editor-view';
 
+vi.mock('../../src/app/editor/html-mode/html-mode', () => ({
+  renderHtmlMode: (host: HTMLElement) => {
+    host.textContent = 'Mode HTML';
+    return () => {
+      host.textContent = '';
+    };
+  },
+}));
+
 class FakeStorage implements Storage {
   saved: Project[] = [];
   exported: Project[] = [];
@@ -42,10 +51,10 @@ afterEach(() => {
 });
 
 describe('renderEditor', () => {
-  it('shows the project name and the HTML-mode placeholder', () => {
+  it('shows the project name while HTML mode is mounted', () => {
     renderEditor(root, { id: 'p1', project, storage, onBack: vi.fn() });
     expect(root.querySelector<HTMLInputElement>('[data-name]')!.value).toBe('Judul Awal');
-    expect(root.textContent).toContain('Area kerja akan diisi pada Fase 1.');
+    expect(root.textContent).toContain('Mode HTML');
   });
 
   it('editing the name autosaves (debounced) with a bumped updatedAt', () => {

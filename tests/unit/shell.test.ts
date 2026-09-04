@@ -1,7 +1,16 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createEmptyProject } from '../../src/core/project';
 import { WebStorage } from '../../src/core/web-storage';
 import { startApp } from '../../src/app/shell';
+
+vi.mock('../../src/app/editor/html-mode/html-mode', () => ({
+  renderHtmlMode: (host: HTMLElement) => {
+    host.textContent = 'Mode HTML';
+    return () => {
+      host.textContent = '';
+    };
+  },
+}));
 
 let root: HTMLElement;
 let stop: () => void;

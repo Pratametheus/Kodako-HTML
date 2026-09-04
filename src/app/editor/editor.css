@@ -43,7 +43,8 @@
   color: #6b7280;
 }
 
-.editor__workspace:has(.sprite-mode) {
+.editor__workspace:has(.sprite-mode),
+.editor__workspace:has(.html-mode) {
   place-items: stretch;
   overflow: hidden;
 }
