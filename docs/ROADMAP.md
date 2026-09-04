@@ -121,13 +121,15 @@ Ditunda ke Fase 3: CSS lanjutan, atribut class/id, tabel, form; alur 'kirim ke g
 - [x] Kategori **Suara** penuh (mainkan suara, mainkan sampai selesai,
       hentikan semua, volume) + ~8 efek suara CC0.
 - [x] Kategori **Sensor** penuh (jarak ke, warna menyentuh warna, tanya/jawab).
+- [x] Tema "rasa Scratch" penuh (blok bulat, chrome kategori, hat block,
+      renderer Zelos) + kostum/latar bawaan dipoles (15 kostum, 6 latar).
 - [ ] Pustaka aset diperluas + layar pilih aset yang rapi.
 - [ ] Ekspor project Sprite sebagai halaman "pemutar" HTML mandiri (opsional
       bila memungkinkan tanpa lingkup besar; kalau tidak, tunda).
-- [ ] Error boundary global + semua pesan error ramah anak berbahasa Indonesia.
-- [ ] Pemeriksaan performa di perangkat kelas bawah; optimasi renderer bila
+- [x] Error boundary global + semua pesan error ramah anak berbahasa Indonesia.
+- [x] Pemeriksaan performa di perangkat kelas bawah; optimasi renderer bila
       perlu.
-- [ ] Pass aksesibilitas dasar (ukuran target, kontras, fokus keyboard).
+- [x] Pass aksesibilitas dasar (ukuran target, kontras, fokus keyboard).
 - [ ] `tauri build` installer Windows `.msi`/`.exe`; ikon & menu Berkas/Bantuan.
 - [ ] CI rilis: build desktop pada tag `v*`, unggah ke GitHub Releases; landing
       "Unduh Aplikasi" menunjuk rilis terbaru.
@@ -140,8 +142,10 @@ Ditunda ke Fase 3: CSS lanjutan, atribut class/id, tabel, form; alur 'kirim ke g
 - Semua jalur error menampilkan pesan Bahasa Indonesia, bukan stack trace.
 - Suite test (unit + integrasi + E2E) hijau di CI.
 
-Ditunda ke 3b/3c: tema Scratch, aset asli, error boundary, a11y, performa,
-Tauri, CI rilis, Bantuan.
+Fase 3b (poles) selesai: tema Scratch, error boundary + toast error, a11y
+dasar, performa (cache sensor warna, vendor chunk Blockly, alokasi
+per-frame). Ditunda ke Fase 3c: `tauri build` installer, CI rilis, halaman
+Bantuan dalam app, README quickstart, aset CC0 asli.
 
 ---
 
