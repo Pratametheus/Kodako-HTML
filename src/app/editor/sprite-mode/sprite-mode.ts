@@ -3,6 +3,8 @@ import {
   Blockly,
   installSpriteBlockly,
   setCostumeOptionsProvider,
+  setSensingTargetsProvider,
+  setSoundOptionsProvider,
   spriteTheme,
 } from '../../../blocks';
 import { spriteToolbox } from '../../../blocks/sprite/toolbox';
@@ -17,12 +19,18 @@ import {
   withSpriteWorkspace,
 } from '../../../core/sprite-project';
 import { BUILTIN_BY_ID, resolveAssetUrl } from '../../../runtime/sprite/assets';
+import { createAudioEngine } from '../../../runtime/sprite/audio';
 import { createSpriteEvents, type SpriteEvents } from '../../../runtime/sprite/event-bus';
-import { createRuntimeContext, type RuntimeContext } from '../../../runtime/sprite/runtime-context';
+import {
+  createRuntimeContext,
+  setMouse,
+  type RuntimeContext,
+} from '../../../runtime/sprite/runtime-context';
 import { createScheduler, type Scheduler } from '../../../runtime/sprite/scheduler';
 import { createStage, type Stage } from '../../../runtime/sprite/stage';
 import { t } from '../../i18n';
 import { renderCostumePanel } from './costume-panel';
+import { renderSoundPanel } from './sound-panel';
 import { renderSpritePanel } from './sprite-panel';
 
 export type SpriteModeDeps = {
@@ -76,9 +84,11 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
           <div class="sprite-tabs" role="tablist">
             <button type="button" role="tab" data-tab="sprite" aria-selected="true">${t('editor.sprite.tabSprite')}</button>
             <button type="button" role="tab" data-tab="kostum" aria-selected="false">${t('editor.sprite.tabCostume')}</button>
+            <button type="button" role="tab" data-tab="suara" aria-selected="false">${t('editor.sprite.tabSound')}</button>
           </div>
           <div class="sprite-tab-panel" data-panel="sprite"></div>
           <div class="sprite-tab-panel" data-panel="kostum" hidden></div>
+          <div class="sprite-tab-panel" data-panel="suara" hidden></div>
         </section>
       </aside>
     </div>
@@ -102,6 +112,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     __kodakoStage?: {
       spriteState: () => { id: string; x: number; y: number; direction: number }[];
       isRunning: () => boolean;
+      pointer: () => { x: number; y: number; down: boolean };
     };
   };
   debugWindow.__kodakoBlockly = { ...Blockly, getMainWorkspace: () => workspace };
@@ -117,9 +128,25 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
       String(index),
     ]),
   );
+  setSoundOptionsProvider(() => {
+    const options = currentSprite().sounds.map((sound, index): [string, string] => [
+      BUILTIN_BY_ID.get(sound.assetId)?.name ??
+        project.assets[sound.assetId]?.name ??
+        `suara${index + 1}`,
+      sound.assetId,
+    ]);
+    return options.length > 0 ? options : [['(tidak ada suara)', '']];
+  });
+  setSensingTargetsProvider(() =>
+    project.sprite.sprites
+      .filter((sprite) => sprite.id !== selectedSpriteId)
+      .map((sprite): [string, string] => [sprite.name, sprite.name]),
+  );
 
+  const audio = createAudioEngine();
   let runtimeContext: RuntimeContext = createRuntimeContext(
     project.sprite.sprites.map(runtimeSpriteFrom),
+    { audio, assets: project.assets },
   );
   const canvas = host.querySelector<HTMLCanvasElement>('canvas')!;
   const stage: Stage = createStage(canvas, () => ({
@@ -165,14 +192,27 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   const makeRuntime = (): void => {
     detachAnimation?.();
     detachAnimation = null;
-    runtimeContext = createRuntimeContext(project.sprite.sprites.map(runtimeSpriteFrom));
+    runtimeContext = createRuntimeContext(project.sprite.sprites.map(runtimeSpriteFrom), {
+      audio,
+      assets: project.assets,
+    });
+    const pointer = stage.pointer();
+    setMouse(runtimeContext, pointer.x, pointer.y, pointer.down);
     scheduler = createScheduler({
       ctx: runtimeContext,
       render: renderFrame,
       onHighlight: highlight,
       onBroadcastDone: (message) => events.broadcast(message),
+      playSound: (url, spriteId) => audio.playUntilDone(url, spriteId),
+      onAsk: (question, submit) => stage.showAsk(question, submit),
+      onAskCancel: () => stage.hideAsk(),
     });
-    events = createSpriteEvents({ ctx: runtimeContext, scheduler, onHighlight: highlight });
+    events = createSpriteEvents({
+      ctx: runtimeContext,
+      scheduler,
+      onHighlight: highlight,
+      stage,
+    });
   };
 
   makeRuntime();
@@ -219,6 +259,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
 
   const spritePanelHost = host.querySelector<HTMLElement>('[data-panel="sprite"]')!;
   const costumePanelHost = host.querySelector<HTMLElement>('[data-panel="kostum"]')!;
+  const soundPanelHost = host.querySelector<HTMLElement>('[data-panel="suara"]')!;
   const selectSprite = (spriteId: string): void => {
     if (spriteId === selectedSpriteId) return;
     persistWorkspace();
@@ -227,6 +268,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     rebuildPrograms();
     spritePanel.refresh();
     costumePanel.refresh();
+    soundPanel.refresh();
     stage.render();
   };
 
@@ -246,6 +288,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
       rebuildPrograms();
       spritePanel.refresh();
       costumePanel.refresh();
+      soundPanel.refresh();
       stage.render();
       deps.markDirty();
     },
@@ -260,6 +303,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
       rebuildPrograms();
       spritePanel.refresh();
       costumePanel.refresh();
+      soundPanel.refresh();
       stage.render();
       deps.markDirty();
     },
@@ -303,6 +347,31 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     },
   });
 
+  const soundPanel = renderSoundPanel(soundPanelHost, {
+    getSelectedSprite: currentSprite,
+    assetName: (assetId, index) =>
+      BUILTIN_BY_ID.get(assetId)?.name ?? project.assets[assetId]?.name ?? `suara${index + 1}`,
+    onAddBuiltin: (assetId) => {
+      if (!currentSprite().sounds.some((sound) => sound.assetId === assetId)) {
+        currentSprite().sounds.push({ assetId });
+        soundPanel.refresh();
+        deps.markDirty();
+      }
+    },
+    onUpload: ({ dataUrl, name }) => {
+      const assetId = newId('asset');
+      project.assets[assetId] = { kind: 'sound', name, source: 'embedded', ref: dataUrl };
+      currentSprite().sounds.push({ assetId });
+      soundPanel.refresh();
+      deps.markDirty();
+      audio.play(dataUrl, selectedSpriteId);
+    },
+    onPreview: (assetId) => {
+      const url = resolveAssetUrl(assetId, project.assets);
+      if (url) audio.play(url, selectedSpriteId);
+    },
+  });
+
   const onWorkspaceChange = (event: Blockly.Events.Abstract): void => {
     if (event.isUiEvent || loadingWorkspace) return;
     persistWorkspace();
@@ -342,6 +411,19 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   };
   canvas.addEventListener('click', onCanvasClick);
 
+  const updatePointer = (event: MouseEvent, down: boolean): void => {
+    stage.setPointer(event.clientX, event.clientY, down);
+    const pointer = stage.pointer();
+    setMouse(runtimeContext, pointer.x, pointer.y, pointer.down);
+  };
+  const onPointerMove = (event: MouseEvent): void =>
+    updatePointer(event, (event.buttons & 1) === 1);
+  const onPointerDown = (event: MouseEvent): void => updatePointer(event, true);
+  const onPointerUp = (event: MouseEvent): void => updatePointer(event, false);
+  canvas.addEventListener('mousemove', onPointerMove);
+  canvas.addEventListener('mousedown', onPointerDown);
+  window.addEventListener('mouseup', onPointerUp);
+
   const onKeyDown = (event: KeyboardEvent): void => {
     if (scheduler.isRunning()) events.keyDown(event.key);
   };
@@ -380,6 +462,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
         direction,
       })),
     isRunning: () => scheduler.isRunning(),
+    pointer: () => stage.pointer(),
   };
 
   return () => {
@@ -392,9 +475,16 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     stage.dispose();
     spritePanel.dispose();
     costumePanel.dispose();
+    soundPanel.dispose();
+    audio.dispose();
+    canvas.removeEventListener('mousemove', onPointerMove);
+    canvas.removeEventListener('mousedown', onPointerDown);
+    window.removeEventListener('mouseup', onPointerUp);
     window.removeEventListener('keydown', onKeyDown);
     window.removeEventListener('keyup', onKeyUp);
     setCostumeOptionsProvider(() => [['kostum1', '0']]);
+    setSoundOptionsProvider(() => [['(tidak ada suara)', '']]);
+    setSensingTargetsProvider(() => []);
     __spriteModeHandle.current = null;
     host.innerHTML = '';
   };

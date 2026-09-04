@@ -16,6 +16,12 @@ describe('t', () => {
     expect(t('editor.sprite.run')).toBe('Jalankan');
     expect(t('editor.sprite.stop')).toBe('Berhenti');
     expect(t('editor.sprite.uploadTooBig')).toContain('2 MB');
+    expect(t('editor.sprite.tabSound')).toBe('Suara');
+    expect(t('editor.sprite.askPlaceholder')).toContain('jawabanmu');
+    expect(t('editor.sprite.askSubmit')).toBe('Kirim');
+    expect(t('editor.sprite.uploadSoundTooBig')).toContain('2 MB');
+    expect(t('editor.sprite.uploadNotAudio')).toContain('bukan suara');
+    expect(t('error.audioUnavailable')).toContain('tidak didukung');
     const obviousEnglish = ['Run ', 'Stop', 'Costume', 'Upload', 'Delete', 'Backdrop'];
     for (const value of Object.values(dict)) {
       for (const word of obviousEnglish) expect(value).not.toContain(word);

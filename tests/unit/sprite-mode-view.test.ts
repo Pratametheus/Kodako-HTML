@@ -86,6 +86,39 @@ describe('renderSpriteMode', () => {
     cleanup();
   });
 
+  it('renders the sound panel and tracks pointer movement over the canvas', () => {
+    const host = document.createElement('div');
+    const cleanup = renderSpriteMode(host, {
+      project: createEmptyProject('X'),
+      markDirty: vi.fn(),
+      getThumbnail: { current: null },
+    });
+    const canvas = host.querySelector('canvas')!;
+    vi.spyOn(canvas, 'getBoundingClientRect').mockReturnValue({
+      x: 0,
+      y: 0,
+      left: 0,
+      top: 0,
+      right: 480,
+      bottom: 360,
+      width: 480,
+      height: 360,
+      toJSON: () => ({}),
+    });
+
+    host.querySelector<HTMLButtonElement>('[data-tab="suara"]')!.click();
+    expect(host.querySelectorAll('[data-builtin-sound]')).toHaveLength(8);
+    expect(host.querySelector('[data-upload-sound]')).not.toBeNull();
+    canvas.dispatchEvent(
+      new MouseEvent('mousemove', { bubbles: true, clientX: 240, clientY: 180, buttons: 1 }),
+    );
+    const debugWindow = window as Window & {
+      __kodakoStage?: { pointer: () => { x: number; y: number; down: boolean } };
+    };
+    expect(debugWindow.__kodakoStage?.pointer()).toEqual({ x: 0, y: 0, down: true });
+    cleanup();
+  });
+
   it('runs a green-flag program to completion and moves the sprite', () => {
     // Drive the rAF loop deterministically: capture the callbacks and flush them.
     const rafCbs: FrameRequestCallback[] = [];

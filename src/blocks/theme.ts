@@ -4,6 +4,7 @@ export const CATEGORY_COLORS: Record<
   | 'events'
   | 'motion'
   | 'looks'
+  | 'sound'
   | 'control'
   | 'operators'
   | 'sensing'
@@ -16,6 +17,7 @@ export const CATEGORY_COLORS: Record<
   events: '#FFBF00',
   motion: '#4C97FF',
   looks: '#9966FF',
+  sound: '#CF63CF',
   control: '#FFAB19',
   operators: '#59C059',
   sensing: '#5CB1D6',
@@ -32,6 +34,7 @@ export const spriteTheme = Blockly.Theme.defineTheme('kodako-sprite', {
     events_blocks: { colourPrimary: CATEGORY_COLORS.events },
     motion_blocks: { colourPrimary: CATEGORY_COLORS.motion },
     looks_blocks: { colourPrimary: CATEGORY_COLORS.looks },
+    sound_blocks: { colourPrimary: CATEGORY_COLORS.sound },
     control_blocks: { colourPrimary: CATEGORY_COLORS.control },
     operators_blocks: { colourPrimary: CATEGORY_COLORS.operators },
     sensing_blocks: { colourPrimary: CATEGORY_COLORS.sensing },
@@ -44,6 +47,7 @@ export const spriteTheme = Blockly.Theme.defineTheme('kodako-sprite', {
     events_category: { colour: CATEGORY_COLORS.events },
     motion_category: { colour: CATEGORY_COLORS.motion },
     looks_category: { colour: CATEGORY_COLORS.looks },
+    sound_category: { colour: CATEGORY_COLORS.sound },
     control_category: { colour: CATEGORY_COLORS.control },
     operators_category: { colour: CATEGORY_COLORS.operators },
     sensing_category: { colour: CATEGORY_COLORS.sensing },

@@ -18,6 +18,38 @@ export function setCostumeOptionsProvider(fn: () => [string, string][]): void {
   getCostumeOptions = fn;
 }
 
+let getSoundOptions: () => [string, string][] = () => [['(tidak ada suara)', '']];
+export function setSoundOptionsProvider(fn: () => [string, string][]): void {
+  getSoundOptions = fn;
+}
+
+let getSensingTargets: () => [string, string][] = () => [];
+export function setSensingTargetsProvider(fn: () => [string, string][]): void {
+  getSensingTargets = fn;
+}
+
+const touchingTargetOptions = (): [string, string][] => [
+  ['tepi', 'edge'],
+  ['pointer mouse', 'pointer'],
+  ...getSensingTargets(),
+];
+
+const distanceTargetOptions = (): [string, string][] => [
+  ['pointer mouse', 'pointer'],
+  ...getSensingTargets(),
+];
+
+const sensingColorOptions: [string, string][] = [
+  ['merah', '#e53935'],
+  ['jingga', '#fb8c00'],
+  ['kuning', '#fdd835'],
+  ['hijau', '#43a047'],
+  ['biru', '#1e88e5'],
+  ['ungu', '#8e24aa'],
+  ['hitam', '#000000'],
+  ['putih', '#ffffff'],
+];
+
 export const SPRITE_BLOCK_TYPES = [
   'sprite_hat_green_flag',
   'sprite_hat_clicked',
@@ -43,6 +75,11 @@ export const SPRITE_BLOCK_TYPES = [
   'sprite_set_size',
   'sprite_show',
   'sprite_hide',
+  'sound_play',
+  'sound_play_until_done',
+  'sound_stop_all',
+  'sound_change_volume',
+  'sound_set_volume',
   'sprite_wait',
   'sprite_repeat',
   'sprite_forever',
@@ -62,6 +99,14 @@ export const SPRITE_BLOCK_TYPES = [
   'sprite_sensing_key',
   'sprite_sensing_timer',
   'sprite_sensing_reset_timer',
+  'sensing_touching',
+  'sensing_touching_color',
+  'sensing_mouse_down',
+  'sensing_mouse_x',
+  'sensing_mouse_y',
+  'sensing_distance_to',
+  'sensing_ask',
+  'sensing_answer',
 ] as const;
 
 export function registerSpriteBlocks(): void {
@@ -256,6 +301,45 @@ export function registerSpriteBlocks(): void {
       previousStatement: null,
       nextStatement: null,
       style: 'looks_blocks',
+    },
+    {
+      type: 'sound_play',
+      message0: 'mainkan suara %1',
+      args0: [{ type: 'field_dropdown', name: 'SOUND', options: () => getSoundOptions() }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'sound_blocks',
+    },
+    {
+      type: 'sound_play_until_done',
+      message0: 'mainkan suara %1 sampai selesai',
+      args0: [{ type: 'field_dropdown', name: 'SOUND', options: () => getSoundOptions() }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'sound_blocks',
+    },
+    {
+      type: 'sound_stop_all',
+      message0: 'hentikan semua suara',
+      previousStatement: null,
+      nextStatement: null,
+      style: 'sound_blocks',
+    },
+    {
+      type: 'sound_change_volume',
+      message0: 'ubah volume %1',
+      args0: [{ type: 'input_value', name: 'DELTA', check: 'Number' }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'sound_blocks',
+    },
+    {
+      type: 'sound_set_volume',
+      message0: 'atur volume ke %1 %',
+      args0: [{ type: 'input_value', name: 'PCT', check: 'Number' }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'sound_blocks',
     },
     {
       type: 'sprite_wait',
@@ -462,6 +546,59 @@ export function registerSpriteBlocks(): void {
       message0: 'reset pengatur waktu',
       previousStatement: null,
       nextStatement: null,
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_touching',
+      message0: 'menyentuh %1?',
+      args0: [{ type: 'field_dropdown', name: 'TARGET', options: touchingTargetOptions }],
+      output: 'Boolean',
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_touching_color',
+      message0: 'menyentuh warna %1?',
+      args0: [{ type: 'field_dropdown', name: 'COLOR', options: sensingColorOptions }],
+      output: 'Boolean',
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_mouse_down',
+      message0: 'mouse ditekan?',
+      output: 'Boolean',
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_mouse_x',
+      message0: 'posisi x mouse',
+      output: 'Number',
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_mouse_y',
+      message0: 'posisi y mouse',
+      output: 'Number',
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_distance_to',
+      message0: 'jarak ke %1',
+      args0: [{ type: 'field_dropdown', name: 'TARGET', options: distanceTargetOptions }],
+      output: 'Number',
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_ask',
+      message0: 'tanya %1 dan tunggu',
+      args0: [{ type: 'input_value', name: 'TEXT' }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'sensing_blocks',
+    },
+    {
+      type: 'sensing_answer',
+      message0: 'jawaban',
+      output: 'String',
       style: 'sensing_blocks',
     },
   ]);

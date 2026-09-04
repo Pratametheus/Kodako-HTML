@@ -4,6 +4,7 @@ import { buildApi } from './api';
 import { createThreadInterpreter } from './interpreter';
 import { setKey, type RuntimeContext } from './runtime-context';
 import type { Scheduler } from './scheduler';
+import type { Stage } from './stage';
 
 export type SpriteProgram = { spriteId: string; workspace: Blockly.Workspace };
 
@@ -24,6 +25,7 @@ export function createSpriteEvents(opts: {
   ctx: RuntimeContext;
   scheduler: Scheduler;
   onHighlight: (id: string | null) => void;
+  stage?: Pick<Stage, 'colorUnderSprite' | 'costumeNaturalOf'>;
 }): SpriteEvents {
   const programs = new Map<string, ThreadCode[]>();
 
@@ -56,6 +58,14 @@ export function createSpriteEvents(opts: {
           else if (scope === 'others') opts.scheduler.stopOthers(stoppedSpriteId, currentThreadId);
         },
         onHighlight: (id) => opts.onHighlight(id),
+        onPlaySound: (url, id) => opts.ctx.audio.play(url, id),
+        onStopAllSounds: () => opts.ctx.audio.stopAll(),
+        onVolumeChange: () => {},
+        onAsk: () => {},
+        colorUnderSprite: (id, hex) => opts.stage?.colorUnderSprite(id, hex) ?? false,
+        costumeNaturalOf: (id) => opts.stage?.costumeNaturalOf(id) ?? { width: 80, height: 80 },
+        spriteByName: (name) =>
+          [...opts.ctx.sprites.values()].find((sprite) => sprite.name === name) ?? null,
       });
       const before = new Set(opts.scheduler.threads.map((thread) => thread.id));
       opts.scheduler.start([

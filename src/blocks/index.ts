@@ -12,7 +12,11 @@ export { setHtmlAssetOptionsProvider } from './html/blocks';
 export { generateHtml } from './html/generator';
 export type { GeneratedHtml } from './html/generator';
 export { htmlToolbox } from './html/toolbox';
-export { setCostumeOptionsProvider } from './sprite/blocks';
+export {
+  setCostumeOptionsProvider,
+  setSensingTargetsProvider,
+  setSoundOptionsProvider,
+} from './sprite/blocks';
 export { generateThreads } from './sprite/generator';
 export type { ThreadCode } from './sprite/generator';
 export const BLOCKLY_LOCALE = 'id';

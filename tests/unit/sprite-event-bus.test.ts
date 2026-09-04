@@ -1,15 +1,17 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { Blockly, installSpriteBlockly } from '../../src/blocks';
+import { Blockly, installSpriteBlockly, setSoundOptionsProvider } from '../../src/blocks';
 import { createSpriteEvents } from '../../src/runtime/sprite/event-bus';
 import { createRuntimeContext } from '../../src/runtime/sprite/runtime-context';
 import { createScheduler } from '../../src/runtime/sprite/scheduler';
 import { createSprite } from '../../src/runtime/sprite/sprite';
+import type { AudioEngine } from '../../src/runtime/sprite/audio';
 
 installSpriteBlockly();
 
 const workspaces: Blockly.Workspace[] = [];
 afterEach(() => {
   workspaces.splice(0).forEach((workspace) => workspace.dispose());
+  setSoundOptionsProvider(() => [['(tidak ada suara)', '']]);
 });
 
 function program(hatType: string, statementType: string, amount = 5): Blockly.Workspace {
@@ -120,5 +122,36 @@ describe('sprite event bus', () => {
 
     expect(done).toHaveBeenCalledOnce();
     expect(events.hasLiveThreadsForMessage('none')).toBe(false);
+  });
+
+  it('routes play and stop-all sound blocks to the context audio engine', () => {
+    setSoundOptionsProvider(() => [['Pop', 'builtin:snd-pop']]);
+    const audio: AudioEngine = {
+      play: vi.fn(),
+      playUntilDone: vi.fn(async () => undefined),
+      stopAll: vi.fn(),
+      changeVolume: vi.fn(),
+      setVolume: vi.fn(),
+      getVolume: vi.fn(() => 100),
+      dispose: vi.fn(),
+    };
+    const ctx = createRuntimeContext([createSprite({ id: 's1', name: 's1' })], { audio });
+    const scheduler = createScheduler({ ctx, render: vi.fn(), onHighlight: vi.fn() });
+    const events = createSpriteEvents({ ctx, scheduler, onHighlight: vi.fn() });
+    const workspace = new Blockly.Workspace();
+    workspaces.push(workspace);
+    const hat = workspace.newBlock('sprite_hat_green_flag');
+    const play = workspace.newBlock('sound_play');
+    play.setFieldValue('builtin:snd-pop', 'SOUND');
+    const stop = workspace.newBlock('sound_stop_all');
+    hat.nextConnection!.connect(play.previousConnection!);
+    play.nextConnection!.connect(stop.previousConnection!);
+    events.rebuild([{ spriteId: 's1', workspace }]);
+
+    events.greenFlag();
+    scheduler.tick(0);
+
+    expect(audio.play).toHaveBeenCalledWith(expect.any(String), 's1');
+    expect(audio.stopAll).toHaveBeenCalledOnce();
   });
 });

@@ -1,5 +1,6 @@
 import { directionToRadians, STAGE, type Sprite } from './sprite';
 import { colorsMatch } from './sensing';
+import { t } from '../../app/i18n';
 
 export type Scene = {
   sprites: Sprite[];
@@ -13,6 +14,7 @@ export type Stage = {
   setPointer(clientX: number, clientY: number, down: boolean): void;
   pointer(): { x: number; y: number; down: boolean };
   colorUnderSprite(spriteId: string, hex: string, tolerance?: number): boolean;
+  costumeNaturalOf(spriteId: string): { width: number; height: number };
   showAsk(question: string, onSubmit: (answer: string) => void): void;
   hideAsk(): void;
   thumbnail(maxW?: number): string;
@@ -231,6 +233,16 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       }
       return false;
     },
+    costumeNaturalOf(spriteId): { width: number; height: number } {
+      const sprite = getScene().sprites.find((candidate) => candidate.id === spriteId);
+      if (!sprite) return { width: 80, height: 80 };
+      const url = getScene().costumeUrlFor(sprite);
+      if (!url) return { width: 80, height: 80 };
+      const image = images.get(url) ?? imageFor(url);
+      return ready(image)
+        ? { width: image.naturalWidth, height: image.naturalHeight }
+        : { width: 80, height: 80 };
+    },
     showAsk(question, onSubmit): void {
       stage.hideAsk();
       const form = document.createElement('form');
@@ -239,10 +251,10 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       label.textContent = question;
       const input = document.createElement('input');
       input.type = 'text';
-      input.placeholder = 'Ketik jawabanmu…';
+      input.placeholder = t('editor.sprite.askPlaceholder');
       const button = document.createElement('button');
       button.type = 'submit';
-      button.textContent = 'Kirim';
+      button.textContent = t('editor.sprite.askSubmit');
       label.append(input);
       form.append(label, button);
       form.addEventListener('submit', (event) => {

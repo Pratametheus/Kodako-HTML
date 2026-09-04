@@ -20,7 +20,9 @@ const HATS: Record<string, ThreadCode['hatType']> = {
 export function registerSpriteGenerators(): void {
   const g = javascriptGenerator;
   g.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
-  g.addReservedWords('highlightBlock,__yield__,api,Math,cmp');
+  g.addReservedWords(
+    'highlightBlock,__yield__,api,Math,cmp,playSound,playSoundUntilDone,stopAllSounds,changeVolume,setVolume,isTouching,isTouchingColor,isMouseDown,mouseX,mouseY,distanceTo,ask,answer',
+  );
   (g as unknown as { INFINITE_LOOP_TRAP: string | null }).INFINITE_LOOP_TRAP = null;
 
   const valNum = (b: Blockly.Block, name: string) => g.valueToCode(b, name, Order.NONE) || '0';
@@ -48,6 +50,14 @@ export function registerSpriteGenerators(): void {
   g.forBlock['sprite_set_size'] = (b) => `setSize(${valNum(b, 'PCT')});\n`;
   g.forBlock['sprite_show'] = () => `show();\n`;
   g.forBlock['sprite_hide'] = () => `hide();\n`;
+
+  g.forBlock['sound_play'] = (b) =>
+    `playSound(${JSON.stringify(b.getFieldValue('SOUND') ?? '')});\n`;
+  g.forBlock['sound_play_until_done'] = (b) =>
+    `playSoundUntilDone(${JSON.stringify(b.getFieldValue('SOUND') ?? '')});\n`;
+  g.forBlock['sound_stop_all'] = () => `stopAllSounds();\n`;
+  g.forBlock['sound_change_volume'] = (b) => `changeVolume(${valNum(b, 'DELTA')});\n`;
+  g.forBlock['sound_set_volume'] = (b) => `setVolume(${valNum(b, 'PCT')});\n`;
 
   g.forBlock['sprite_wait'] = (b) => `wait(${valNum(b, 'SECS')});\n`;
   g.forBlock['sprite_repeat'] = (b) => {
@@ -117,6 +127,30 @@ export function registerSpriteGenerators(): void {
   ];
   g.forBlock['sprite_sensing_timer'] = () => [`timer()`, Order.ATOMIC];
   g.forBlock['sprite_sensing_reset_timer'] = () => `resetTimer();\n`;
+  g.forBlock['sensing_touching'] = (b) => [
+    `isTouching(${JSON.stringify(b.getFieldValue('TARGET') ?? 'edge')})`,
+    Order.ATOMIC,
+  ];
+  g.forBlock['sensing_touching_color'] = (b) => [
+    `isTouchingColor(${JSON.stringify(b.getFieldValue('COLOR') ?? '#e53935')})`,
+    Order.ATOMIC,
+  ];
+  g.forBlock['sensing_mouse_down'] = () => [`isMouseDown()`, Order.ATOMIC];
+  g.forBlock['sensing_mouse_x'] = () => [`mouseX()`, Order.ATOMIC];
+  g.forBlock['sensing_mouse_y'] = () => [`mouseY()`, Order.ATOMIC];
+  g.forBlock['sensing_distance_to'] = (b) => [
+    `distanceTo(${JSON.stringify(b.getFieldValue('TARGET') ?? 'pointer')})`,
+    Order.ATOMIC,
+  ];
+  g.forBlock['sensing_ask'] = (b) => {
+    const textBlock = b.getInputTargetBlock('TEXT');
+    const text =
+      textBlock?.type === 'text'
+        ? JSON.stringify(textBlock.getFieldValue('TEXT') ?? '')
+        : valAny(b, 'TEXT');
+    return `ask(${text});\n`;
+  };
+  g.forBlock['sensing_answer'] = () => [`answer()`, Order.ATOMIC];
 
   g.forBlock['variables_get'] = (b) => [
     `getVar(${JSON.stringify(b.getField('VAR')!.getText())})`,

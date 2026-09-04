@@ -53,6 +53,18 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
     },
     {
       kind: 'category',
+      name: 'Suara',
+      categorystyle: 'sound_category',
+      contents: [
+        { kind: 'block', type: 'sound_play' },
+        { kind: 'block', type: 'sound_play_until_done' },
+        { kind: 'block', type: 'sound_stop_all' },
+        { kind: 'block', type: 'sound_change_volume', inputs: { DELTA: num(-10) } },
+        { kind: 'block', type: 'sound_set_volume', inputs: { PCT: num(100) } },
+      ],
+    },
+    {
+      kind: 'category',
       name: 'Kontrol',
       categorystyle: 'control_category',
       contents: [
@@ -86,7 +98,15 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       name: 'Sensor',
       categorystyle: 'sensing_category',
       contents: [
+        { kind: 'block', type: 'sensing_touching' },
+        { kind: 'block', type: 'sensing_touching_color' },
         { kind: 'block', type: 'sprite_sensing_key' },
+        { kind: 'block', type: 'sensing_mouse_down' },
+        { kind: 'block', type: 'sensing_mouse_x' },
+        { kind: 'block', type: 'sensing_mouse_y' },
+        { kind: 'block', type: 'sensing_distance_to' },
+        { kind: 'block', type: 'sensing_ask', inputs: { TEXT: txt('Siapa namamu?') } },
+        { kind: 'block', type: 'sensing_answer' },
         { kind: 'block', type: 'sprite_sensing_timer' },
         { kind: 'block', type: 'sprite_sensing_reset_timer' },
       ],
