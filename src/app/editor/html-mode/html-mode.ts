@@ -65,7 +65,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       </section>
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
-          <div class="html-mode__tabs" role="tablist">
+          <div class="html-mode__tabs" role="tablist" aria-label="${t('a11y.previewTablist')}">
             <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
             <button type="button" role="tab" id="html-tab-code" data-tab="code" aria-selected="false" aria-controls="html-panel-code">${t('editor.html.tabCode')}</button>
           </div>

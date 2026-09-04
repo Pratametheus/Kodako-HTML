@@ -60,5 +60,13 @@
   "error.lastSprite": "Tidak bisa menghapus sprite terakhir.",
   "confirm.delete": "Hapus project \"{name}\"? Tindakan ini tidak bisa dibatalkan.",
   "error.loadProject": "Gagal membuka project.",
-  "error.importFile": "Gagal membuka file project."
+  "error.importFile": "Gagal membuka file project.",
+  "boundary.title": "Maaf, ada yang salah",
+  "boundary.body": "Pekerjaanmu yang terakhir sudah tersimpan. Coba muat ulang halaman.",
+  "boundary.reload": "Muat ulang",
+  "boundary.copy": "Salin detail",
+  "toast.close": "Tutup pesan",
+  "editor.sprite.stageLabel": "Panggung tempat sprite bergerak",
+  "a11y.modeTablist": "Pilih mode editor",
+  "a11y.previewTablist": "Pratinjau atau kode"
 }

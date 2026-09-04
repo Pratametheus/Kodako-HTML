@@ -42,6 +42,24 @@ describe('t', () => {
       for (const phrase of obviousEnglish) expect(value).not.toContain(phrase);
     }
   });
+
+  it('contains exact Bahasa Indonesia strings for the error boundary, toast, and a11y labels', () => {
+    expect(t('boundary.title')).toBe('Maaf, ada yang salah');
+    expect(t('boundary.body')).toBe(
+      'Pekerjaanmu yang terakhir sudah tersimpan. Coba muat ulang halaman.',
+    );
+    expect(t('boundary.reload')).toBe('Muat ulang');
+    expect(t('boundary.copy')).toBe('Salin detail');
+    expect(t('toast.close')).toBe('Tutup pesan');
+    expect(t('editor.sprite.stageLabel')).toBe('Panggung tempat sprite bergerak');
+    expect(t('a11y.modeTablist')).toBe('Pilih mode editor');
+    expect(t('a11y.previewTablist')).toBe('Pratinjau atau kode');
+
+    const obviousEnglish = ['Reload', 'Copy', 'Close'];
+    for (const value of Object.values(dict)) {
+      for (const word of obviousEnglish) expect(value).not.toContain(word);
+    }
+  });
 });
 
 describe('formatDate', () => {
