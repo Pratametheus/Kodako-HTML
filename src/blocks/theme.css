@@ -1,0 +1,26 @@
+.blocklyToolboxDiv {
+  padding: 6px 4px;
+  border-radius: 0 12px 12px 0;
+  box-shadow: 3px 0 14px rgb(42 56 90 / 10%);
+}
+
+.blocklyFlyout {
+  border-radius: 0 12px 12px 0;
+}
+
+.blocklyTreeRow {
+  min-height: 40px;
+  border-radius: 8px;
+}
+
+.blocklyText {
+  font-weight: 600;
+}
+
+.blocklyFlyoutButton {
+  min-height: 40px;
+}
+
+.blocklyMainBackground {
+  stroke: none;
+}

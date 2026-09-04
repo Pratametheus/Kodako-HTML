@@ -101,7 +101,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   )(blocklyHost, {
     toolbox: spriteToolbox,
     theme: spriteTheme,
-    renderer: 'geras',
+    renderer: 'zelos',
     trashcan: true,
     zoom: { controls: true, wheel: true },
     move: { scrollbars: true },

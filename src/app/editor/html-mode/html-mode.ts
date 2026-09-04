@@ -91,7 +91,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   )(blocklyHost, {
     toolbox: htmlToolbox,
     theme: spriteTheme,
-    renderer: 'geras',
+    renderer: 'zelos',
     trashcan: true,
     zoom: { controls: true, wheel: true },
     move: { scrollbars: true },
