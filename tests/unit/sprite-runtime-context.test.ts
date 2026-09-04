@@ -3,10 +3,13 @@ import {
   createRuntimeContext,
   isKeyDown,
   resetTimer,
+  setAnswer,
   setKey,
+  setMouse,
   timerSeconds,
   updateSprite,
 } from '../../src/runtime/sprite/runtime-context';
+import { createNoopAudioEngine } from '../../src/runtime/sprite/audio';
 import { createSprite } from '../../src/runtime/sprite/sprite';
 
 describe('sprite runtime context', () => {
@@ -60,5 +63,26 @@ describe('sprite runtime context', () => {
     updateSprite(ctx, 's1', next);
 
     expect(ctx.sprites.get('s1')).toBe(next);
+  });
+
+  it('initializes and updates shared mouse and answer state', () => {
+    const ctx = createRuntimeContext([]);
+
+    expect(ctx.mouse).toEqual({ x: 0, y: 0, down: false });
+    expect(ctx.answer).toBe('');
+    expect(ctx.audio.getVolume('s1')).toBe(100);
+
+    setMouse(ctx, 12, -8, true);
+    setAnswer(ctx, 'Budi');
+    expect(ctx.mouse).toEqual({ x: 12, y: -8, down: true });
+    expect(ctx.answer).toBe('Budi');
+  });
+
+  it('uses injected clock and audio engine options', () => {
+    const audio = createNoopAudioEngine();
+    const ctx = createRuntimeContext([], { now: () => 1234, audio });
+
+    expect(ctx.timerOrigin).toBe(1234);
+    expect(ctx.audio).toBe(audio);
   });
 });

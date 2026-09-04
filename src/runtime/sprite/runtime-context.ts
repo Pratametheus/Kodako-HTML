@@ -1,3 +1,4 @@
+import { createNoopAudioEngine, type AudioEngine } from './audio';
 import type { Sprite } from './sprite';
 
 export type RuntimeContext = {
@@ -6,6 +7,14 @@ export type RuntimeContext = {
   timerOrigin: number;
   now: () => number;
   getStageSprites: () => Sprite[];
+  mouse: { x: number; y: number; down: boolean };
+  answer: string;
+  audio: AudioEngine;
+};
+
+export type RuntimeContextOptions = {
+  now?: () => number;
+  audio?: AudioEngine;
 };
 
 function normalizeKey(key: string): string {
@@ -23,8 +32,10 @@ function cloneSprite(sprite: Sprite): Sprite {
 
 export function createRuntimeContext(
   sprites: Sprite[],
-  now: () => number = () => Date.now(),
+  opts: RuntimeContextOptions | (() => number) = {},
 ): RuntimeContext {
+  const options: RuntimeContextOptions = typeof opts === 'function' ? { now: opts } : opts;
+  const now = options.now ?? (() => Date.now());
   const map = new Map(sprites.map((sprite) => [sprite.id, cloneSprite(sprite)]));
   return {
     sprites: map,
@@ -32,6 +43,9 @@ export function createRuntimeContext(
     timerOrigin: now(),
     now,
     getStageSprites: () => [...map.values()],
+    mouse: { x: 0, y: 0, down: false },
+    answer: '',
+    audio: options.audio ?? createNoopAudioEngine(),
   };
 }
 
@@ -55,4 +69,12 @@ export function isKeyDown(ctx: RuntimeContext, key: string): boolean {
 
 export function updateSprite(ctx: RuntimeContext, id: string, next: Sprite): void {
   ctx.sprites.set(id, next);
+}
+
+export function setMouse(ctx: RuntimeContext, x: number, y: number, down: boolean): void {
+  ctx.mouse = { x, y, down };
+}
+
+export function setAnswer(ctx: RuntimeContext, value: string): void {
+  ctx.answer = value;
 }
