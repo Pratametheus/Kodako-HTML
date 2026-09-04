@@ -14,8 +14,9 @@ describe('t', () => {
   });
   it('contains complete Bahasa Indonesia strings for sprite mode', () => {
     expect(t('editor.sprite.run')).toBe('Jalankan');
+    expect(t('editor.sprite.stop')).toBe('Berhenti');
     expect(t('editor.sprite.uploadTooBig')).toContain('2 MB');
-    const obviousEnglish = ['Run ', 'Costume', 'Upload', 'Delete', 'Backdrop'];
+    const obviousEnglish = ['Run ', 'Stop', 'Costume', 'Upload', 'Delete', 'Backdrop'];
     for (const value of Object.values(dict)) {
       for (const word of obviousEnglish) expect(value).not.toContain(word);
     }
