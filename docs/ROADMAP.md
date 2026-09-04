@@ -2,7 +2,8 @@
 
 Status: Draft 1 · Tanggal: 2026-09-03 · Menyertai: `PRD.md`, `Design.md`
 
-Rilis 1 = Fase 0 + 1 + 2 + 3. Fase 4 dikerjakan setelah rilis 1.
+Rilis 1 = Fase 0 + 1 + 2 + 3 (**selesai**). Konten guru bukan bagian dari
+proyek ini — lihat Fase 4 di bawah.
 
 ---
 
@@ -156,24 +157,18 @@ mesin pengembangan ini (tidak ada Rust/MSVC lokal).
 
 ---
 
-## Fase 4 — Konten guru (setelah rilis 1)
+## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini
 
-**Tujuan:** bahan ajar siap pakai.
+Proyek ini fokus pada **pengembangan alat** (editor blok untuk animasi &
+HTML). Konten pengajaran — modul ajar/RPP, lembar kerja murid, contoh
+project berkurikulum, jurnal mengajar — sengaja **tidak** dibangun di sini
+karena sudah punya rumah sendiri: **[Jurnal
+Mengajar](https://jurnal-mengajar-blond.vercel.app/)**
+([repo](https://github.com/Pratametheus/Jurnal-Mengajar)).
 
-**Deliverable**
-
-- [ ] 6–10 contoh project (Sprite & HTML) dengan tingkat kesulitan bertahap,
-      dapat dibuka dari Home ("Contoh").
-- [ ] Modul ajar / RPP singkat per pertemuan (PDF) untuk beberapa pertemuan.
-- [ ] Lembar kerja murid (PDF) selaras contoh project.
-- [ ] Bagian "Untuk Guru" di landing terisi (unduh modul & lembar kerja).
-- [ ] Panduan "mengumpulkan hasil murid" (konvensi penamaan berkas
-      `.ghtml.json` / `.html`).
-
-**Definisi "selesai"**
-
-- Seorang guru dapat menjalankan minimal 4 pertemuan hanya dengan bahan yang
-  tersedia, tanpa menyiapkan materi sendiri.
+Rilis 1 (Fase 0–3) adalah lingkup penuh proyek ini untuk saat ini. Bagian
+"Untuk Guru" di landing page mengarahkan ke Jurnal Mengajar, bukan
+menjanjikan konten di sini.
 
 ---
 

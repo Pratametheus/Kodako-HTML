@@ -46,7 +46,7 @@ sekaligus mengenalkan HTML.
 | Peran | Deskripsi | Kebutuhan utama |
 |---|---|---|
 | **Murid SD** (kelas 3–6) | Pengguna utama editor. Kemampuan membaca dasar, motorik mouse cukup. | Antarmuka sederhana, Bahasa Indonesia, umpan balik cepat & ramah, sulit "merusak", project mudah disimpan/dibuka. |
-| **Guru** | Menyiapkan materi, mendemokan, memeriksa hasil murid. | Aplikasi offline yang mudah dipasang, contoh project, modul ajar/lembar kerja, cara mengumpulkan hasil (file). |
+| **Guru** | Mendemokan, membimbing murid pakai editor, memeriksa hasil. | Aplikasi offline yang mudah dipasang, panduan singkat dalam-aplikasi, cara mengumpulkan hasil (file). Modul ajar/RPP/lembar kerja dikelola terpisah di [Jurnal Mengajar](https://jurnal-mengajar-blond.vercel.app/), bukan bagian proyek ini. |
 | **Pengembang / kontributor** (Claude + pemilik) | Membangun & memelihara. | Struktur modul jelas, dokumentasi, test otomatis. |
 
 ## 4. Skenario pemakaian
@@ -79,7 +79,6 @@ sekaligus mengenalkan HTML.
 **Menyusul setelah MVP**
 
 - Kategori blok Suara & Sensor lengkap.
-- Pustaka contoh project & modul ajar/lembar kerja (PDF) untuk guru.
 - Build desktop macOS/Linux.
 
 **Non-lingkup eksplisit (tidak dikerjakan sekarang)**
@@ -91,6 +90,9 @@ sekaligus mengenalkan HTML.
 - Tidak ada backend/API pihak ketiga.
 - Tidak ada telemetry/analytics pengumpul data.
 - Mode HTML tidak mengajarkan JavaScript / tidak mengeksekusi skrip buatan anak.
+- Tidak ada konten pengajaran (modul ajar/RPP, lembar kerja, contoh project
+  berkurikulum) — proyek ini fokus pada alatnya saja; konten dikelola
+  terpisah di [Jurnal Mengajar](https://jurnal-mengajar-blond.vercel.app/).
 
 ## 6. Fitur per mode (ringkas)
 
@@ -163,6 +165,6 @@ Lihat `ROADMAP.md` untuk rincian fase. Ringkas:
 - **Fase 1 — Mode Sprite MVP**: panggung + sprite + blok inti + runner.
 - **Fase 2 — Mode HTML**: blok HTML + preview + Lihat Kode + ekspor.
 - **Fase 3 — Poles & paket desktop**: pustaka aset, Suara/Sensor, installer
-  Windows, CI rilis.
-- **Fase 4 — Konten guru** (setelah rilis 1): contoh project, modul ajar,
-  lembar kerja.
+  Windows, CI rilis. **Rilis 1 selesai di sini.**
+- Konten pengajaran (contoh project, modul ajar, lembar kerja) di luar
+  lingkup proyek ini — lihat `ROADMAP.md` §"Fase 4".
