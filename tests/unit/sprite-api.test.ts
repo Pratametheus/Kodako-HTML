@@ -34,7 +34,6 @@ function setup() {
     onPlaySound: vi.fn(),
     onStopAllSounds: vi.fn(),
     onVolumeChange: vi.fn(),
-    onAsk: vi.fn(),
     costumeNaturalOf: vi.fn(() => ({ width: 80, height: 80 })),
     spriteByName: vi.fn(
       (name: string) =>
@@ -194,6 +193,17 @@ describe('buildApi', () => {
   it('returns an ask duration request without opening UI in the API layer', () => {
     const { api, hooks } = setup();
     expect(api.async.ask!('Nama?')).toEqual({ kind: 'ask', question: 'Nama?' });
-    expect(hooks.onAsk).not.toHaveBeenCalled();
+    for (const hook of Object.values(hooks)) expect(hook).not.toHaveBeenCalled();
+  });
+
+  it('uses an 80 by 80 costume fallback for direct edge sensing callers', () => {
+    const ctx = createRuntimeContext([createSprite({ id: 's1', name: 'Kucing', x: 210 })]);
+    const api = buildApi(ctx, 's1', {
+      onBroadcast: vi.fn(),
+      onStop: vi.fn(),
+      onHighlight: vi.fn(),
+    });
+
+    expect(api.sync.isTouching!('edge')).toBe(true);
   });
 });

@@ -58,7 +58,6 @@ export type ApiHooks = {
   onPlaySound?: (soundUrl: string, spriteId: string) => void;
   onStopAllSounds?: () => void;
   onVolumeChange?: (spriteId: string, percent: number) => void;
-  onAsk?: (question: string) => void;
   costumeNaturalOf?: (spriteId: string) => { width: number; height: number };
   spriteByName?: (name: string) => Sprite | null;
   colorUnderSprite?: (spriteId: string, hex: string) => boolean;
@@ -100,7 +99,7 @@ export function buildApi(ctx: RuntimeContext, spriteId: string, hooks: ApiHooks)
   };
   const say = (text: unknown): void => mutate((sprite) => saidText(sprite, stringArg(text)));
   const naturalOf = (id: string): { width: number; height: number } =>
-    hooks.costumeNaturalOf?.(id) ?? { width: 0, height: 0 };
+    hooks.costumeNaturalOf?.(id) ?? { width: 80, height: 80 };
   const spriteNamed = (name: string): Sprite | null =>
     hooks.spriteByName?.(name) ??
     [...ctx.sprites.values()].find((sprite) => sprite.name === name) ??

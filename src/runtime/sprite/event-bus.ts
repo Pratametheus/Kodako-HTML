@@ -61,7 +61,6 @@ export function createSpriteEvents(opts: {
         onPlaySound: (url, id) => opts.ctx.audio.play(url, id),
         onStopAllSounds: () => opts.ctx.audio.stopAll(),
         onVolumeChange: () => {},
-        onAsk: () => {},
         colorUnderSprite: (id, hex) => opts.stage?.colorUnderSprite(id, hex) ?? false,
         costumeNaturalOf: (id) => opts.stage?.costumeNaturalOf(id) ?? { width: 80, height: 80 },
         spriteByName: (name) =>

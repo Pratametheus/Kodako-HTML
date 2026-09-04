@@ -142,6 +142,47 @@ describe('sprite scheduler', () => {
     expect(scheduler.isRunning()).toBe(false);
   });
 
+  it('resumes the thread when playSoundUntilDone rejects', async () => {
+    const playSound = vi.fn(() => Promise.reject(new Error('decode gagal')));
+    const { ctx, scheduler } = harness(
+      `
+        function hat_green_flag_0() {
+          playSoundUntilDone("builtin:snd-pop");
+          move(10);
+        }
+      `,
+      { playSound },
+    );
+
+    scheduler.tick(0);
+    expect(ctx.sprites.get('s1')!.x).toBe(0);
+    await Promise.resolve();
+    scheduler.tick(16);
+
+    expect(ctx.sprites.get('s1')!.x).toBe(10);
+    expect(scheduler.isRunning()).toBe(false);
+  });
+
+  it('skips playback and resumes when playSoundUntilDone has an empty URL', () => {
+    const playSound = vi.fn(async () => undefined);
+    const { ctx, scheduler } = harness(
+      `
+        function hat_green_flag_0() {
+          playSoundUntilDone("");
+          move(10);
+        }
+      `,
+      { playSound },
+    );
+
+    scheduler.tick(0);
+    scheduler.tick(16);
+
+    expect(playSound).not.toHaveBeenCalled();
+    expect(ctx.sprites.get('s1')!.x).toBe(10);
+    expect(scheduler.isRunning()).toBe(false);
+  });
+
   it('parks on ask, stores the submitted answer, then resumes', () => {
     let submit: ((answer: string) => void) | undefined;
     const onAsk = vi.fn((_question: string, callback: (answer: string) => void) => {

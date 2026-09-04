@@ -181,6 +181,10 @@ export function createScheduler(opts: {
         break;
       }
       case 'playUntilDone': {
+        if (request.soundUrl === '') {
+          thread.interp.resume();
+          break;
+        }
         thread.awaitingSound = true;
         try {
           const completion = (opts.playSound ?? (() => Promise.resolve()))(
