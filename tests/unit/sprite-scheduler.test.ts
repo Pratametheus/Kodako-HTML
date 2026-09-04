@@ -247,6 +247,58 @@ describe('sprite scheduler', () => {
     expect(ctx.sprites.get('s2')!.x).toBe(1);
   });
 
+  it('runs 300 frames of 5 forever threads without growing the thread list or throwing', () => {
+    const ctx = createRuntimeContext(
+      Array.from({ length: 5 }, (_, index) => createSprite({ id: `s${index}`, name: `S${index}` })),
+    );
+    const scheduler = createScheduler({ ctx, render: vi.fn(), onHighlight: vi.fn() });
+    const makeThread = (spriteId: string) => {
+      const api = buildApi(ctx, spriteId, {
+        onBroadcast: vi.fn(),
+        onStop: vi.fn(),
+        onHighlight: vi.fn(),
+      });
+      return {
+        spriteId,
+        hatBlockId: `hat_${spriteId}`,
+        interp: createThreadInterpreter(
+          `function hat_green_flag_0() { while (true) { move(1); __yield__(); } }`,
+          api,
+        ),
+      };
+    };
+    scheduler.start(Array.from({ length: 5 }, (_, index) => makeThread(`s${index}`)));
+
+    const filterSpy = vi.spyOn(Array.prototype, 'filter');
+    filterSpy.mockClear();
+    expect(() => {
+      for (let frame = 0; frame < 300; frame++) scheduler.tick(frame * 16);
+    }).not.toThrow();
+    filterSpy.mockRestore();
+
+    expect(scheduler.threads).toHaveLength(5);
+    expect(scheduler.isRunning()).toBe(true);
+    scheduler.stopAll();
+    expect(scheduler.threads).toHaveLength(0);
+  });
+
+  it('does not reallocate the thread array via .filter() when no thread finishes that tick', () => {
+    const { scheduler } = harness(`
+      function hat_green_flag_0() {
+        while (true) {
+          move(1);
+          __yield__();
+        }
+      }
+    `);
+
+    scheduler.tick(0); // prime the running thread
+    const filterSpy = vi.spyOn(Array.prototype, 'filter').mockClear();
+    for (let frame = 1; frame < 50; frame++) scheduler.tick(frame * 16);
+    expect(filterSpy).not.toHaveBeenCalled();
+    filterSpy.mockRestore();
+  });
+
   it('cancels an active ask and drops its thread on stopAll', () => {
     const onAskCancel = vi.fn();
     const { scheduler } = harness(`function hat_green_flag_0() { ask("Nama?"); }`, {

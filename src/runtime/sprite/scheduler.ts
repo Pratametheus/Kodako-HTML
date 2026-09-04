@@ -255,7 +255,11 @@ export function createScheduler(opts: {
           thread.parkedUntil = nowMs;
         }
       }
-      threads = threads.filter((thread) => thread.interp.state !== 'done');
+      // Avoid allocating a fresh array every frame via .filter() when no thread
+      // actually finished this tick (the common case for `forever` loops).
+      if (threads.some((thread) => thread.interp.state === 'done')) {
+        threads = threads.filter((thread) => thread.interp.state !== 'done');
+      }
       opts.render();
     },
     isRunning: () => threads.length > 0,
