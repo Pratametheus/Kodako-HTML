@@ -86,19 +86,19 @@ dan mengekspor halaman.
 
 **Deliverable**
 
-- [ ] `blocks/html/blocks.ts` + `toolbox.ts`: Struktur, Konten, Gaya
+- [x] `blocks/html/blocks.ts` + `toolbox.ts`: Struktur, Konten, Gaya
       (`Design.md` §4.4).
-- [ ] `blocks/html/generator.ts`: workspace → HTML rapi, `asset:<id>`,
+- [x] `blocks/html/generator.ts`: workspace → HTML rapi, `asset:<id>`,
       *escape* teks, penggabungan `style` dari blok gaya bertumpuk.
-- [ ] `runtime/html/preview.ts`: `iframe` ber-*sandbox* (tanpa skrip), update
+- [x] `runtime/html/preview.ts`: `iframe` ber-*sandbox* (tanpa skrip), update
       ter-*debounce*, resolusi `asset:<id>` → data URL.
-- [ ] Panel "Lihat Kode": HTML `<body>` rapi + sorot sintaks (highlight.js
+- [x] Panel "Lihat Kode": HTML `<body>` rapi + sorot sintaks (highlight.js
       dibundel), read-only.
-- [ ] `runtime/html/export.ts`: dokumen `.html` mandiri (aset sebagai data
+- [x] `runtime/html/export.ts`: dokumen `.html` mandiri (aset sebagai data
       URL) + unduh/dialog simpan.
-- [ ] Pemilih mode di header menukar workspace; kedua workspace ikut
+- [x] Pemilih mode di header menukar workspace; kedua workspace ikut
       diserialisasi.
-- [ ] Test: unit generator (snapshot HTML) + *escape*; E2E "tambah judul +
+- [x] Test: unit generator (snapshot HTML) + *escape*; E2E "tambah judul +
       paragraf + gambar → preview memuat → ekspor berkas".
 
 **Definisi "selesai"**
@@ -107,6 +107,8 @@ dan mengekspor halaman.
 - Blok gaya (warna, rata, ukuran, tebal) tercermin di preview & di panel kode.
 - Berkas HTML hasil ekspor terbuka mandiri di browser lain, gambar tampil.
 - Ganti mode Sprite↔HTML tidak menghilangkan pekerjaan di mode lain.
+
+Ditunda ke Fase 3: CSS lanjutan, atribut class/id, tabel, form; alur 'kirim ke guru'.
 
 ---
 
