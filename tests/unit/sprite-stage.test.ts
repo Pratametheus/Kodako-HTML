@@ -186,6 +186,32 @@ describe('sprite stage', () => {
     expect(stage.colorUnderSprite('s1', '#e53935')).toBe(false);
   });
 
+  it('rasterizes the colour-sensing backdrop once per frame, then reuses the cache', () => {
+    const canvas = document.createElement('canvas');
+    const sprite = createSprite({ id: 's1', name: 'Kucing', costumes: ['cat'] });
+    const stage = createStage(canvas, () => ({
+      sprites: [sprite],
+      backdropUrl: 'bg',
+      costumeUrlFor: () => 'cat',
+    }));
+    getImageData.mockReturnValue({ data: new Uint8ClampedArray(80 * 80 * 4) } as ImageData);
+
+    stage.render();
+    drawImage.mockClear();
+
+    for (let i = 0; i < 5; i++) stage.colorUnderSprite('s1', '#e53935');
+    // One raster of the backdrop for the whole frame, no matter how many times
+    // colorUnderSprite is called within it (a tight `menyentuh warna` loop).
+    expect(drawImage).toHaveBeenCalledTimes(1);
+
+    stage.render(); // bumps the frame's scene version
+    drawImage.mockClear();
+    stage.colorUnderSprite('s1', '#e53935');
+    expect(drawImage).toHaveBeenCalledTimes(1);
+
+    stage.dispose();
+  });
+
   it('submits and removes a Bahasa Indonesia ask overlay', () => {
     const host = document.createElement('div');
     const canvas = document.createElement('canvas');

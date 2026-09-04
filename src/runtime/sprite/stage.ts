@@ -22,6 +22,17 @@ export type Stage = {
   dispose(): void;
 };
 
+type Bounds = { left: number; top: number; right: number; bottom: number };
+
+function intersectBounds(a: Bounds, b: Bounds): Bounds | null {
+  const left = Math.max(a.left, b.left);
+  const top = Math.max(a.top, b.top);
+  const right = Math.min(a.right, b.right);
+  const bottom = Math.min(a.bottom, b.bottom);
+  if (right <= left || bottom <= top) return null;
+  return { left, top, right, bottom };
+}
+
 export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): Stage {
   const context = canvas.getContext('2d');
   if (!context) throw new Error('Canvas 2D tidak tersedia.');
@@ -32,6 +43,28 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
   let redrawQueued = false;
   let pointerState = { x: 0, y: 0, down: false };
   let askOverlay: HTMLFormElement | null = null;
+
+  // Colour-sensing perf cache: the backdrop rarely changes between frames, so it
+  // is rasterized onto a persistent offscreen canvas at most once per render()
+  // ("sceneVersion" bump), not once per colorUnderSprite() call. A tight
+  // `forever { jika menyentuh warna ... }` loop calling colorUnderSprite many
+  // times inside one frame reuses the same cached backdrop raster instead of
+  // re-drawing the whole 480x360 scene every call. Other sprites are excluded
+  // from the cached raster (so it stays valid regardless of which sprite is
+  // asking) and are instead walked analytically: only sprites whose bounding
+  // box actually overlaps the query's bounding box are rasterized at all, and
+  // only over that small overlap rectangle, on a separate un-cached scratch
+  // canvas that never touches the cached backdrop raster.
+  let sceneVersion = 0;
+  let senseRasterVersion = -1;
+  const senseCanvas = document.createElement('canvas');
+  senseCanvas.width = STAGE.width;
+  senseCanvas.height = STAGE.height;
+  const senseContext = senseCanvas.getContext('2d');
+  const scratchCanvas = document.createElement('canvas');
+  scratchCanvas.width = STAGE.width;
+  scratchCanvas.height = STAGE.height;
+  const scratchContext = scratchCanvas.getContext('2d');
 
   const scheduleRedraw = (): void => {
     if (disposed || redrawQueued) return;
@@ -120,6 +153,7 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
   const stage: Stage = {
     render(): void {
       if (disposed) return;
+      sceneVersion++;
       const dpr = Math.max(1, window.devicePixelRatio || 1);
       const width = Math.round(STAGE.width * dpr);
       const height = Math.round(STAGE.height * dpr);
@@ -186,50 +220,82 @@ export function createStage(canvas: HTMLCanvasElement, getScene: () => Scene): S
       if (!costumeUrl) return false;
       const image = images.get(costumeUrl);
       if (!image || !ready(image)) return false;
+      if (!senseContext || !scratchContext) return false;
 
       const scale = sprite.size / 100;
       const halfWidth = (image.naturalWidth * scale) / 2;
       const halfHeight = (image.naturalHeight * scale) / 2;
-      const left = Math.max(0, Math.floor(STAGE.width / 2 + sprite.x - halfWidth));
-      const right = Math.min(STAGE.width, Math.ceil(STAGE.width / 2 + sprite.x + halfWidth));
-      const top = Math.max(0, Math.floor(STAGE.height / 2 - sprite.y - halfHeight));
-      const bottom = Math.min(STAGE.height, Math.ceil(STAGE.height / 2 - sprite.y + halfHeight));
-      const width = right - left;
-      const height = bottom - top;
-      if (width <= 0 || height <= 0) return false;
+      const bounds: Bounds = {
+        left: Math.max(0, Math.floor(STAGE.width / 2 + sprite.x - halfWidth)),
+        right: Math.min(STAGE.width, Math.ceil(STAGE.width / 2 + sprite.x + halfWidth)),
+        top: Math.max(0, Math.floor(STAGE.height / 2 - sprite.y - halfHeight)),
+        bottom: Math.min(STAGE.height, Math.ceil(STAGE.height / 2 - sprite.y + halfHeight)),
+      };
+      if (bounds.right <= bounds.left || bounds.bottom <= bounds.top) return false;
 
-      const offscreen = document.createElement('canvas');
-      offscreen.width = STAGE.width;
-      offscreen.height = STAGE.height;
-      const offscreenContext = offscreen.getContext('2d');
-      if (!offscreenContext) return false;
-      offscreenContext.clearRect(0, 0, STAGE.width, STAGE.height);
-      if (scene.backdropUrl) drawBackdrop(offscreenContext, scene.backdropUrl);
+      const pixelsMatch = (context: CanvasRenderingContext2D, region: Bounds): boolean => {
+        const width = region.right - region.left;
+        const height = region.bottom - region.top;
+        if (width <= 0 || height <= 0) return false;
+        try {
+          const pixels = context.getImageData(region.left, region.top, width, height).data;
+          // MVP simplification: any matching pixel inside the AABB counts.
+          for (let index = 0; index < pixels.length; index += 4) {
+            if (
+              (pixels[index + 3] ?? 0) > 0 &&
+              colorsMatch(
+                pixels[index] ?? 0,
+                pixels[index + 1] ?? 0,
+                pixels[index + 2] ?? 0,
+                hex,
+                tolerance,
+              )
+            ) {
+              return true;
+            }
+          }
+        } catch {
+          return false;
+        }
+        return false;
+      };
+
+      // Rasterize the backdrop-only scene at most once per render() frame.
+      if (senseRasterVersion !== sceneVersion) {
+        senseContext.clearRect(0, 0, STAGE.width, STAGE.height);
+        if (scene.backdropUrl) drawBackdrop(senseContext, scene.backdropUrl);
+        senseRasterVersion = sceneVersion;
+      }
+      if (pixelsMatch(senseContext, bounds)) return true;
+
+      // Walk other sprites analytically: skip anything whose bounding box doesn't
+      // overlap the query bbox, and rasterize only the overlap on a throwaway
+      // scratch canvas that never pollutes the cached backdrop raster above.
       for (const other of scene.sprites) {
         if (!other.visible || other.id === spriteId) continue;
         const otherUrl = scene.costumeUrlFor(other);
-        if (otherUrl) drawSprite(offscreenContext, other, otherUrl, false);
-      }
-
-      try {
-        const pixels = offscreenContext.getImageData(left, top, width, height).data;
-        // MVP simplification: any matching scene-minus-self pixel inside the AABB counts.
-        for (let index = 0; index < pixels.length; index += 4) {
-          if (
-            (pixels[index + 3] ?? 0) > 0 &&
-            colorsMatch(
-              pixels[index] ?? 0,
-              pixels[index + 1] ?? 0,
-              pixels[index + 2] ?? 0,
-              hex,
-              tolerance,
-            )
-          ) {
-            return true;
-          }
-        }
-      } catch {
-        return false;
+        if (!otherUrl) continue;
+        const otherImage = images.get(otherUrl);
+        if (!otherImage || !ready(otherImage)) continue;
+        const otherScale = other.size / 100;
+        const otherHalfWidth = (otherImage.naturalWidth * otherScale) / 2;
+        const otherHalfHeight = (otherImage.naturalHeight * otherScale) / 2;
+        const otherBounds: Bounds = {
+          left: Math.max(0, Math.floor(STAGE.width / 2 + other.x - otherHalfWidth)),
+          right: Math.min(STAGE.width, Math.ceil(STAGE.width / 2 + other.x + otherHalfWidth)),
+          top: Math.max(0, Math.floor(STAGE.height / 2 - other.y - otherHalfHeight)),
+          bottom: Math.min(STAGE.height, Math.ceil(STAGE.height / 2 - other.y + otherHalfHeight)),
+        };
+        const overlap = intersectBounds(bounds, otherBounds);
+        if (!overlap) continue;
+        scratchContext.clearRect(
+          overlap.left,
+          overlap.top,
+          overlap.right - overlap.left,
+          overlap.bottom - overlap.top,
+        );
+        drawSprite(scratchContext, other, otherUrl, false);
+        if (pixelsMatch(scratchContext, overlap)) return true;
       }
       return false;
     },
