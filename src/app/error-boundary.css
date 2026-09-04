@@ -1,0 +1,57 @@
+.error-boundary {
+  position: fixed;
+  z-index: 10000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgb(19 27 46 / 78%);
+}
+
+.error-boundary__card {
+  width: min(100%, 520px);
+  padding: 28px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 22px 60px rgb(0 0 0 / 28%);
+  color: #17213a;
+}
+
+.error-boundary__card h1 {
+  margin: 0 0 10px;
+  font-size: 1.5rem;
+}
+
+.error-boundary__card p {
+  margin: 0;
+  line-height: 1.6;
+}
+
+.error-boundary__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.error-boundary__actions button {
+  min-height: 44px;
+  padding: 9px 16px;
+  border: 1px solid #b7c1d4;
+  border-radius: 9px;
+  background: #fff;
+  color: inherit;
+}
+
+.error-boundary__actions [data-action='reload'] {
+  border-color: #1e88e5;
+  background: #1e88e5;
+  color: #fff;
+}
+
+.error-boundary__copy-source {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
