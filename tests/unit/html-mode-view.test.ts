@@ -47,6 +47,7 @@ describe('HTML mode view', () => {
 
   afterEach(() => {
     setHtmlWorkspaceFactoryForTests(null);
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -98,6 +99,38 @@ describe('HTML mode view', () => {
 
     expect(host.querySelector<HTMLElement>('[data-panel="code"]')!.hidden).toBe(false);
     expect(host.querySelector('[data-panel="code"]')?.textContent).toContain('<p>Halo</p>');
+    cleanup();
+  });
+
+  it('refreshes preview and code with styles on every wrapped sibling', () => {
+    vi.useFakeTimers();
+    const host = document.createElement('div');
+    const cleanup = renderHtmlMode(host, {
+      project: createEmptyProject('X'),
+      storage: new FakeStorage(),
+      markDirty: vi.fn(),
+    });
+    const workspace = __htmlModeHandle.current!.workspace;
+    const page = workspace.getBlocksByType('html_page', false)[0]!;
+    const bold = workspace.newBlock('html_style_bold');
+    const first = workspace.newBlock('html_paragraph');
+    const second = workspace.newBlock('html_paragraph');
+    const firstText = workspace.newBlock('html_text');
+    const secondText = workspace.newBlock('html_text');
+    firstText.setFieldValue('A', 'VALUE');
+    secondText.setFieldValue('B', 'VALUE');
+    first.getInput('TEXT')?.connection?.connect(firstText.outputConnection!);
+    second.getInput('TEXT')?.connection?.connect(secondText.outputConnection!);
+    first.nextConnection?.connect(second.previousConnection!);
+    bold.getInput('BODY')?.connection?.connect(first.previousConnection!);
+    page.getInput('BODY')?.connection?.connect(bold.previousConnection!);
+
+    workspace.fireChangeListener({ isUiEvent: false } as Blockly.Events.Abstract);
+    vi.advanceTimersByTime(300);
+
+    const styledSecond = '<p style="font-weight:bold">B</p>';
+    expect(host.querySelector<HTMLIFrameElement>('iframe')!.srcdoc).toContain(styledSecond);
+    expect(host.querySelector('[data-panel="code"]')?.textContent).toContain(styledSecond);
     cleanup();
   });
 

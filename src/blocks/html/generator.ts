@@ -76,6 +76,10 @@ function withStyle(html: string, fragment: string): string {
   });
 }
 
+function withStyles(html: string, fragments: string[]): string {
+  return fragments.length > 0 ? withStyle(html, fragments.join(';')) : html;
+}
+
 function styleFragment(block: Blockly.Block): string {
   switch (block.type) {
     case 'html_style_color': {
@@ -103,11 +107,16 @@ function styleFragment(block: Blockly.Block): string {
   }
 }
 
-function emitChain(block: Blockly.Block | null, depth: number, assetIds: string[]): string {
+function emitChain(
+  block: Blockly.Block | null,
+  depth: number,
+  assetIds: string[],
+  styleFragments: string[] = [],
+): string {
   let html = '';
   let current = block;
   while (current) {
-    html += emitBlock(current, depth, assetIds);
+    html += emitBlock(current, depth, assetIds, styleFragments);
     current = current.getNextBlock();
   }
   return html;
@@ -119,43 +128,64 @@ function emitContainer(
   tag: 'div' | 'ul',
   depth: number,
   assetIds: string[],
+  styleFragments: string[],
 ): string {
   const prefix = indent(depth);
   const children = emitChain(block.getInputTargetBlock(inputName), depth + 1, assetIds);
-  return `${prefix}<${tag}>\n${children}${prefix}</${tag}>\n`;
+  return withStyles(`${prefix}<${tag}>\n${children}${prefix}</${tag}>\n`, styleFragments);
 }
 
-function emitBlock(block: Blockly.Block, depth: number, assetIds: string[]): string {
+function emitBlock(
+  block: Blockly.Block,
+  depth: number,
+  assetIds: string[],
+  styleFragments: string[],
+): string {
   const prefix = indent(depth);
   switch (block.type) {
     case 'html_section':
-      return emitContainer(block, 'BODY', 'div', depth, assetIds);
+      return emitContainer(block, 'BODY', 'div', depth, assetIds, styleFragments);
     case 'html_list':
-      return emitContainer(block, 'ITEMS', 'ul', depth, assetIds);
+      return emitContainer(block, 'ITEMS', 'ul', depth, assetIds, styleFragments);
     case 'html_heading': {
       const requestedLevel = field(block, 'LEVEL');
       const level = HEADING_LEVELS.has(requestedLevel) ? requestedLevel : 'h1';
-      return `${prefix}<${level}>${textInput(block, 'TEXT')}</${level}>\n`;
+      return withStyles(
+        `${prefix}<${level}>${textInput(block, 'TEXT')}</${level}>\n`,
+        styleFragments,
+      );
     }
     case 'html_paragraph':
-      return `${prefix}<p>${textInput(block, 'TEXT')}</p>\n`;
+      return withStyles(`${prefix}<p>${textInput(block, 'TEXT')}</p>\n`, styleFragments);
     case 'html_list_item':
-      return `${prefix}<li>${textInput(block, 'TEXT')}</li>\n`;
+      return withStyles(`${prefix}<li>${textInput(block, 'TEXT')}</li>\n`, styleFragments);
     case 'html_text':
       return `${prefix}${escapeHtmlText(field(block, 'VALUE'))}\n`;
     case 'html_image_asset': {
       const assetId = field(block, 'ASSET');
       if (assetId) assetIds.push(assetId);
-      return `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`;
+      return withStyles(
+        `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
+        styleFragments,
+      );
     }
     case 'html_image_url':
-      return `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`;
+      return withStyles(
+        `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
+        styleFragments,
+      );
     case 'html_link':
-      return `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}">${escapeHtmlText(field(block, 'LABEL'))}</a>\n`;
+      return withStyles(
+        `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}">${escapeHtmlText(field(block, 'LABEL'))}</a>\n`,
+        styleFragments,
+      );
     case 'html_button':
-      return `${prefix}<button type="button">${textInput(block, 'TEXT')}</button>\n`;
+      return withStyles(
+        `${prefix}<button type="button">${textInput(block, 'TEXT')}</button>\n`,
+        styleFragments,
+      );
     case 'html_hr':
-      return `${prefix}<hr>\n`;
+      return withStyles(`${prefix}<hr>\n`, styleFragments);
     case 'html_style_color':
     case 'html_style_bg':
     case 'html_style_align':
@@ -164,7 +194,7 @@ function emitBlock(block: Blockly.Block, depth: number, assetIds: string[]): str
     case 'html_style_italic': {
       const child = block.getInputTargetBlock('BODY');
       if (!child) return '';
-      return withStyle(emitChain(child, depth, assetIds), styleFragment(block));
+      return emitChain(child, depth, assetIds, [...styleFragments, styleFragment(block)]);
     }
     default:
       return '';

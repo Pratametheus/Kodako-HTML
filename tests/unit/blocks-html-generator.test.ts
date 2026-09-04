@@ -106,6 +106,54 @@ describe('HTML block generator', () => {
     );
   });
 
+  it('applies a style wrapper to every direct child element', () => {
+    const page = statement(workspace, 'html_page');
+    const bold = statement(workspace, 'html_style_bold');
+    const first = statement(workspace, 'html_paragraph');
+    const second = statement(workspace, 'html_paragraph');
+    connectText(first, 'A');
+    connectText(second, 'B');
+    append(first, second);
+    connectStatement(bold, 'BODY', first);
+    connectStatement(page, 'BODY', bold);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<p style="font-weight:bold">A</p>\n<p style="font-weight:bold">B</p>\n',
+    );
+  });
+
+  it.each([
+    ['html_style_bg', 'COLOR', '#1e88e5', 'background:#1e88e5'],
+    ['html_style_align', 'ALIGN', 'center', 'text-align:center'],
+    ['html_style_size', 'SIZE', '1.5rem', 'font-size:1.5rem'],
+  ])('emits the expected %s style fragment', (type, fieldName, value, fragment) => {
+    const page = statement(workspace, 'html_page');
+    const wrapper = statement(workspace, type);
+    const paragraph = statement(workspace, 'html_paragraph');
+    wrapper.setFieldValue(value, fieldName);
+    connectText(paragraph, 'A');
+    connectStatement(wrapper, 'BODY', paragraph);
+    connectStatement(page, 'BODY', wrapper);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(`<p style="${fragment}">A</p>\n`);
+  });
+
+  it('applies style wrappers directly to section and list opening tags', () => {
+    const page = statement(workspace, 'html_page');
+    const bold = statement(workspace, 'html_style_bold');
+    const section = statement(workspace, 'html_section');
+    const italic = statement(workspace, 'html_style_italic');
+    const list = statement(workspace, 'html_list');
+    connectStatement(bold, 'BODY', section);
+    connectStatement(italic, 'BODY', list);
+    append(bold, italic);
+    connectStatement(page, 'BODY', bold);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<div style="font-weight:bold">\n</div>\n<ul style="font-style:italic">\n</ul>\n',
+    );
+  });
+
   it('emits nothing for an empty style wrapper', () => {
     const page = statement(workspace, 'html_page');
     connectStatement(page, 'BODY', statement(workspace, 'html_style_bold'));
@@ -123,6 +171,34 @@ describe('HTML block generator', () => {
       bodyHtml: '<img src="asset:img_1" alt="Kucing &lt;x&gt;">\n',
       assetIds: ['img_1'],
     });
+  });
+
+  it('emits remote images, buttons, and rules exactly', () => {
+    const page = statement(workspace, 'html_page');
+    const image = statement(workspace, 'html_image_url');
+    const button = statement(workspace, 'html_button');
+    const rule = statement(workspace, 'html_hr');
+    image.setFieldValue('https://a.b/c.png', 'URL');
+    image.setFieldValue('Gambar', 'ALT');
+    connectText(button, 'Tekan');
+    append(image, button);
+    append(button, rule);
+    connectStatement(page, 'BODY', image);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<img src="https://a.b/c.png" alt="Gambar">\n<button type="button">Tekan</button>\n<hr>\n',
+    );
+  });
+
+  it('emits an html_text value inside a paragraph in a section', () => {
+    const page = statement(workspace, 'html_page');
+    const section = statement(workspace, 'html_section');
+    const paragraph = statement(workspace, 'html_paragraph');
+    connectText(paragraph, 'Isi');
+    connectStatement(section, 'BODY', paragraph);
+    connectStatement(page, 'BODY', section);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<div>\n  <p>Isi</p>\n</div>\n');
   });
 
   it('emits a link with escaped attributes and label text', () => {
