@@ -6,6 +6,7 @@ import {
   renderSpriteMode,
   setSpriteWorkspaceFactoryForTests,
 } from '../../src/app/editor/sprite-mode/sprite-mode';
+import type { AudioEngine } from '../../src/runtime/sprite/audio';
 
 installSpriteBlockly();
 
@@ -110,12 +111,42 @@ describe('renderSpriteMode', () => {
     expect(host.querySelectorAll('[data-builtin-sound]')).toHaveLength(8);
     expect(host.querySelector('[data-upload-sound]')).not.toBeNull();
     canvas.dispatchEvent(
-      new MouseEvent('mousemove', { bubbles: true, clientX: 240, clientY: 180, buttons: 1 }),
+      new MouseEvent('mousemove', { bubbles: true, clientX: 340, clientY: 230, buttons: 1 }),
     );
     const debugWindow = window as Window & {
       __kodakoStage?: { pointer: () => { x: number; y: number; down: boolean } };
     };
-    expect(debugWindow.__kodakoStage?.pointer()).toEqual({ x: 0, y: 0, down: true });
+    const pointer = debugWindow.__kodakoStage?.pointer();
+    expect(pointer?.x).toBeCloseTo(100);
+    expect(pointer?.y).toBeCloseTo(-50);
+    expect(pointer?.down).toBe(true);
+    cleanup();
+  });
+
+  it('silences audio before each green-flag run and when Stop is pressed', () => {
+    const audioEngine: AudioEngine = {
+      play: vi.fn(),
+      playUntilDone: vi.fn(async () => undefined),
+      stopAll: vi.fn(),
+      changeVolume: vi.fn(),
+      setVolume: vi.fn(),
+      getVolume: vi.fn(() => 100),
+      dispose: vi.fn(),
+    };
+    const host = document.createElement('div');
+    const cleanup = renderSpriteMode(host, {
+      project: createEmptyProject('X'),
+      markDirty: vi.fn(),
+      getThumbnail: { current: null },
+      audioEngine,
+    });
+    vi.mocked(audioEngine.stopAll).mockClear();
+
+    host.querySelector<HTMLButtonElement>('[data-green-flag]')!.click();
+    host.querySelector<HTMLButtonElement>('[data-green-flag]')!.click();
+    host.querySelector<HTMLButtonElement>('[data-stop]')!.click();
+
+    expect(audioEngine.stopAll).toHaveBeenCalledTimes(3);
     cleanup();
   });
 

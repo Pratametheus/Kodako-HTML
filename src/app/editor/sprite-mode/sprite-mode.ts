@@ -37,6 +37,7 @@ export type SpriteModeDeps = {
   project: Project;
   markDirty: () => void;
   getThumbnail: { current: (() => string | undefined) | null };
+  audioEngine?: AudioEngine;
 };
 
 type WorkspaceFactory = (
@@ -151,7 +152,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
       .map((sprite): [string, string] => [sprite.name, sprite.name]),
   );
 
-  const audioEngine = createAudioEngine();
+  const audioEngine = deps.audioEngine ?? createAudioEngine();
   let lastSoundId: string | null = null;
   const rememberSound = (url: string): void => {
     lastSoundId =
@@ -220,6 +221,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   };
 
   const makeRuntime = (): void => {
+    audio.stopAll();
     detachAnimation?.();
     detachAnimation = null;
     runtimeContext = createRuntimeContext(project.sprite.sprites.map(runtimeSpriteFrom), {
@@ -425,6 +427,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
   };
   const onStop = (): void => {
     scheduler.stopAll();
+    audio.stopAll();
     if (runActive) finishRun();
     else {
       deps.getThumbnail.current = () => stage.thumbnail();
