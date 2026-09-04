@@ -14,15 +14,8 @@ import type { Storage } from '../../../core/storage';
 import { exportHtmlProject } from '../../../runtime/html/export';
 import { createHtmlPreview } from '../../../runtime/html/preview';
 import { BUILTIN_COSTUMES, loadUploadedImage } from '../../../runtime/sprite/assets';
+import { t } from '../../i18n';
 import { renderCodePanel } from './code-panel';
-
-const LABELS = {
-  preview: 'Pratinjau',
-  code: 'Lihat Kode',
-  export: 'Ekspor HTML',
-  upload: 'Unggah gambar',
-  exportFailed: 'Gagal mengekspor halaman HTML.',
-} as const;
 
 export type HtmlModeDeps = {
   project: Project;
@@ -72,20 +65,20 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
           <div class="html-mode__tabs" role="tablist">
-            <button type="button" role="tab" data-tab="preview" aria-selected="true">${LABELS.preview}</button>
-            <button type="button" role="tab" data-tab="code" aria-selected="false">${LABELS.code}</button>
+            <button type="button" role="tab" data-tab="preview" aria-selected="true">${t('editor.html.tabPreview')}</button>
+            <button type="button" role="tab" data-tab="code" aria-selected="false">${t('editor.html.tabCode')}</button>
           </div>
           <div class="html-mode__actions">
             <label class="html-mode__upload">
-              ${LABELS.upload}
+              ${t('editor.html.uploadImage')}
               <input type="file" accept="image/*" data-upload-image>
             </label>
-            <button type="button" data-export-html>${LABELS.export}</button>
+            <button type="button" data-export-html>${t('editor.html.exportHtml')}</button>
           </div>
         </div>
         <p class="html-mode__error" data-html-error hidden></p>
         <div class="html-mode__panel" data-panel="preview">
-          <iframe title="${LABELS.preview}"></iframe>
+          <iframe title="${t('editor.html.previewTitle')}"></iframe>
         </div>
         <div class="html-mode__panel html-mode__code" data-panel="code" hidden></div>
       </aside>
@@ -156,7 +149,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     preview.flush();
     void exportHtmlProject(project, deps.storage).catch((error: unknown) => {
       console.error(error);
-      errorElement.textContent = LABELS.exportFailed;
+      errorElement.textContent = t('error.htmlExportFailed');
       errorElement.hidden = false;
     });
   };
@@ -180,7 +173,12 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       deps.markDirty();
       refresh();
     } catch (error) {
-      errorElement.textContent = error instanceof Error ? error.message : String(error);
+      const message = error instanceof Error ? error.message : String(error);
+      errorElement.textContent = message.includes('terlalu besar')
+        ? t('editor.html.uploadTooBig')
+        : message.includes('bukan gambar')
+          ? t('editor.html.uploadNotImage')
+          : message;
       errorElement.hidden = false;
     } finally {
       uploadInput.value = '';

@@ -21,6 +21,21 @@ describe('t', () => {
       for (const word of obviousEnglish) expect(value).not.toContain(word);
     }
   });
+  it('contains complete Bahasa Indonesia strings for HTML mode', () => {
+    expect(t('editor.html.tabCode')).toBe('Lihat Kode');
+    expect(t('editor.html.uploadTooBig')).toContain('2 MB');
+    const obviousEnglish = [
+      'Preview',
+      'View Code',
+      'Upload',
+      'Export',
+      'Image too large',
+      'File is not an image',
+    ];
+    for (const value of Object.values(dict)) {
+      for (const phrase of obviousEnglish) expect(value).not.toContain(phrase);
+    }
+  });
 });
 
 describe('formatDate', () => {
