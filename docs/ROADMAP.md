@@ -156,6 +156,13 @@ dalam app, dan README quickstart. `tauri build` sungguhan (menghasilkan
 `.msi`) diverifikasi oleh `release.yml` saat tag `v*` di-push, bukan di
 mesin pengembangan ini (tidak ada Rust/MSVC lokal).
 
+Perbaikan UX pasca-rilis (2026-09-05): blok `halaman` HTML dihapus (isi
+`<body>` = blok top-level, memperbaiki bug "Lihat Kode kosong"), label
+blok HTML memakai tag asli, rail kategori bergaya Scratch, nama/urutan
+kategori Mode Sprite disamakan dengan Scratch Indonesia, dan tombol
+"Jalankan" untuk pratinjau HTML. Lihat
+`docs/superpowers/specs/2026-09-05-scratch-familiar-editor-ux-design.md`.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini
