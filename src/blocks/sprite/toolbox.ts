@@ -8,20 +8,7 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
   contents: [
     {
       kind: 'category',
-      name: 'Kejadian',
-      categorystyle: 'events_category',
-      contents: [
-        { kind: 'block', type: 'sprite_hat_green_flag' },
-        { kind: 'block', type: 'sprite_hat_clicked' },
-        { kind: 'block', type: 'sprite_hat_key' },
-        { kind: 'block', type: 'sprite_hat_receive' },
-        { kind: 'block', type: 'sprite_broadcast' },
-        { kind: 'block', type: 'sprite_broadcast_wait' },
-      ],
-    },
-    {
-      kind: 'category',
-      name: 'Gerak',
+      name: 'Gerakan',
       categorystyle: 'motion_category',
       contents: [
         { kind: 'block', type: 'sprite_move', inputs: { STEPS: num(10) } },
@@ -65,6 +52,19 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
     },
     {
       kind: 'category',
+      name: 'Kejadian',
+      categorystyle: 'events_category',
+      contents: [
+        { kind: 'block', type: 'sprite_hat_green_flag' },
+        { kind: 'block', type: 'sprite_hat_clicked' },
+        { kind: 'block', type: 'sprite_hat_key' },
+        { kind: 'block', type: 'sprite_hat_receive' },
+        { kind: 'block', type: 'sprite_broadcast' },
+        { kind: 'block', type: 'sprite_broadcast_wait' },
+      ],
+    },
+    {
+      kind: 'category',
       name: 'Kontrol',
       categorystyle: 'control_category',
       contents: [
@@ -75,22 +75,6 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'sprite_if_else' },
         { kind: 'block', type: 'sprite_wait_until' },
         { kind: 'block', type: 'sprite_stop' },
-      ],
-    },
-    {
-      kind: 'category',
-      name: 'Operator',
-      categorystyle: 'operators_category',
-      contents: [
-        { kind: 'block', type: 'sprite_op_arith', inputs: { A: num(1), B: num(1) } },
-        { kind: 'block', type: 'sprite_op_mod', inputs: { A: num(7), B: num(2) } },
-        { kind: 'block', type: 'sprite_op_compare', inputs: { A: num(1), B: num(1) } },
-        { kind: 'block', type: 'sprite_op_and' },
-        { kind: 'block', type: 'sprite_op_or' },
-        { kind: 'block', type: 'sprite_op_not' },
-        { kind: 'block', type: 'sprite_op_random', inputs: { FROM: num(1), TO: num(10) } },
-        { kind: 'block', type: 'sprite_op_join', inputs: { A: txt('apel '), B: txt('jeruk') } },
-        { kind: 'block', type: 'sprite_op_length', inputs: { A: txt('halo') } },
       ],
     },
     {
@@ -109,6 +93,22 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'sensing_answer' },
         { kind: 'block', type: 'sprite_sensing_timer' },
         { kind: 'block', type: 'sprite_sensing_reset_timer' },
+      ],
+    },
+    {
+      kind: 'category',
+      name: 'Operator',
+      categorystyle: 'operators_category',
+      contents: [
+        { kind: 'block', type: 'sprite_op_arith', inputs: { A: num(1), B: num(1) } },
+        { kind: 'block', type: 'sprite_op_mod', inputs: { A: num(7), B: num(2) } },
+        { kind: 'block', type: 'sprite_op_compare', inputs: { A: num(1), B: num(1) } },
+        { kind: 'block', type: 'sprite_op_and' },
+        { kind: 'block', type: 'sprite_op_or' },
+        { kind: 'block', type: 'sprite_op_not' },
+        { kind: 'block', type: 'sprite_op_random', inputs: { FROM: num(1), TO: num(10) } },
+        { kind: 'block', type: 'sprite_op_join', inputs: { A: txt('apel '), B: txt('jeruk') } },
+        { kind: 'block', type: 'sprite_op_length', inputs: { A: txt('halo') } },
       ],
     },
     { kind: 'category', name: 'Variabel', categorystyle: 'variables_category', custom: 'VARIABLE' },
