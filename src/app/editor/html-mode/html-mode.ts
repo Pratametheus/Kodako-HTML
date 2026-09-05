@@ -7,7 +7,11 @@ import {
   setHtmlAssetOptionsProvider,
   spriteTheme,
 } from '../../../blocks';
-import { htmlWorkspaceJson, withHtmlWorkspace } from '../../../core/html-project';
+import {
+  htmlWorkspaceJson,
+  migrateHtmlWorkspaceJson,
+  withHtmlWorkspace,
+} from '../../../core/html-project';
 import { newId } from '../../../core/ids';
 import type { Project } from '../../../core/project';
 import type { Storage } from '../../../core/storage';
@@ -62,6 +66,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     <div class="html-mode">
       <section class="html-mode__blocks" aria-label="Area blok HTML">
         <div id="htmlBlocklyDiv"></div>
+        <p class="html-mode__hint" data-html-hint>${t('editor.html.canvasHint')}</p>
       </section>
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
@@ -98,12 +103,11 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     move: { scrollbars: true },
   });
 
-  const savedWorkspace = htmlWorkspaceJson(project);
+  const savedWorkspace = migrateHtmlWorkspaceJson(htmlWorkspaceJson(project));
   if (Object.keys(savedWorkspace).length > 0) {
     Blockly.serialization.workspaces.load(savedWorkspace, workspace);
-  } else {
-    workspace.newBlock('html_page');
   }
+  // No starter block — an empty canvas is valid now; the top-level block stack is the <body>.
   loadingWorkspace = false;
 
   const iframe = host.querySelector<HTMLIFrameElement>('iframe')!;
@@ -111,6 +115,12 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   const codeHost = host.querySelector<HTMLElement>('[data-panel="code"]')!;
   const codePanel = renderCodePanel(codeHost);
   const errorElement = host.querySelector<HTMLElement>('[data-html-error]')!;
+
+  const hint = host.querySelector<HTMLElement>('[data-html-hint]')!;
+  const syncHint = (): void => {
+    hint.hidden = workspace.getTopBlocks(false).length > 0;
+  };
+  syncHint();
 
   const persist = (markDirty = true): void => {
     if (loadingWorkspace || disposed) return;
@@ -129,6 +139,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     if (event.isUiEvent || loadingWorkspace) return;
     persist();
     refresh();
+    syncHint();
   };
   workspace.addChangeListener(onWorkspaceChange);
 

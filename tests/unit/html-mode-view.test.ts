@@ -30,12 +30,10 @@ class FakeStorage implements Storage {
 }
 
 function addTextElement(workspace: Blockly.Workspace, type: string, value: string): void {
-  const page = workspace.getBlocksByType('html_page', false)[0]!;
   const element = workspace.newBlock(type);
   const text = workspace.newBlock('html_text');
   text.setFieldValue(value, 'VALUE');
   element.getInput('TEXT')?.connection?.connect(text.outputConnection!);
-  page.getInput('BODY')?.connection?.connect(element.previousConnection!);
 }
 
 describe('HTML mode view', () => {
@@ -111,7 +109,6 @@ describe('HTML mode view', () => {
       markDirty: vi.fn(),
     });
     const workspace = __htmlModeHandle.current!.workspace;
-    const page = workspace.getBlocksByType('html_page', false)[0]!;
     const bold = workspace.newBlock('html_style_bold');
     const first = workspace.newBlock('html_paragraph');
     const second = workspace.newBlock('html_paragraph');
@@ -123,7 +120,6 @@ describe('HTML mode view', () => {
     second.getInput('TEXT')?.connection?.connect(secondText.outputConnection!);
     first.nextConnection?.connect(second.previousConnection!);
     bold.getInput('BODY')?.connection?.connect(first.previousConnection!);
-    page.getInput('BODY')?.connection?.connect(bold.previousConnection!);
 
     workspace.fireChangeListener({ isUiEvent: false } as Blockly.Events.Abstract);
     vi.advanceTimersByTime(300);

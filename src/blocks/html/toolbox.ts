@@ -12,7 +12,6 @@ export const htmlToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       name: 'Struktur',
       categorystyle: 'structure_category',
       contents: [
-        { kind: 'block', type: 'html_page' },
         { kind: 'block', type: 'html_section' },
         { kind: 'block', type: 'html_heading', inputs: { TEXT: textShadow() } },
         { kind: 'block', type: 'html_paragraph', inputs: { TEXT: textShadow() } },

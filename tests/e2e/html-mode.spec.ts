@@ -20,39 +20,32 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
           languageVersion: 0,
           blocks: [
             {
-              type: 'html_page',
+              type: 'html_heading',
               x: 20,
               y: 20,
+              fields: { LEVEL: 'h1' },
               inputs: {
-                BODY: {
-                  block: {
-                    type: 'html_heading',
-                    fields: { LEVEL: 'h1' },
-                    inputs: {
-                      TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Halo' } } },
-                    },
-                    next: {
+                TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Halo' } } },
+              },
+              next: {
+                block: {
+                  type: 'html_style_bold',
+                  inputs: {
+                    BODY: {
                       block: {
-                        type: 'html_style_bold',
+                        type: 'html_paragraph',
                         inputs: {
-                          BODY: {
-                            block: {
-                              type: 'html_paragraph',
-                              inputs: {
-                                TEXT: {
-                                  shadow: { type: 'html_text', fields: { VALUE: 'Dunia' } },
-                                },
-                              },
-                            },
-                          },
-                        },
-                        next: {
-                          block: {
-                            type: 'html_image_url',
-                            fields: { URL: 'https://x/y.png', ALT: 'gbr' },
+                          TEXT: {
+                            shadow: { type: 'html_text', fields: { VALUE: 'Dunia' } },
                           },
                         },
                       },
+                    },
+                  },
+                  next: {
+                    block: {
+                      type: 'html_image_url',
+                      fields: { URL: 'https://x/y.png', ALT: 'gbr' },
                     },
                   },
                 },

@@ -54,6 +54,7 @@
   "editor.html.uploadTooBig": "Gambar terlalu besar (maks 2 MB).",
   "editor.html.uploadNotImage": "File itu bukan gambar.",
   "editor.html.previewTitle": "Pratinjau",
+  "editor.html.canvasHint": "Seret blok dari kiri untuk membuat halaman.",
   "error.spriteRunFailed": "Ada kesalahan saat menjalankan skrip.",
   "error.audioUnavailable": "Suara tidak didukung di peramban ini.",
   "error.htmlExportFailed": "Gagal mengekspor halaman HTML.",

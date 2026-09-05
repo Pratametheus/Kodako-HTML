@@ -20,7 +20,6 @@ export function setHtmlAssetOptionsProvider(fn: () => [string, string][]): void 
 }
 
 export const HTML_BLOCK_TYPES = [
-  'html_page',
   'html_section',
   'html_heading',
   'html_paragraph',
@@ -42,12 +41,6 @@ export const HTML_BLOCK_TYPES = [
 
 export function registerHtmlBlocks(): void {
   Blockly.defineBlocksWithJsonArray([
-    {
-      type: 'html_page',
-      message0: 'halaman %1 %2',
-      args0: [{ type: 'input_dummy' }, { type: 'input_statement', name: 'BODY' }],
-      style: 'structure_blocks',
-    },
     {
       type: 'html_section',
       message0: 'bagian %1 %2',
