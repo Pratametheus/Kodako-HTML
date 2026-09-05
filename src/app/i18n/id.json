@@ -49,6 +49,7 @@
   "editor.sprite.askSubmit": "Kirim",
   "editor.html.tabPreview": "Pratinjau",
   "editor.html.tabCode": "Lihat Kode",
+  "editor.html.run": "Jalankan",
   "editor.html.exportHtml": "Ekspor HTML",
   "editor.html.uploadImage": "Unggah gambar",
   "editor.html.uploadTooBig": "Gambar terlalu besar (maks 2 MB).",

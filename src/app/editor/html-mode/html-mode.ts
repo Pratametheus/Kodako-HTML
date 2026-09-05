@@ -70,6 +70,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       </section>
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
+          <button type="button" class="html-mode__run" data-run-html>▶ ${t('editor.html.run')}</button>
           <div class="html-mode__tabs" role="tablist" aria-label="${t('a11y.previewTablist')}">
             <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
             <button type="button" role="tab" id="html-tab-code" data-tab="code" aria-selected="false" aria-controls="html-panel-code">${t('editor.html.tabCode')}</button>
@@ -138,22 +139,30 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   const onWorkspaceChange = (event: Blockly.Events.Abstract): void => {
     if (event.isUiEvent || loadingWorkspace) return;
     persist();
-    refresh();
     syncHint();
   };
   workspace.addChangeListener(onWorkspaceChange);
 
   const tabButtons = [...host.querySelectorAll<HTMLButtonElement>('[data-tab]')];
   const panels = [...host.querySelectorAll<HTMLElement>('[data-panel]')];
-  const onTabClick = (event: Event): void => {
-    const selected = event.currentTarget as HTMLButtonElement;
-    const tab = selected.dataset.tab;
+  const activateTab = (tab: 'preview' | 'code'): void => {
     for (const button of tabButtons) {
-      button.setAttribute('aria-selected', String(button === selected));
+      button.setAttribute('aria-selected', String(button.dataset.tab === tab));
     }
     for (const panel of panels) panel.hidden = panel.dataset.panel !== tab;
   };
+  const onTabClick = (event: Event): void => {
+    const selected = event.currentTarget as HTMLButtonElement;
+    activateTab(selected.dataset.tab as 'preview' | 'code');
+  };
   for (const button of tabButtons) button.addEventListener('click', onTabClick);
+
+  const runButton = host.querySelector<HTMLButtonElement>('[data-run-html]')!;
+  const onRun = (): void => {
+    refresh();
+    activateTab('preview');
+  };
+  runButton.addEventListener('click', onRun);
 
   const exportButton = host.querySelector<HTMLButtonElement>('[data-export-html]')!;
   const onExport = (): void => {
@@ -215,6 +224,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     disposed = true;
     workspace.removeChangeListener(onWorkspaceChange);
     for (const button of tabButtons) button.removeEventListener('click', onTabClick);
+    runButton.removeEventListener('click', onRun);
     exportButton.removeEventListener('click', onExport);
     uploadInput.removeEventListener('change', onUpload);
     preview.dispose();

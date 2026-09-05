@@ -29,6 +29,7 @@ describe('t', () => {
   });
   it('contains complete Bahasa Indonesia strings for HTML mode', () => {
     expect(t('editor.html.tabCode')).toBe('Lihat Kode');
+    expect(t('editor.html.run')).toBe('Jalankan');
     expect(t('editor.html.uploadTooBig')).toContain('2 MB');
     const obviousEnglish = [
       'Preview',

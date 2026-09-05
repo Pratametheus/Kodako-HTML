@@ -58,6 +58,9 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
     );
   });
 
+  await expect(page.getByRole('button', { name: 'Jalankan' })).toBeVisible();
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+
   await page.waitForFunction(() => {
     const body = (window as any).__kodakoHtml.bodyHtml();
     return (

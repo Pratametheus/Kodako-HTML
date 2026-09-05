@@ -64,6 +64,7 @@ describe('HTML mode view', () => {
     expect(host.querySelector('[data-tab="preview"]')).toBeTruthy();
     expect(host.querySelector('[data-tab="code"]')).toBeTruthy();
     expect(host.querySelector('[data-export-html]')).toBeTruthy();
+    expect(host.querySelector('[data-run-html]')).toBeTruthy();
     cleanup();
   });
 
@@ -82,7 +83,7 @@ describe('HTML mode view', () => {
     cleanup();
   });
 
-  it('shows generated code for blocks in the workspace', () => {
+  it('renders preview and code only after Jalankan', () => {
     const host = document.createElement('div');
     const cleanup = renderHtmlMode(host, {
       project: createEmptyProject('X'),
@@ -93,10 +94,35 @@ describe('HTML mode view', () => {
     addTextElement(workspace, 'html_paragraph', 'Halo');
     workspace.fireChangeListener({ isUiEvent: false } as Blockly.Events.Abstract);
 
+    // not yet run → code panel empty
+    expect(host.querySelector('[data-panel="code"]')?.textContent ?? '').not.toContain(
+      '<p>Halo</p>',
+    );
+
+    host.querySelector<HTMLButtonElement>('[data-run-html]')!.click();
     host.querySelector<HTMLButtonElement>('[data-tab="code"]')!.click();
 
     expect(host.querySelector<HTMLElement>('[data-panel="code"]')!.hidden).toBe(false);
     expect(host.querySelector('[data-panel="code"]')?.textContent).toContain('<p>Halo</p>');
+    cleanup();
+  });
+
+  it('activates the Pratinjau tab on Jalankan', () => {
+    const host = document.createElement('div');
+    const cleanup = renderHtmlMode(host, {
+      project: createEmptyProject('X'),
+      storage: new FakeStorage(),
+      markDirty: vi.fn(),
+    });
+    const workspace = __htmlModeHandle.current!.workspace;
+    addTextElement(workspace, 'html_paragraph', 'Halo');
+    workspace.fireChangeListener({ isUiEvent: false } as Blockly.Events.Abstract);
+    host.querySelector<HTMLButtonElement>('[data-tab="code"]')!.click();
+
+    host.querySelector<HTMLButtonElement>('[data-run-html]')!.click();
+
+    expect(host.querySelector('[data-tab="preview"]')!.getAttribute('aria-selected')).toBe('true');
+    expect(host.querySelector<HTMLElement>('[data-panel="preview"]')!.hidden).toBe(false);
     cleanup();
   });
 
@@ -122,6 +148,7 @@ describe('HTML mode view', () => {
     bold.getInput('BODY')?.connection?.connect(first.previousConnection!);
 
     workspace.fireChangeListener({ isUiEvent: false } as Blockly.Events.Abstract);
+    host.querySelector<HTMLButtonElement>('[data-run-html]')!.click();
     vi.advanceTimersByTime(300);
 
     const styledSecond = '<p style="font-weight:bold">B</p>';
