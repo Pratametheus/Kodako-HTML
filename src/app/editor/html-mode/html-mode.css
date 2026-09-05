@@ -21,6 +21,7 @@
 }
 
 .html-mode__blocks {
+  position: relative; /* anchor for the empty-canvas hint overlay */
   margin-right: 5px;
 }
 
@@ -56,6 +57,37 @@
 .html-mode__actions {
   display: flex;
   gap: 6px;
+}
+
+.html-mode__run {
+  min-height: 40px;
+  padding: 8px 16px;
+  border: 1px solid var(--html-green);
+  border-radius: 10px;
+  background: var(--html-green);
+  color: #fff;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  justify-self: start;
+}
+
+.html-mode__run:focus-visible {
+  outline: 3px solid #80b9ff;
+  outline-offset: 2px;
+}
+
+.html-mode__hint {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  margin: 0;
+  padding: 24px;
+  color: #6b8a99;
+  font-size: 0.95rem;
+  text-align: center;
+  pointer-events: none;
 }
 
 .html-mode__tabs button,
@@ -136,8 +168,10 @@
 }
 
 .html-mode__code {
+  min-height: 240px;
   padding: 14px;
   background: #f6f8fa;
+  color: var(--html-ink);
 }
 
 .html-mode__code pre {

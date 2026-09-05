@@ -28,12 +28,10 @@ class FakeStorage implements Storage {
 
 function projectWithParagraph(text: string): Project {
   const workspace = new Blockly.Workspace();
-  const page = workspace.newBlock('html_page');
   const paragraph = workspace.newBlock('html_paragraph');
   const value = workspace.newBlock('html_text');
   value.setFieldValue(text, 'VALUE');
   paragraph.getInput('TEXT')?.connection?.connect(value.outputConnection!);
-  page.getInput('BODY')?.connection?.connect(paragraph.previousConnection!);
   const project = createEmptyProject('Halaman Saya');
   project.html.workspace = Blockly.serialization.workspaces.save(workspace);
   workspace.dispose();

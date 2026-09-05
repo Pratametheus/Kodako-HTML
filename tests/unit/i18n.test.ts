@@ -29,6 +29,7 @@ describe('t', () => {
   });
   it('contains complete Bahasa Indonesia strings for HTML mode', () => {
     expect(t('editor.html.tabCode')).toBe('Lihat Kode');
+    expect(t('editor.html.run')).toBe('Jalankan');
     expect(t('editor.html.uploadTooBig')).toContain('2 MB');
     const obviousEnglish = [
       'Preview',
@@ -72,7 +73,7 @@ describe('t', () => {
       'Seret blok dari kategori di kiri ke area kerja. Mulai dari blok "saat bendera hijau diklik", lalu sambungkan blok gerak/tampilan di bawahnya. Klik ▶ untuk menjalankan, ⏹ untuk berhenti. Tambah sprite baru dari panel Sprite di kanan bawah.',
     );
     expect(t('help.html')).toBe(
-      'Seret blok Struktur (judul, paragraf, gambar, daftar) ke dalam blok "halaman". Bungkus dengan blok Gaya untuk mengatur warna/ukuran. Lihat hasilnya di tab Pratinjau, atau kodenya di tab Lihat Kode.',
+      'Seret blok Struktur (judul, paragraf, gambar, daftar) langsung ke area kerja — blok yang tersusun dari atas ke bawah menjadi isi halaman. Bungkus dengan blok Gaya untuk warna/ukuran. Klik "Jalankan" untuk melihat hasilnya di tab Pratinjau, atau kodenya di tab Lihat Kode.',
     );
     expect(t('help.save')).toBe(
       'Project tersimpan otomatis di peramban ini. Gunakan tombol Simpan untuk menyimpan segera, atau Ekspor untuk mengunduh file project (.ghtml.json) atau halaman HTML mandiri.',

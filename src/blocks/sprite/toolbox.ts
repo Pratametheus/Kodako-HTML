@@ -8,21 +8,9 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
   contents: [
     {
       kind: 'category',
-      name: 'Kejadian',
-      categorystyle: 'events_category',
-      contents: [
-        { kind: 'block', type: 'sprite_hat_green_flag' },
-        { kind: 'block', type: 'sprite_hat_clicked' },
-        { kind: 'block', type: 'sprite_hat_key' },
-        { kind: 'block', type: 'sprite_hat_receive' },
-        { kind: 'block', type: 'sprite_broadcast' },
-        { kind: 'block', type: 'sprite_broadcast_wait' },
-      ],
-    },
-    {
-      kind: 'category',
-      name: 'Gerak',
+      name: 'Gerakan',
       categorystyle: 'motion_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--motion' },
       contents: [
         { kind: 'block', type: 'sprite_move', inputs: { STEPS: num(10) } },
         { kind: 'block', type: 'sprite_turn_right', inputs: { DEG: num(15) } },
@@ -39,6 +27,7 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       kind: 'category',
       name: 'Tampilan',
       categorystyle: 'looks_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--looks' },
       contents: [
         { kind: 'block', type: 'sprite_say', inputs: { TEXT: txt('Halo!') } },
         { kind: 'block', type: 'sprite_say_for', inputs: { TEXT: txt('Halo!'), SECS: num(2) } },
@@ -55,6 +44,7 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       kind: 'category',
       name: 'Suara',
       categorystyle: 'sound_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--sound' },
       contents: [
         { kind: 'block', type: 'sound_play' },
         { kind: 'block', type: 'sound_play_until_done' },
@@ -65,8 +55,23 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
     },
     {
       kind: 'category',
+      name: 'Kejadian',
+      categorystyle: 'events_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--events' },
+      contents: [
+        { kind: 'block', type: 'sprite_hat_green_flag' },
+        { kind: 'block', type: 'sprite_hat_clicked' },
+        { kind: 'block', type: 'sprite_hat_key' },
+        { kind: 'block', type: 'sprite_hat_receive' },
+        { kind: 'block', type: 'sprite_broadcast' },
+        { kind: 'block', type: 'sprite_broadcast_wait' },
+      ],
+    },
+    {
+      kind: 'category',
       name: 'Kontrol',
       categorystyle: 'control_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--control' },
       contents: [
         { kind: 'block', type: 'sprite_wait', inputs: { SECS: num(1) } },
         { kind: 'block', type: 'sprite_repeat', inputs: { TIMES: num(10) } },
@@ -79,24 +84,9 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
     },
     {
       kind: 'category',
-      name: 'Operator',
-      categorystyle: 'operators_category',
-      contents: [
-        { kind: 'block', type: 'sprite_op_arith', inputs: { A: num(1), B: num(1) } },
-        { kind: 'block', type: 'sprite_op_mod', inputs: { A: num(7), B: num(2) } },
-        { kind: 'block', type: 'sprite_op_compare', inputs: { A: num(1), B: num(1) } },
-        { kind: 'block', type: 'sprite_op_and' },
-        { kind: 'block', type: 'sprite_op_or' },
-        { kind: 'block', type: 'sprite_op_not' },
-        { kind: 'block', type: 'sprite_op_random', inputs: { FROM: num(1), TO: num(10) } },
-        { kind: 'block', type: 'sprite_op_join', inputs: { A: txt('apel '), B: txt('jeruk') } },
-        { kind: 'block', type: 'sprite_op_length', inputs: { A: txt('halo') } },
-      ],
-    },
-    {
-      kind: 'category',
       name: 'Sensor',
       categorystyle: 'sensing_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--sensing' },
       contents: [
         { kind: 'block', type: 'sensing_touching' },
         { kind: 'block', type: 'sensing_touching_color' },
@@ -111,6 +101,29 @@ export const spriteToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'sprite_sensing_reset_timer' },
       ],
     },
-    { kind: 'category', name: 'Variabel', categorystyle: 'variables_category', custom: 'VARIABLE' },
+    {
+      kind: 'category',
+      name: 'Operator',
+      categorystyle: 'operators_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--operators' },
+      contents: [
+        { kind: 'block', type: 'sprite_op_arith', inputs: { A: num(1), B: num(1) } },
+        { kind: 'block', type: 'sprite_op_mod', inputs: { A: num(7), B: num(2) } },
+        { kind: 'block', type: 'sprite_op_compare', inputs: { A: num(1), B: num(1) } },
+        { kind: 'block', type: 'sprite_op_and' },
+        { kind: 'block', type: 'sprite_op_or' },
+        { kind: 'block', type: 'sprite_op_not' },
+        { kind: 'block', type: 'sprite_op_random', inputs: { FROM: num(1), TO: num(10) } },
+        { kind: 'block', type: 'sprite_op_join', inputs: { A: txt('apel '), B: txt('jeruk') } },
+        { kind: 'block', type: 'sprite_op_length', inputs: { A: txt('halo') } },
+      ],
+    },
+    {
+      kind: 'category',
+      name: 'Variabel',
+      categorystyle: 'variables_category',
+      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--variables' },
+      custom: 'VARIABLE',
+    },
   ],
 };
