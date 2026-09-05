@@ -5,22 +5,116 @@
 }
 
 .blocklyFlyout {
+  padding-top: 6px;
   border-radius: 0 12px 12px 0;
-}
-
-.blocklyTreeRow {
-  min-height: 40px;
-  border-radius: 8px;
 }
 
 .blocklyText {
   font-weight: 600;
 }
 
-.blocklyFlyoutButton {
-  min-height: 40px;
-}
-
 .blocklyMainBackground {
   stroke: none;
+}
+
+/* Scratch-style category rail: roomy rows, a colour disc with a white glyph,
+   and a tinted pill + left accent bar on the selected row. Pure CSS — the
+   disc colours come from CATEGORY_COLORS (src/blocks/theme.ts) and the glyphs
+   mirror the data URIs in src/blocks/category-icons.ts (the source of truth). */
+.blocklyTreeRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin: 2px 4px;
+  padding: 4px 10px 4px 6px;
+  border-radius: 10px;
+}
+
+.blocklyTreeRow[aria-selected='true'] {
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  box-shadow: inset 3px 0 0 currentColor;
+}
+
+.blocklyTreeIcon.kodako-cat-icon {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background-color: #9aa4b2; /* overridden per category below */
+  -webkit-mask-repeat: no-repeat;
+  mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  mask-position: center;
+  -webkit-mask-size: 16px 16px;
+  mask-size: 16px 16px;
+}
+
+.kodako-cat-icon--motion {
+  background-color: #4c97ff;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%2010h10l-4-4%201.4-1.4L18%2010l-7.6%207.4L9%2016l4-4H3z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%2010h10l-4-4%201.4-1.4L18%2010l-7.6%207.4L9%2016l4-4H3z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--looks {
+  background-color: #9966ff;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%204h14v9H8l-4%203v-3H3z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%204h14v9H8l-4%203v-3H3z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--sound {
+  background-color: #cf63cf;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%208h3l4-4v12l-4-4H3z%22%2F%3E%3Cpath%20d%3D%22M13%206q3%204%200%208%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%208h3l4-4v12l-4-4H3z%22%2F%3E%3Cpath%20d%3D%22M13%206q3%204%200%208%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--events {
+  background-color: #ffbf00;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M5%202v16H3.4V2zM6%203h10l-2.2%203L16%209H6z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M5%202v16H3.4V2zM6%203h10l-2.2%203L16%209H6z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--control {
+  background-color: #ffab19;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%201h4v2H8zM10%204a7%207%200%201%200%200%2014%207%207%200%200%200%200-14zm.9%203v4l3%201.8-.9%201.5L9%2011.4V7z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%201h4v2H8zM10%204a7%207%200%201%200%200%2014%207%207%200%200%200%200-14zm.9%203v4l3%201.8-.9%201.5L9%2011.4V7z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--sensing {
+  background-color: #5cb1d6;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8.5%203a5.5%205.5%200%200%201%204.2%209l3.6%203.6-1.5%201.5L11.2%2013A5.5%205.5%200%201%201%208.5%203zm0%202a3.5%203.5%200%201%200%200%207%203.5%203.5%200%200%200%200-7z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8.5%203a5.5%205.5%200%200%201%204.2%209l3.6%203.6-1.5%201.5L11.2%2013A5.5%205.5%200%201%201%208.5%203zm0%202a3.5%203.5%200%201%200%200%207%203.5%203.5%200%200%200%200-7z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--operators {
+  background-color: #59c059;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M10%201l9%209-9%209-9-9z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M10%201l9%209-9%209-9-9z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--variables {
+  background-color: #ff8c1a;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%203h7l7%207-7%207-7-7zm4%202.5A1.7%201.7%200%201%200%207%209a1.7%201.7%200%200%200%200-3.5z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%203h7l7%207-7%207-7-7zm4%202.5A1.7%201.7%200%201%200%207%209a1.7%201.7%200%200%200%200-3.5z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--structure {
+  background-color: #1e88e5;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%204%203%2010l5%206%201.5-1.5L6%2010l3.5-4.5zM12%204l5%206-5%206-1.5-1.5L14%2010l-3.5-4.5z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%204%203%2010l5%206%201.5-1.5L6%2010l3.5-4.5zM12%204l5%206-5%206-1.5-1.5L14%2010l-3.5-4.5z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--content {
+  background-color: #43a047;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M2%204h16v12H2zm2%2010%204-5%203%203%203-4%204%206z%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%228%22%20r%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M2%204h16v12H2zm2%2010%204-5%203%203%203-4%204%206z%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%228%22%20r%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.kodako-cat-icon--style {
+  background-color: #8e24aa;
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M10%202s6%207%206%2011a6%206%200%200%201-12%200c0-4%206-11%206-11z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M10%202s6%207%206%2011a6%206%200%200%201-12%200c0-4%206-11%206-11z%22%2F%3E%3C%2Fsvg%3E');
+}
+
+.blocklyFlyoutButton {
+  min-height: 40px;
 }
