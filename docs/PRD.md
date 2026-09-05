@@ -78,8 +78,8 @@ sekaligus mengenalkan HTML.
 
 **Menyusul setelah MVP**
 
-- Kategori blok Suara & Sensor lengkap.
-- Build desktop macOS/Linux.
+- Kategori blok Suara & Sensor lengkap. _(Selesai di Fase 3a.)_
+- Build desktop macOS/Linux. _(Belum — Windows saja untuk Rilis 1.)_
 
 **Non-lingkup eksplisit (tidak dikerjakan sekarang)**
 

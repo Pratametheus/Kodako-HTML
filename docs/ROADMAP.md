@@ -14,20 +14,20 @@ landing page tampil, bukti-konsep desktop.
 
 **Deliverable**
 
-- [ ] Scaffold repo: Vite + TypeScript, multi-page (`index.html` editor +
+- [x] Scaffold repo: Vite + TypeScript, multi-page (`index.html` editor +
       `landing.html`), ESLint + Prettier, konfigurasi test.
-- [ ] `core/project.ts`: tipe `Project`, `createEmptyProject`, `validate`,
+- [x] `core/project.ts`: tipe `Project`, `createEmptyProject`, `validate`,
       `migrate` (kerangka), serialisasi round-trip.
-- [ ] `core/storage.ts`: antarmuka `Storage` + `WebStorage` (localStorage +
+- [x] `core/storage.ts`: antarmuka `Storage` + `WebStorage` (localStorage +
       slot `:tmp` + import/export berkas).
-- [ ] `core/events.ts`: event bus bertipe.
-- [ ] Shell SPA: router hash, Home (manajer project: daftar, baru, buka file,
+- [x] `core/events.ts`: event bus bertipe.
+- [x] Shell SPA: router hash, Home (manajer project: daftar, baru, buka file,
       ganti nama, duplikat, hapus, unduh), kerangka Editor kosong dengan header.
-- [ ] i18n: `t()` + `id.json` awal + `formatDate` `id-ID`.
-- [ ] Landing page statis (Hero + bagian dasar), Bahasa Indonesia.
-- [ ] Bukti-konsep Tauri: `src-tauri/` membungkus build web, `TauriStorage`
+- [x] i18n: `t()` + `id.json` awal + `formatDate` `id-ID`.
+- [x] Landing page statis (Hero + bagian dasar), Bahasa Indonesia.
+- [x] Bukti-konsep Tauri: `src-tauri/` membungkus build web, `TauriStorage`
       untuk import/export berkas asli, deteksi runtime.
-- [ ] CI: lint + unit test pada push.
+- [x] CI: lint + unit test pada push.
 
 **Definisi "selesai"**
 
@@ -62,8 +62,8 @@ bergerak/berperilaku di panggung.
       broadcast + broadcastAndWait.
 - [x] Editor mode Sprite: panel sprite (tambah/hapus/pilih, atur nama/posisi),
       panel kostum (pilih dari pustaka + unggah), tombol Bendera Hijau & Stop.
-- [ ] `runtime/sprite/assets.ts` + `audio.ts`: ~10–15 kostum + beberapa
-      backdrop CC0; unggah gambar (≤ 2 MB).
+- [x] `runtime/sprite/assets.ts` + `audio.ts`: ~10–15 kostum + beberapa
+      backdrop CC0; unggah gambar (≤ 2 MB). (`audio.ts` menyusul di Fase 3a.)
 - [x] Autosave menyimpan skrip semua sprite + state; thumbnail panggung.
 - [x] Test: unit generator (snapshot) + model; integrasi "fixture → jalankan N
       frame → assert state"; E2E alur bendera hijau.
@@ -124,9 +124,10 @@ Ditunda ke Fase 3: CSS lanjutan, atribut class/id, tabel, form; alur 'kirim ke g
 - [x] Kategori **Sensor** penuh (jarak ke, warna menyentuh warna, tanya/jawab).
 - [x] Tema "rasa Scratch" penuh (blok bulat, chrome kategori, hat block,
       renderer Zelos) + kostum/latar bawaan dipoles (15 kostum, 6 latar).
-- [ ] Pustaka aset diperluas + layar pilih aset yang rapi.
-- [ ] Ekspor project Sprite sebagai halaman "pemutar" HTML mandiri (opsional
-      bila memungkinkan tanpa lingkup besar; kalau tidak, tunda).
+- [x] Pustaka aset diperluas + layar pilih aset yang rapi (15 kostum, 6 latar
+      dipoles; panel pilih kostum/latar dari Fase 1).
+- [ ] Ekspor project Sprite sebagai halaman "pemutar" HTML mandiri — **ditunda**
+      (ditandai opsional sejak awal; tidak dikerjakan di Rilis 1).
 - [x] Error boundary global + semua pesan error ramah anak berbahasa Indonesia.
 - [x] Pemeriksaan performa di perangkat kelas bawah; optimasi renderer bila
       perlu.
