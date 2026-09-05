@@ -26,8 +26,14 @@ describe('migrateHtmlWorkspaceJson', () => {
     };
     const out = migrateHtmlWorkspaceJson(legacy) as typeof legacy;
     const top = out.blocks.blocks;
-    expect(top.map((b: { type: string }) => b.type)).toEqual(['html_paragraph', 'html_hr']);
-    expect(top[0]).toMatchObject({ x: 20, y: 20 });
+    // one top-level entry: the head block keeps its whole `.next` chain
+    expect(top).toHaveLength(1);
+    expect(top[0]).toMatchObject({
+      type: 'html_paragraph',
+      x: 20,
+      y: 20,
+      next: { block: { type: 'html_hr' } },
+    });
     expect(migrateHtmlWorkspaceJson(out)).toEqual(out); // idempotent
   });
 
