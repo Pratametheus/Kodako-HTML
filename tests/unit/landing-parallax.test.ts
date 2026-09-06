@@ -38,8 +38,8 @@ describe('initParallax', () => {
     initParallax(list, { reducedMotion: false });
     window.scrollY = 100;
     window.dispatchEvent(new Event('scroll'));
-    expect(list[0].style.getPropertyValue('--parallax-y')).toBe('-20.0px');
-    expect(list[1].style.getPropertyValue('--parallax-y')).toBe('-10.0px');
+    expect(list[0]!.style.getPropertyValue('--parallax-y')).toBe('-20.0px');
+    expect(list[1]!.style.getPropertyValue('--parallax-y')).toBe('-10.0px');
   });
 
   it('cleanup removes the scroll listener', () => {
