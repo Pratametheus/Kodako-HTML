@@ -337,7 +337,7 @@ Claude-Session: https://claude.ai/code/session_013btUoirk4SyfGZ71mExnFf"
 - [ ] **Step 1: Write the failing test**
 
 ```ts
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it } from 'vitest';
 import { initHeroLetters } from '../../src/landing/hero-letters';
 
 function makeTitle(text = 'Kodako HTML'): HTMLElement {
