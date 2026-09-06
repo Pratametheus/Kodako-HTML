@@ -13,10 +13,7 @@ const DANCE_COUNT = 8;
  * `pointerenter` (toggled with the `is-dancing` class, cleared on the matching
  * `animationend`). No-op when `container` is null; never throws.
  */
-export function initHeroLetters(
-  container: HTMLElement | null,
-  options: HeroLettersOptions,
-): void {
+export function initHeroLetters(container: HTMLElement | null, options: HeroLettersOptions): void {
   if (!container) return;
 
   const text = container.textContent ?? '';

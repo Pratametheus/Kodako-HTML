@@ -16,7 +16,9 @@ describe('landing page (index.html)', () => {
   it('points both editor CTAs at /editor.html and keeps the download CTA', () => {
     expect(html).toMatch(/data-cta-editor[^>]*href="\/editor\.html"/);
     expect(html).toMatch(/class="btn btn--nav" href="\/editor\.html"/);
-    expect(html).toMatch(/data-cta-download[^>]*href="https:\/\/github\.com\/Pratametheus\/Kodako-HTML\/releases"/);
+    expect(html).toMatch(
+      /data-cta-download[^>]*href="https:\/\/github\.com\/Pratametheus\/Kodako-HTML\/releases"/,
+    );
   });
 
   it('has every section, the demo band, and the year placeholder', () => {

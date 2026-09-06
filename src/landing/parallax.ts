@@ -9,10 +9,7 @@ export interface ParallaxOptions {
  * reduced motion or with no nodes. Returns a cleanup function that removes the
  * listener.
  */
-export function initParallax(
-  nodes: Iterable<HTMLElement>,
-  options: ParallaxOptions,
-): () => void {
+export function initParallax(nodes: Iterable<HTMLElement>, options: ParallaxOptions): () => void {
   const list = Array.from(nodes);
   if (options.reducedMotion || list.length === 0) {
     return () => {};
