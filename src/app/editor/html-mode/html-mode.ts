@@ -7,7 +7,11 @@ import {
   setHtmlAssetOptionsProvider,
   spriteTheme,
 } from '../../../blocks';
-import { htmlWorkspaceJson, withHtmlWorkspace } from '../../../core/html-project';
+import {
+  htmlWorkspaceJson,
+  migrateHtmlWorkspaceJson,
+  withHtmlWorkspace,
+} from '../../../core/html-project';
 import { newId } from '../../../core/ids';
 import type { Project } from '../../../core/project';
 import type { Storage } from '../../../core/storage';
@@ -62,9 +66,11 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     <div class="html-mode">
       <section class="html-mode__blocks" aria-label="Area blok HTML">
         <div id="htmlBlocklyDiv"></div>
+        <p class="html-mode__hint" data-html-hint>${t('editor.html.canvasHint')}</p>
       </section>
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
+          <button type="button" class="html-mode__run" data-run-html>▶ ${t('editor.html.run')}</button>
           <div class="html-mode__tabs" role="tablist" aria-label="${t('a11y.previewTablist')}">
             <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
             <button type="button" role="tab" id="html-tab-code" data-tab="code" aria-selected="false" aria-controls="html-panel-code">${t('editor.html.tabCode')}</button>
@@ -98,12 +104,11 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     move: { scrollbars: true },
   });
 
-  const savedWorkspace = htmlWorkspaceJson(project);
+  const savedWorkspace = migrateHtmlWorkspaceJson(htmlWorkspaceJson(project));
   if (Object.keys(savedWorkspace).length > 0) {
     Blockly.serialization.workspaces.load(savedWorkspace, workspace);
-  } else {
-    workspace.newBlock('html_page');
   }
+  // No starter block — an empty canvas is valid now; the top-level block stack is the <body>.
   loadingWorkspace = false;
 
   const iframe = host.querySelector<HTMLIFrameElement>('iframe')!;
@@ -111,6 +116,12 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   const codeHost = host.querySelector<HTMLElement>('[data-panel="code"]')!;
   const codePanel = renderCodePanel(codeHost);
   const errorElement = host.querySelector<HTMLElement>('[data-html-error]')!;
+
+  const hint = host.querySelector<HTMLElement>('[data-html-hint]')!;
+  const syncHint = (): void => {
+    hint.hidden = workspace.getTopBlocks(false).length > 0;
+  };
+  syncHint();
 
   const persist = (markDirty = true): void => {
     if (loadingWorkspace || disposed) return;
@@ -128,21 +139,30 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   const onWorkspaceChange = (event: Blockly.Events.Abstract): void => {
     if (event.isUiEvent || loadingWorkspace) return;
     persist();
-    refresh();
+    syncHint();
   };
   workspace.addChangeListener(onWorkspaceChange);
 
   const tabButtons = [...host.querySelectorAll<HTMLButtonElement>('[data-tab]')];
   const panels = [...host.querySelectorAll<HTMLElement>('[data-panel]')];
-  const onTabClick = (event: Event): void => {
-    const selected = event.currentTarget as HTMLButtonElement;
-    const tab = selected.dataset.tab;
+  const activateTab = (tab: 'preview' | 'code'): void => {
     for (const button of tabButtons) {
-      button.setAttribute('aria-selected', String(button === selected));
+      button.setAttribute('aria-selected', String(button.dataset.tab === tab));
     }
     for (const panel of panels) panel.hidden = panel.dataset.panel !== tab;
   };
+  const onTabClick = (event: Event): void => {
+    const selected = event.currentTarget as HTMLButtonElement;
+    activateTab(selected.dataset.tab as 'preview' | 'code');
+  };
   for (const button of tabButtons) button.addEventListener('click', onTabClick);
+
+  const runButton = host.querySelector<HTMLButtonElement>('[data-run-html]')!;
+  const onRun = (): void => {
+    refresh();
+    activateTab('preview');
+  };
+  runButton.addEventListener('click', onRun);
 
   const exportButton = host.querySelector<HTMLButtonElement>('[data-export-html]')!;
   const onExport = (): void => {
@@ -204,6 +224,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     disposed = true;
     workspace.removeChangeListener(onWorkspaceChange);
     for (const button of tabButtons) button.removeEventListener('click', onTabClick);
+    runButton.removeEventListener('click', onRun);
     exportButton.removeEventListener('click', onExport);
     uploadInput.removeEventListener('change', onUpload);
     preview.dispose();

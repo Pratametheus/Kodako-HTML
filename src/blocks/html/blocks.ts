@@ -20,7 +20,6 @@ export function setHtmlAssetOptionsProvider(fn: () => [string, string][]): void 
 }
 
 export const HTML_BLOCK_TYPES = [
-  'html_page',
   'html_section',
   'html_heading',
   'html_paragraph',
@@ -43,33 +42,27 @@ export const HTML_BLOCK_TYPES = [
 export function registerHtmlBlocks(): void {
   Blockly.defineBlocksWithJsonArray([
     {
-      type: 'html_page',
-      message0: 'halaman %1 %2',
-      args0: [{ type: 'input_dummy' }, { type: 'input_statement', name: 'BODY' }],
-      style: 'structure_blocks',
-    },
-    {
       type: 'html_section',
-      message0: 'bagian %1 %2',
-      args0: [{ type: 'input_dummy' }, { type: 'input_statement', name: 'BODY' }],
+      message0: '<section> %1 </section>',
+      args0: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'structure_blocks',
     },
     {
       type: 'html_heading',
-      message0: 'judul %1 ukuran %2',
+      message0: '%1 %2',
       args0: [
-        { type: 'input_value', name: 'TEXT', check: 'String' },
         {
           type: 'field_dropdown',
           name: 'LEVEL',
           options: [
-            ['besar', 'h1'],
-            ['sedang', 'h2'],
-            ['kecil', 'h3'],
+            ['<h1>', 'h1'],
+            ['<h2>', 'h2'],
+            ['<h3>', 'h3'],
           ],
         },
+        { type: 'input_value', name: 'TEXT', check: 'String' },
       ],
       previousStatement: null,
       nextStatement: null,
@@ -77,7 +70,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_paragraph',
-      message0: 'paragraf %1',
+      message0: '<p> %1 </p>',
       args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
       previousStatement: null,
       nextStatement: null,
@@ -85,15 +78,15 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_list',
-      message0: 'daftar %1 %2',
-      args0: [{ type: 'input_dummy' }, { type: 'input_statement', name: 'ITEMS' }],
+      message0: '<ul> %1 </ul>',
+      args0: [{ type: 'input_statement', name: 'ITEMS' }],
       previousStatement: null,
       nextStatement: null,
       style: 'structure_blocks',
     },
     {
       type: 'html_list_item',
-      message0: 'item daftar %1',
+      message0: '<li> %1 </li>',
       args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
       previousStatement: null,
       nextStatement: null,
@@ -101,14 +94,14 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_text',
-      message0: 'teks %1',
+      message0: '<> %1',
       args0: [{ type: 'field_input', name: 'VALUE', text: 'Tulis di sini' }],
       output: 'String',
       style: 'content_blocks',
     },
     {
       type: 'html_image_asset',
-      message0: 'gambar aset %1 teks alt %2',
+      message0: '<img src= %1 alt= %2 >',
       args0: [
         { type: 'field_dropdown', name: 'ASSET', options: () => getAssetOptions() },
         { type: 'field_input', name: 'ALT', text: '' },
@@ -119,7 +112,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_image_url',
-      message0: 'gambar dari URL %1 teks alt %2',
+      message0: '<img src= %1 alt= %2 >',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
         { type: 'field_input', name: 'ALT', text: '' },
@@ -130,7 +123,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_link',
-      message0: 'tautan ke %1 tulisan %2',
+      message0: '<a href= %1 > %2 </a>',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
         { type: 'field_input', name: 'LABEL', text: 'Tulis di sini' },
@@ -141,7 +134,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_button',
-      message0: 'tombol %1',
+      message0: '<button> %1 </button>',
       args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
       previousStatement: null,
       nextStatement: null,
@@ -149,7 +142,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_hr',
-      message0: 'garis pemisah',
+      message0: '<hr>',
       previousStatement: null,
       nextStatement: null,
       style: 'content_blocks',

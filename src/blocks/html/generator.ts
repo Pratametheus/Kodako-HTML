@@ -202,12 +202,10 @@ function emitBlock(
 }
 
 export function generateHtml(workspace: Blockly.Workspace): GeneratedHtml {
-  const page = workspace.getTopBlocks(false).find((block) => block.type === 'html_page');
-  if (!page) return { bodyHtml: '', assetIds: [] };
-
   const assetIds: string[] = [];
-  return {
-    bodyHtml: emitChain(page.getInputTargetBlock('BODY'), 0, assetIds),
-    assetIds,
-  };
+  let bodyHtml = '';
+  for (const block of workspace.getTopBlocks(true)) {
+    bodyHtml += emitChain(block, 0, assetIds);
+  }
+  return { bodyHtml, assetIds };
 }
