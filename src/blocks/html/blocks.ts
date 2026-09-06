@@ -20,6 +20,10 @@ export function setHtmlAssetOptionsProvider(fn: () => [string, string][]): void 
 }
 
 export const HTML_BLOCK_TYPES = [
+  'html_document',
+  'html_head',
+  'html_body',
+  'html_title',
   'html_section',
   'html_heading',
   'html_paragraph',
@@ -42,7 +46,44 @@ export const HTML_BLOCK_TYPES = [
 export function registerHtmlBlocks(): void {
   Blockly.defineBlocksWithJsonArray([
     {
+      type: 'html_document',
+      message0: '<html> %1 </html>',
+      args0: [{ type: 'input_statement', name: 'CONTENT' }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'structure_blocks',
+      tooltip: 'Kerangka satu halaman HTML lengkap (<html>).',
+    },
+    {
+      type: 'html_head',
+      message0: '<head> %1 </head>',
+      args0: [{ type: 'input_statement', name: 'CONTENT' }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'structure_blocks',
+      tooltip: 'Bagian info halaman yang tak tampil di layar, mis. judul tab (<head>).',
+    },
+    {
+      type: 'html_body',
+      message0: '<body> %1 </body>',
+      args0: [{ type: 'input_statement', name: 'CONTENT' }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'structure_blocks',
+      tooltip: 'Isi halaman yang tampil di layar (<body>).',
+    },
+    {
+      type: 'html_title',
+      message0: '<title> %1 </title>',
+      args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
+      previousStatement: null,
+      nextStatement: null,
+      style: 'structure_blocks',
+      tooltip: 'Judul halaman yang muncul di tab browser (<title>).',
+    },
+    {
       type: 'html_section',
+      tooltip: 'Satu bagian halaman untuk mengelompokkan isi (<section>).',
       message0: '<section> %1 </section>',
       args0: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
@@ -51,6 +92,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_heading',
+      tooltip: 'Judul bagian dengan ukuran h1, h2, atau h3 (<h1>).',
       message0: '%1 %2',
       args0: [
         {
@@ -70,6 +112,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_paragraph',
+      tooltip: 'Satu paragraf teks (<p>).',
       message0: '<p> %1 </p>',
       args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
       previousStatement: null,
@@ -78,6 +121,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_list',
+      tooltip: 'Daftar berpoin (<ul>) — isi dengan blok <li>.',
       message0: '<ul> %1 </ul>',
       args0: [{ type: 'input_statement', name: 'ITEMS' }],
       previousStatement: null,
@@ -86,6 +130,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_list_item',
+      tooltip: 'Satu butir di dalam daftar (<li>).',
       message0: '<li> %1 </li>',
       args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
       previousStatement: null,
@@ -94,6 +139,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_text',
+      tooltip: 'Sepotong teks biasa untuk diisikan ke blok lain.',
       message0: '<> %1',
       args0: [{ type: 'field_input', name: 'VALUE', text: 'Tulis di sini' }],
       output: 'String',
@@ -101,6 +147,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_image_asset',
+      tooltip: 'Menampilkan gambar dari pustaka aset (<img>).',
       message0: '<img src= %1 alt= %2 >',
       args0: [
         { type: 'field_dropdown', name: 'ASSET', options: () => getAssetOptions() },
@@ -112,6 +159,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_image_url',
+      tooltip: 'Menampilkan gambar dari alamat web (<img>).',
       message0: '<img src= %1 alt= %2 >',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
@@ -123,6 +171,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_link',
+      tooltip: 'Tautan yang bisa diklik ke halaman lain (<a>).',
       message0: '<a href= %1 > %2 </a>',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
@@ -134,6 +183,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_button',
+      tooltip: 'Tombol yang bisa ditekan (<button>).',
       message0: '<button> %1 </button>',
       args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
       previousStatement: null,
@@ -142,6 +192,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_hr',
+      tooltip: 'Garis pemisah mendatar (<hr>).',
       message0: '<hr>',
       previousStatement: null,
       nextStatement: null,
@@ -149,7 +200,8 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_style_color',
-      message0: 'warna teks %1 %2',
+      tooltip: 'Mengubah warna teks isinya (CSS color).',
+      message0: 'color: %1 %2',
       args0: [
         { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
         { type: 'input_statement', name: 'BODY' },
@@ -160,7 +212,8 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_style_bg',
-      message0: 'warna latar %1 %2',
+      tooltip: 'Mengubah warna latar isinya (CSS background).',
+      message0: 'background: %1 %2',
       args0: [
         { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
         { type: 'input_statement', name: 'BODY' },
@@ -171,7 +224,8 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_style_align',
-      message0: 'rata %1 %2',
+      tooltip: 'Mengatur perataan teks isinya: kiri, tengah, kanan (CSS text-align).',
+      message0: 'text-align: %1 %2',
       args0: [
         {
           type: 'field_dropdown',
@@ -190,7 +244,8 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_style_size',
-      message0: 'ukuran %1 %2',
+      tooltip: 'Mengubah ukuran teks isinya (CSS font-size).',
+      message0: 'font-size: %1 %2',
       args0: [
         {
           type: 'field_dropdown',
@@ -209,7 +264,8 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_style_bold',
-      message0: 'tebal %1',
+      tooltip: 'Menebalkan teks isinya (CSS font-weight: bold).',
+      message0: 'font-weight: bold %1',
       args0: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
@@ -217,7 +273,8 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_style_italic',
-      message0: 'miring %1',
+      tooltip: 'Memiringkan teks isinya (CSS font-style: italic).',
+      message0: 'font-style: italic %1',
       args0: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,

@@ -40,7 +40,7 @@ describe('HTML block generator', () => {
   });
 
   it('returns an empty result for an empty workspace', () => {
-    expect(generateHtml(workspace)).toEqual({ bodyHtml: '', assetIds: [] });
+    expect(generateHtml(workspace)).toEqual({ headHtml: '', bodyHtml: '', assetIds: [] });
   });
 
   it('emits escaped paragraph text exactly', () => {
@@ -67,7 +67,9 @@ describe('HTML block generator', () => {
     append(first, second);
     connectStatement(section, 'BODY', first);
 
-    expect(generateHtml(workspace).bodyHtml).toBe('<div>\n  <p>A</p>\n  <p>B</p>\n</div>\n');
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<section>\n  <p>A</p>\n  <p>B</p>\n</section>\n',
+    );
   });
 
   it('emits an indented unordered list', () => {
@@ -134,7 +136,7 @@ describe('HTML block generator', () => {
     append(bold, italic);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<div style="font-weight:bold">\n</div>\n<ul style="font-style:italic">\n</ul>\n',
+      '<section style="font-weight:bold">\n</section>\n<ul style="font-style:italic">\n</ul>\n',
     );
   });
 
@@ -149,6 +151,7 @@ describe('HTML block generator', () => {
     image.setFieldValue('Kucing <x>', 'ALT');
 
     expect(generateHtml(workspace)).toEqual({
+      headHtml: '',
       bodyHtml: '<img src="asset:img_1" alt="Kucing &lt;x&gt;">\n',
       assetIds: ['img_1'],
     });
@@ -175,7 +178,7 @@ describe('HTML block generator', () => {
     connectText(paragraph, 'Isi');
     connectStatement(section, 'BODY', paragraph);
 
-    expect(generateHtml(workspace).bodyHtml).toBe('<div>\n  <p>Isi</p>\n</div>\n');
+    expect(generateHtml(workspace).bodyHtml).toBe('<section>\n  <p>Isi</p>\n</section>\n');
   });
 
   it('emits a link with escaped attributes and label text', () => {
@@ -268,5 +271,65 @@ describe('HTML block generator', () => {
     const result = generateHtml(workspace).bodyHtml;
     expect(result).toBe('<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>\n');
     expect(result).not.toContain('<script>');
+  });
+  it('renders the full document skeleton via html_document', () => {
+    const doc = statement(workspace, 'html_document');
+    const head = statement(workspace, 'html_head');
+    const title = statement(workspace, 'html_title');
+    const body = statement(workspace, 'html_body');
+    const p = statement(workspace, 'html_paragraph');
+    connectText(title, 'Halaman Saya');
+    connectText(p, 'Halo');
+    connectStatement(body, 'CONTENT', p);
+    connectStatement(head, 'CONTENT', title);
+    append(head, body);
+    connectStatement(doc, 'CONTENT', head);
+
+    const out = generateHtml(workspace);
+    expect(out.headHtml).toBe('<title>Halaman Saya</title>\n');
+    expect(out.bodyHtml).toBe('<p>Halo</p>\n');
+  });
+
+  it('ignores loose top-level blocks when an html_document is present', () => {
+    const doc = statement(workspace, 'html_document');
+    const body = statement(workspace, 'html_body');
+    const inside = statement(workspace, 'html_paragraph');
+    connectText(inside, 'dipakai');
+    connectStatement(body, 'CONTENT', inside);
+    connectStatement(doc, 'CONTENT', body);
+
+    const loose = statement(workspace, 'html_paragraph');
+    connectText(loose, 'diabaikan');
+    loose.moveBy(0, 200);
+
+    const out = generateHtml(workspace);
+    expect(out.bodyHtml).toBe('<p>dipakai</p>\n');
+    expect(out.bodyHtml).not.toContain('diabaikan');
+  });
+
+  it('no html_document: headHtml is empty and body matches the flat output', () => {
+    const first = statement(workspace, 'html_paragraph');
+    connectText(first, 'a');
+    const second = statement(workspace, 'html_paragraph');
+    connectText(second, 'b');
+    second.moveBy(0, 100);
+    const out = generateHtml(workspace);
+    expect(out.headHtml).toBe('');
+    expect(out.bodyHtml).toBe('<p>a</p>\n<p>b</p>\n');
+  });
+
+  it('ignores a <body> or <title> placed in the body path', () => {
+    const outerBody = statement(workspace, 'html_document');
+    const b1 = statement(workspace, 'html_body');
+    const nestedBody = statement(workspace, 'html_body');
+    const title = statement(workspace, 'html_title');
+    const p = statement(workspace, 'html_paragraph');
+    connectText(title, 'x');
+    connectText(p, 'ok');
+    append(p, nestedBody);
+    append(nestedBody, title);
+    connectStatement(b1, 'CONTENT', p);
+    connectStatement(outerBody, 'CONTENT', b1);
+    expect(generateHtml(workspace).bodyHtml).toBe('<p>ok</p>\n');
   });
 });

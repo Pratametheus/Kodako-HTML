@@ -6,16 +6,44 @@ export const HTML_DOCUMENT_RESET =
 export function wrapBodyInDocument(
   title: string,
   bodyHtml: string,
-  opts: { lang?: string } = {},
+  opts: { lang?: string; headHtml?: string } = {},
 ): string {
   const lang = escapeHtmlAttr(opts.lang ?? 'id');
+  const headHtml = opts.headHtml ?? '';
+  const titleTag = /<title[\s>]/i.test(headHtml)
+    ? headHtml
+    : `<title>${escapeHtmlText(title)}</title>`;
   return (
     `<!doctype html><html lang="${lang}"><head>` +
     '<meta charset="utf-8">' +
     "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'none'; object-src 'none'; base-uri 'none'\">" +
     '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-    `<title>${escapeHtmlText(title)}</title>` +
+    titleTag +
     `<style>${HTML_DOCUMENT_RESET}</style>` +
     `</head><body>${bodyHtml}</body></html>`
   );
+}
+
+export function composeDisplayDocument(input: {
+  headHtml: string;
+  bodyHtml: string;
+  lang?: string;
+  fallbackTitle: string;
+}): string {
+  const lang = escapeHtmlAttr(input.lang ?? 'id');
+  const titleLine = /<title[\s>]/i.test(input.headHtml)
+    ? input.headHtml.trim()
+    : `<title>${escapeHtmlText(input.fallbackTitle)}</title>`;
+  return [
+    '<!doctype html>',
+    `<html lang="${lang}">`,
+    '<head>',
+    titleLine,
+    '</head>',
+    '<body>',
+    input.bodyHtml.replace(/\n$/, ''),
+    '</body>',
+    '</html>',
+    '',
+  ].join('\n');
 }

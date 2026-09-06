@@ -230,6 +230,19 @@ reset) di antara panel blok dan sisi kanan tiap mode. Grid memakai
 `onResize` memanggil `Blockly.svgResize`. Gutter disembunyikan di layout
 bertumpuk Mode HTML (`@media (max-width: 900px)`).
 
+Blok kerangka dokumen (Fase C): `<html>` / `<head>` / `<body>` / `<title>`
+opsional di kategori Struktur. `generateHtml` mengembalikan
+`{ headHtml, bodyHtml, assetIds }`; tanpa `html_document` perilakunya persis
+seperti sebelumnya (blok top-level = isi body). Panel "Lihat Kode" kini
+menampilkan dokumen penuh lewat `composeDisplayDocument` (tanpa meta CSP; CSP
+tetap ada di pratinjau & ekspor lewat `wrapBodyInDocument`). Label blok gaya
+memakai notasi properti CSS (`color:`, `background:`, `text-align:`,
+`font-size:`, `font-weight: bold`, `font-style: italic`) — field & nilai
+dropdown tak berubah. Tiap blok HTML punya `tooltip`; strip "Info blok" di
+toolbar keluaran mencerminkan tooltip blok yang dipilih
+(`src/app/editor/html-mode/block-info.ts`, click-delegation). Perbaikan
+sampingan: `html_section` kini meng-emit `<section>` (dulu `<div>`).
+
 ### 4.3 Daftar blok — Mode Sprite
 
 Topi (hat):

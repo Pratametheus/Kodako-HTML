@@ -174,6 +174,13 @@ di kedua mode (`src/app/editor/resizable-split.ts`): gutter dengan
 `role="separator"` + panah + klik-ganda reset, posisi disimpan per mode di
 `localStorage`.
 
+Fase C (2026-09-06): blok `<html>` / `<head>` / `<body>` / `<title>` opsional di
+kategori Struktur; `generateHtml` → `{ headHtml, bodyHtml, assetIds }` (fallback
+identik tanpa `html_document`); panel "Lihat Kode" menampilkan dokumen penuh
+(CSP tetap di pratinjau & ekspor); label blok gaya = notasi properti CSS;
+`tooltip` + strip "Info blok" di setiap blok HTML; `html_section` → `<section>`.
+Lihat `docs/superpowers/specs/2026-09-06-phase-c-html-document-blocks-design.md`.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini

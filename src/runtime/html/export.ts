@@ -18,8 +18,9 @@ export function buildStandaloneDocument(
   title: string,
   bodyHtml: string,
   assets: Record<string, { ref: string }>,
+  headHtml = '',
 ): string {
-  return wrapBodyInDocument(title, inlineAssetSources(bodyHtml, assets));
+  return wrapBodyInDocument(title, inlineAssetSources(bodyHtml, assets), { headHtml });
 }
 
 export async function exportHtmlProject(project: Project, storage: Storage): Promise<void> {
@@ -27,8 +28,8 @@ export async function exportHtmlProject(project: Project, storage: Storage): Pro
   const workspace = new Blockly.Workspace();
   try {
     Blockly.serialization.workspaces.load(htmlWorkspaceJson(project), workspace);
-    const { bodyHtml } = generateHtml(workspace);
-    const html = buildStandaloneDocument(project.meta.name, bodyHtml, project.assets);
+    const { headHtml, bodyHtml } = generateHtml(workspace);
+    const html = buildStandaloneDocument(project.meta.name, bodyHtml, project.assets, headHtml);
     await storage.exportHtml(project.meta.name, html);
   } finally {
     workspace.dispose();

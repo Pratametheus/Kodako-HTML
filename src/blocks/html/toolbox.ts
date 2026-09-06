@@ -16,6 +16,10 @@ export const htmlToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
         icon: 'kodako-cat-icon kodako-cat-icon--structure',
       },
       contents: [
+        { kind: 'block', type: 'html_document' },
+        { kind: 'block', type: 'html_head' },
+        { kind: 'block', type: 'html_title', inputs: { TEXT: textShadow('Halaman Saya') } },
+        { kind: 'block', type: 'html_body' },
         { kind: 'block', type: 'html_section' },
         { kind: 'block', type: 'html_heading', inputs: { TEXT: textShadow() } },
         { kind: 'block', type: 'html_paragraph', inputs: { TEXT: textShadow() } },

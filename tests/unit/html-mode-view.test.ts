@@ -58,6 +58,7 @@ describe('HTML mode view', () => {
     });
 
     expect(host.querySelector('#htmlBlocklyDiv')).toBeTruthy();
+    expect(host.querySelector('[data-block-info]')).toBeTruthy();
     const iframe = host.querySelector('iframe')!;
     expect(iframe.getAttribute('sandbox')).toBe('allow-same-origin');
     expect(iframe.getAttribute('sandbox')).not.toContain('allow-scripts');
@@ -104,6 +105,8 @@ describe('HTML mode view', () => {
 
     expect(host.querySelector<HTMLElement>('[data-panel="code"]')!.hidden).toBe(false);
     expect(host.querySelector('[data-panel="code"]')?.textContent).toContain('<p>Halo</p>');
+    expect(host.querySelector('[data-panel="code"]')?.textContent).toContain('<!doctype html>');
+    expect(host.querySelector('[data-panel="code"]')?.textContent).toContain('<body>');
     cleanup();
   });
 

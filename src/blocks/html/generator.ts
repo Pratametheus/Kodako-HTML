@@ -2,6 +2,7 @@ import type * as Blockly from 'blockly/core';
 import { escapeHtmlAttr, escapeHtmlText } from '../../runtime/html/escape';
 
 export type GeneratedHtml = {
+  headHtml: string;
   bodyHtml: string;
   assetIds: string[];
 };
@@ -125,7 +126,7 @@ function emitChain(
 function emitContainer(
   block: Blockly.Block,
   inputName: string,
-  tag: 'div' | 'ul',
+  tag: 'section' | 'ul',
   depth: number,
   assetIds: string[],
   styleFragments: string[],
@@ -143,8 +144,13 @@ function emitBlock(
 ): string {
   const prefix = indent(depth);
   switch (block.type) {
+    case 'html_document':
+    case 'html_head':
+    case 'html_body':
+    case 'html_title':
+      return '';
     case 'html_section':
-      return emitContainer(block, 'BODY', 'div', depth, assetIds, styleFragments);
+      return emitContainer(block, 'BODY', 'section', depth, assetIds, styleFragments);
     case 'html_list':
       return emitContainer(block, 'ITEMS', 'ul', depth, assetIds, styleFragments);
     case 'html_heading': {
@@ -201,11 +207,41 @@ function emitBlock(
   }
 }
 
+function firstChildOfType(
+  block: Blockly.Block,
+  inputName: string,
+  type: string,
+): Blockly.Block | null {
+  let current = block.getInputTargetBlock(inputName);
+  while (current) {
+    if (current.type === type) return current;
+    current = current.getNextBlock();
+  }
+  return null;
+}
+
+function emitHead(headBlock: Blockly.Block): string {
+  const title = firstChildOfType(headBlock, 'CONTENT', 'html_title');
+  if (!title) return '';
+  return `<title>${escapeHtmlText(textInput(title, 'TEXT'))}</title>\n`;
+}
+
 export function generateHtml(workspace: Blockly.Workspace): GeneratedHtml {
   const assetIds: string[] = [];
+  const top = workspace.getTopBlocks(true);
+  const doc = top.find((b) => b.type === 'html_document') ?? null;
+
+  if (doc) {
+    const head = firstChildOfType(doc, 'CONTENT', 'html_head');
+    const body = firstChildOfType(doc, 'CONTENT', 'html_body');
+    const headHtml = head ? emitHead(head) : '';
+    const bodyHtml = body ? emitChain(body.getInputTargetBlock('CONTENT'), 0, assetIds) : '';
+    return { headHtml, bodyHtml, assetIds };
+  }
+
   let bodyHtml = '';
-  for (const block of workspace.getTopBlocks(true)) {
+  for (const block of top) {
     bodyHtml += emitChain(block, 0, assetIds);
   }
-  return { bodyHtml, assetIds };
+  return { headHtml: '', bodyHtml, assetIds };
 }
