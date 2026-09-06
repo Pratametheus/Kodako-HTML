@@ -39,6 +39,33 @@ function projectWithParagraph(text: string): Project {
 }
 
 describe('standalone HTML export', () => {
+  it('exports document-block title and body while preserving CSP', async () => {
+    const workspace = new Blockly.Workspace();
+    const doc = workspace.newBlock('html_document');
+    const head = workspace.newBlock('html_head');
+    const title = workspace.newBlock('html_title');
+    const body = workspace.newBlock('html_body');
+    const paragraph = workspace.newBlock('html_paragraph');
+    const titleText = workspace.newBlock('html_text');
+    const paragraphText = workspace.newBlock('html_text');
+    titleText.setFieldValue('Halaman Saya', 'VALUE');
+    paragraphText.setFieldValue('Halo', 'VALUE');
+    title.getInput('TEXT')!.connection!.connect(titleText.outputConnection!);
+    paragraph.getInput('TEXT')!.connection!.connect(paragraphText.outputConnection!);
+    head.getInput('CONTENT')!.connection!.connect(title.previousConnection!);
+    body.getInput('CONTENT')!.connection!.connect(paragraph.previousConnection!);
+    head.nextConnection!.connect(body.previousConnection!);
+    doc.getInput('CONTENT')!.connection!.connect(head.previousConnection!);
+    const project = createEmptyProject('Nama Proyek');
+    project.html.workspace = Blockly.serialization.workspaces.save(workspace);
+    workspace.dispose();
+    const storage = new FakeStorage();
+    await exportHtmlProject(project, storage);
+    expect(storage.exported).toHaveLength(1);
+    expect(storage.exported[0]?.html).toContain('<title>Halaman Saya</title>');
+    expect(storage.exported[0]?.html).toContain('<p>Halo</p>');
+    expect(storage.exported[0]?.html).toContain('Content-Security-Policy');
+  });
   it('builds a complete document', () => {
     const html = buildStandaloneDocument('Judul', '<p>hi</p>', {});
     expect(html).toContain('<!doctype html>');
