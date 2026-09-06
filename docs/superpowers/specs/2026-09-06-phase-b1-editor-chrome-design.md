@@ -144,12 +144,15 @@ Satu blok token editor bersama di `src/app/editor/editor.css`:
 
 ### 3. Tombol jalankan = ikon saja
 
-- **Sprite** (`sprite-mode.ts:81`): isi tombol jadi hanya `▶` (atau glyph
-  bendera). Tetap `aria-label="${t('editor.sprite.run')}"` + tambah
-  `title="${t('editor.sprite.run')}"`. CSS: bujur sangkar membulat ~40×40,
-  hijau, tetap `flex: 1`? → **tidak**: karena tak ada teks, jangan regangkan;
-  jadikan lebar tetap ~44px, sisakan ruang untuk tombol Stop di sampingnya.
-  (Cek markup toolbar panggung; sesuaikan `sprite-stage-toolbar`.)
+- **Sprite** (`sprite-mode.ts:81`): isi tombol jadi **glyph bendera hijau**
+  (SVG inline, ~18px, `fill` = hijau aksen sprite `#20a464` untuk bagian kain,
+  tiang gelap) — bukan `▶`. Bendera hijau adalah standar universal "jalankan" di
+  coding blok, langsung dikenali anak. Tetap `aria-label="${t('editor.sprite.run')}"`
+  + tambah `title="${t('editor.sprite.run')}"`. CSS: karena tak ada teks, jangan
+  regangkan — lebar tetap ~44×40 membulat, latar hijau; sisakan ruang untuk
+  tombol Stop di sampingnya (cek markup `sprite-stage-toolbar`; kalau tombol
+  jalankan sebelumnya `flex: 1`, ganti jadi lebar tetap dan biarkan Stop mengisi
+  sisa atau tetap alami).
 - **HTML** (`html-mode.ts:73`): isi jadi hanya `▶`. Tambah
   `aria-label="${t('editor.html.run')}"` + `title=...`. CSS `.html-mode__run`:
   jadi tombol ikon ~40×40 (hapus `justify-self: start` + padding teks).
