@@ -24,6 +24,7 @@
   Claude-Session: https://claude.ai/code/session_013btUoirk4SyfGZ71mExnFf
   ```
 - **Full gate (must be green before the PR):** `npm run lint && npm run typecheck && npm test && npm run build && npm run check:chunks && npm run test:e2e`.
+- **Formatting:** the code blocks in this plan are not guaranteed Prettier-clean. After creating/editing any file in a task, run `npm run format` before that task's lint/commit step; a Prettier-only `lint` failure is fixed with `npm run format`, never by hand.
 
 ---
 
