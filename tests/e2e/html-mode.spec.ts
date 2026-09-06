@@ -188,4 +188,11 @@ test('document skeleton blocks drive the head + the code panel shows the full pa
   await expect(code).toContainText('<body>');
   await expect(code).toContainText('Halo dunia');
   await expect(code).not.toContainText('Content-Security-Policy');
+
+  // "Info blok" strip: starts as a hint, shows the clicked block's tooltip.
+  const info = page.locator('[data-block-info]');
+  await expect(info).toHaveText('Klik sebuah blok untuk melihat penjelasannya.');
+  await page.locator('.blocklyDraggable').first().click();
+  await expect(info).not.toHaveText('Klik sebuah blok untuk melihat penjelasannya.');
+  await expect(info).toContainText('<');
 });
