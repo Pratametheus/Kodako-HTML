@@ -11,7 +11,10 @@ export const htmlToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       kind: 'category',
       name: 'Struktur',
       categorystyle: 'structure_category',
-      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--structure' },
+      cssconfig: {
+        container: 'blocklyToolboxCategory kodako-cat kodako-cat--structure',
+        icon: 'kodako-cat-icon kodako-cat-icon--structure',
+      },
       contents: [
         { kind: 'block', type: 'html_section' },
         { kind: 'block', type: 'html_heading', inputs: { TEXT: textShadow() } },
@@ -24,7 +27,10 @@ export const htmlToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       kind: 'category',
       name: 'Konten',
       categorystyle: 'content_category',
-      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--content' },
+      cssconfig: {
+        container: 'blocklyToolboxCategory kodako-cat kodako-cat--content',
+        icon: 'kodako-cat-icon kodako-cat-icon--content',
+      },
       contents: [
         { kind: 'block', type: 'html_text' },
         { kind: 'block', type: 'html_image_asset' },
@@ -38,7 +44,10 @@ export const htmlToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       kind: 'category',
       name: 'Gaya',
       categorystyle: 'style_category',
-      cssconfig: { icon: 'kodako-cat-icon kodako-cat-icon--style' },
+      cssconfig: {
+        container: 'blocklyToolboxCategory kodako-cat kodako-cat--style',
+        icon: 'kodako-cat-icon kodako-cat-icon--style',
+      },
       contents: [
         { kind: 'block', type: 'html_style_color' },
         { kind: 'block', type: 'html_style_bg' },

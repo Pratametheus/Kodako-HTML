@@ -9,6 +9,7 @@ import { registerSpriteGenerators } from './sprite/generator';
 import { spriteTheme } from './theme';
 
 export { Blockly, spriteTheme };
+export { attachToolboxWash } from './toolbox-wash';
 export { KodakoVerticalFlyout } from './flyout';
 export { setHtmlAssetOptionsProvider } from './html/blocks';
 export { generateHtml } from './html/generator';

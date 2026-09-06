@@ -6,12 +6,21 @@ type Cat = {
   name?: string;
   categorystyle?: string;
   custom?: string;
-  cssconfig?: { icon?: string };
+  cssconfig?: { icon?: string; container?: string };
 };
 
 const categories = (spriteToolbox as { contents: Cat[] }).contents;
 
 describe('sprite toolbox', () => {
+  it('gives every category a matching rail container + icon class', () => {
+    for (const category of categories) {
+      const icon = category.cssconfig?.icon ?? '';
+      const container = category.cssconfig?.container ?? '';
+      expect(icon).toMatch(/^kodako-cat-icon kodako-cat-icon--[a-z]+$/);
+      const key = icon.split('--')[1];
+      expect(container).toBe(`blocklyToolboxCategory kodako-cat kodako-cat--${key}`);
+    }
+  });
   it('lists categories in Scratch-Indonesia order', () => {
     expect(categories.map((c) => c.name)).toEqual([
       'Gerakan',

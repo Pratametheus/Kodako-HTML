@@ -6,6 +6,7 @@ import {
   setSensingTargetsProvider,
   setSoundOptionsProvider,
   spriteTheme,
+  attachToolboxWash,
 } from '../../../blocks';
 import { spriteToolbox } from '../../../blocks/sprite/toolbox';
 import { newId } from '../../../core/ids';
@@ -107,6 +108,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     zoom: { controls: true, wheel: true },
     move: { scrollbars: true },
   });
+  const detachWash = attachToolboxWash(workspace);
 
   const debugWindow = window as Window & {
     Blockly?: Partial<typeof Blockly> & { getMainWorkspace?: () => Blockly.WorkspaceSvg };
@@ -545,6 +547,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     detachAnimation?.();
     scheduler.stopAll();
     workspace.removeChangeListener(onWorkspaceChange);
+    detachWash();
     workspace.dispose();
     stage.dispose();
     spritePanel.dispose();

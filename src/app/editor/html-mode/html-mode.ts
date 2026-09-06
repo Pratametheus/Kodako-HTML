@@ -6,6 +6,7 @@ import {
   installHtmlBlockly,
   setHtmlAssetOptionsProvider,
   spriteTheme,
+  attachToolboxWash,
 } from '../../../blocks';
 import {
   htmlWorkspaceJson,
@@ -103,6 +104,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     zoom: { controls: true, wheel: true },
     move: { scrollbars: true },
   });
+  const detachWash = attachToolboxWash(workspace);
 
   const savedWorkspace = migrateHtmlWorkspaceJson(htmlWorkspaceJson(project));
   if (Object.keys(savedWorkspace).length > 0) {
@@ -229,6 +231,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     uploadInput.removeEventListener('change', onUpload);
     preview.dispose();
     codePanel.dispose();
+    detachWash();
     workspace.dispose();
     setHtmlAssetOptionsProvider(() => [['(tidak ada gambar)', '']]);
     delete debugWindow.__kodakoHtml;
