@@ -211,3 +211,13 @@
     scroll-behavior: auto !important;
   }
 }
+.html-mode__blockinfo {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 2px 4px;
+  font-size: 0.8rem;
+  color: #5c7784;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

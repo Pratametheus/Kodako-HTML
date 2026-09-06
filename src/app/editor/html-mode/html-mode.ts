@@ -17,6 +17,8 @@ import { newId } from '../../../core/ids';
 import type { Project } from '../../../core/project';
 import type { Storage } from '../../../core/storage';
 import { exportHtmlProject } from '../../../runtime/html/export';
+import { composeDisplayDocument } from '../../../runtime/html/document';
+import { attachBlockInfo } from './block-info';
 import { createHtmlPreview } from '../../../runtime/html/preview';
 import { BUILTIN_COSTUMES, loadUploadedImage } from '../../../runtime/sprite/assets';
 import { t } from '../../i18n';
@@ -72,6 +74,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       </section>
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
+          <p class="html-mode__blockinfo" data-block-info></p>
           <button type="button" class="html-mode__run" data-run-html aria-label="${t('editor.html.run')}" title="${t('editor.html.run')}">▶</button>
           <div class="html-mode__tabs" role="tablist" aria-label="${t('a11y.previewTablist')}">
             <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
@@ -114,6 +117,11 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     onResize: () => Blockly.svgResize(workspace),
   });
 
+  const detachInfo = attachBlockInfo(
+    workspace,
+    host.querySelector<HTMLElement>('[data-block-info]'),
+  );
+
   const savedWorkspace = migrateHtmlWorkspaceJson(htmlWorkspaceJson(project));
   if (Object.keys(savedWorkspace).length > 0) {
     Blockly.serialization.workspaces.load(savedWorkspace, workspace);
@@ -141,9 +149,11 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   };
 
   const refresh = (): void => {
-    const { bodyHtml } = generateHtml(workspace);
-    preview.update(bodyHtml);
-    codePanel.setCode(bodyHtml);
+    const { headHtml, bodyHtml } = generateHtml(workspace);
+    preview.update(bodyHtml, headHtml);
+    codePanel.setCode(
+      composeDisplayDocument({ headHtml, bodyHtml, fallbackTitle: project.meta.name }),
+    );
   };
 
   const onWorkspaceChange = (event: Blockly.Events.Abstract): void => {
@@ -221,11 +231,14 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   const debugWindow = window as Window & {
     Blockly?: Partial<typeof Blockly> & { getMainWorkspace?: () => Blockly.WorkspaceSvg };
     __kodakoBlockly?: typeof Blockly & { getMainWorkspace: () => Blockly.WorkspaceSvg };
-    __kodakoHtml?: { bodyHtml: () => string };
+    __kodakoHtml?: { bodyHtml: () => string; headHtml: () => string };
   };
   debugWindow.__kodakoBlockly = { ...Blockly, getMainWorkspace: () => workspace };
   debugWindow.Blockly = Object.assign(debugWindow.Blockly ?? {}, debugWindow.__kodakoBlockly);
-  debugWindow.__kodakoHtml = { bodyHtml: () => generateHtml(workspace).bodyHtml };
+  debugWindow.__kodakoHtml = {
+    bodyHtml: () => generateHtml(workspace).bodyHtml,
+    headHtml: () => generateHtml(workspace).headHtml,
+  };
   __htmlModeHandle.current = { workspace };
   refresh();
 
@@ -240,6 +253,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     preview.dispose();
     codePanel.dispose();
     detachWash();
+    detachInfo();
     detachSplit();
     workspace.dispose();
     setHtmlAssetOptionsProvider(() => [['(tidak ada gambar)', '']]);

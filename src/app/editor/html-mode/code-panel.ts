@@ -17,8 +17,8 @@ const VOID_TAGS = new Set([
   'meta',
 ]);
 
-function prettyPrintHtml(bodyHtml: string): string {
-  const source = bodyHtml.trim();
+function prettyPrintHtml(source: string): string {
+  source = source.trim();
   if (!source) return '';
 
   let depth = 0;
@@ -41,7 +41,7 @@ function prettyPrintHtml(bodyHtml: string): string {
 }
 
 export type HtmlCodePanel = {
-  setCode(bodyHtml: string): void;
+  setCode(documentHtml: string): void;
   dispose(): void;
 };
 
@@ -56,8 +56,8 @@ export function renderCodePanel(host: HTMLElement): HtmlCodePanel {
   host.append(pre);
 
   return {
-    setCode(bodyHtml: string): void {
-      const pretty = prettyPrintHtml(bodyHtml);
+    setCode(documentHtml: string): void {
+      const pretty = prettyPrintHtml(documentHtml);
       code.innerHTML = hljs.highlight(pretty, { language: 'xml' }).value;
     },
     dispose(): void {
