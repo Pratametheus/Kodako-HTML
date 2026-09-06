@@ -2,15 +2,15 @@ import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-const html = readFileSync(resolve(__dirname, '../../landing.html'), 'utf8');
+const html = readFileSync(resolve(__dirname, '../../index.html'), 'utf8');
 
-describe('landing.html', () => {
+describe('landing page (index.html)', () => {
   it('is in Indonesian and set to lang="id"', () => {
     expect(html).toContain('lang="id"');
     expect(html).toMatch(/Mulai Buat/);
   });
   it('links the primary CTA to the editor entry', () => {
-    expect(html).toMatch(/data-cta-editor[^>]*href="\/index\.html"/);
+    expect(html).toMatch(/data-cta-editor[^>]*href="\/editor\.html"/);
   });
   it('has a download CTA and a teacher section', () => {
     expect(html).toContain('data-cta-download');

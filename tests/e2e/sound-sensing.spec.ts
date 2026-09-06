@@ -4,7 +4,7 @@ import type { Page } from '@playwright/test';
 /* eslint-disable @typescript-eslint/no-explicit-any -- browser debug hooks intentionally mirror Blockly's untyped E2E boundary */
 
 async function openNewSpriteProject(page: Page): Promise<void> {
-  await page.goto('/index.html#/');
+  await page.goto('/editor.html#/');
   await page.getByRole('button', { name: 'Project Baru' }).click();
   await expect(page).toHaveURL(/#\/editor\/proj_/);
   await expect(page.locator('#blocklyDiv')).toBeVisible();

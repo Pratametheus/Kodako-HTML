@@ -6,8 +6,8 @@ export default defineConfig({
     chunkSizeWarningLimit: 700,
     rollupOptions: {
       input: {
-        editor: resolve(__dirname, 'index.html'),
-        landing: resolve(__dirname, 'landing.html'),
+        landing: resolve(__dirname, 'index.html'),
+        editor: resolve(__dirname, 'editor.html'),
       },
       output: {
         manualChunks(id: string): string | undefined {

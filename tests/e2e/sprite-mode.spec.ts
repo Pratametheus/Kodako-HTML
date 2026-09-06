@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 /* eslint-disable @typescript-eslint/no-explicit-any -- browser debug hooks intentionally mirror Blockly's untyped E2E boundary */
 
 test('green flag runs a script and the sprite moves; workspace persists', async ({ page }) => {
-  await page.goto('/index.html#/');
+  await page.goto('/editor.html#/');
   await page.getByRole('button', { name: 'Project Baru' }).click();
   await expect(page).toHaveURL(/#\/editor\/proj_/);
 

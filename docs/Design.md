@@ -61,8 +61,8 @@ game-html/
     PRD.md
     Design.md
     ROADMAP.md
-  index.html                 # entri editor
-  landing.html               # entri landing page
+  index.html                 # entri landing page (root situs)
+  editor.html                # entri editor SPA (/editor.html)
   public/                    # favicon, og-image, ikon
   src/
     app/
@@ -444,10 +444,10 @@ interface Storage {
   `localStorage` (webview Tauri menyediakannya) — konsisten & sederhana.
 - Pemilihan: `const storage = ('__TAURI__' in window) ? new TauriStorage() : new WebStorage()`.
 
-## 10. Landing page (`landing.html`)
+## 10. Landing page (`index.html`, di root situs)
 
-- Statis, dibangun oleh Vite sebagai halaman kedua (`build.rollupOptions.input`).
-- Bagian: Hero (nama, tagline, tombol "Mulai Buat" → `index.html`, "Unduh
+- Statis, dibangun oleh Vite sebagai salah satu halaman (`build.rollupOptions.input`).
+- Bagian: Hero (nama, tagline, tombol "Mulai Buat" → `editor.html`, "Unduh
   Aplikasi" → GitHub Releases) · "Apa ini?" · 3 langkah cara pakai · cuplikan
   mode Sprite & HTML (gambar statis) · bagian untuk guru (tautan unduh modul
   ajar — placeholder di rilis 1) · footer (lisensi kode, kredit aset CC0).
@@ -492,8 +492,9 @@ pada tiap push/PR. Build desktop hanya pada tag `v*`.
 
 ## 14. Build & rilis
 
-- **Web**: `vite build` → `dist/` berisi `index.html` (editor) + `landing.html`
-  + aset. Deploy statis ke GitHub Pages / Netlify / Cloudflare Pages.
+- **Web**: `vite build` → `dist/` berisi `index.html` (landing, di root) +
+  `editor.html` (editor SPA) + aset. Deploy statis ke GitHub Pages / Netlify /
+  Cloudflare Pages.
 - **Desktop**: `tauri build` → installer Windows (`.msi` / `.exe`), di-*attach*
   ke GitHub Releases. Tombol "Unduh Aplikasi" di landing menunjuk ke rilis
   terbaru. macOS/Linux menyusul (Fase 3+).

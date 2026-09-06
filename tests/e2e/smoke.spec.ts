@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('create, name, reload, still listed', async ({ page }) => {
-  await page.goto('/index.html#/');
+  await page.goto('/editor.html#/');
   await expect(page.getByRole('heading', { name: 'Project Saya' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Project Baru' }).click();
@@ -21,9 +21,9 @@ test('create, name, reload, still listed', async ({ page }) => {
   await expect(page.getByText('Latihan Kelas 4')).toBeVisible();
 });
 
-test('landing page links to the editor', async ({ page }) => {
-  await page.goto('/landing.html');
+test('landing page is served at the site root and links to the editor', async ({ page }) => {
+  await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Game HTML' })).toBeVisible();
   await page.getByRole('link', { name: 'Mulai Buat' }).click();
-  await expect(page).toHaveURL(/index\.html/);
+  await expect(page).toHaveURL(/editor\.html/);
 });

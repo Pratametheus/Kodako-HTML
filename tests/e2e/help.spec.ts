@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test('the Bantuan panel opens from the editor header and closes on Escape', async ({ page }) => {
-  await page.goto('/index.html#/');
+  await page.goto('/editor.html#/');
   await page.getByRole('button', { name: 'Project Baru' }).click();
   await expect(page).toHaveURL(/#\/editor\/proj_/);
 

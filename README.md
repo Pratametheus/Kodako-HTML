@@ -6,8 +6,8 @@ tingkat SD dan bisa dipakai **tanpa internet**.
 
 ## Untuk guru — mulai cepat
 
-1. **Buka aplikasinya** — pakai versi web (buka `index.html` / tautan yang
-   dibagikan) atau pasang aplikasi desktop dari halaman
+1. **Buka aplikasinya** — pakai versi web (buka tautan yang dibagikan lalu klik
+   **Mulai Buat** di halaman depan) atau pasang aplikasi desktop dari halaman
    [Releases](../../releases) (installer Windows `.msi`).
 2. Klik **Project Baru**, lalu pilih **Mode Sprite** (animasi/permainan) atau
    **Mode HTML** (halaman web).

@@ -3,7 +3,7 @@
 //     instead of inflating the `editor` entry chunk.
 //   - The `editor` entry chunk itself stays under the perf budget from the
 //     Fase 3b plan (PRD §7 "loads fast on a school laptop" proxy).
-//   - `dist/index.html` and `dist/landing.html` are both still emitted.
+//   - `dist/index.html` (landing) and `dist/editor.html` are both still emitted.
 //
 // Run after `npm run build` (see Task 11 in
 // docs/superpowers/plans/2026-09-04-phase-3b-polish.md — a full spawn-build
@@ -30,7 +30,7 @@ if (!existsSync(distDir)) {
   process.exit(process.exitCode);
 }
 
-for (const page of ['index.html', 'landing.html']) {
+for (const page of ['index.html', 'editor.html']) {
   if (!existsSync(resolve(distDir, page))) fail(`dist/${page} is missing.`);
 }
 

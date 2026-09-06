@@ -14,8 +14,8 @@ landing page tampil, bukti-konsep desktop.
 
 **Deliverable**
 
-- [x] Scaffold repo: Vite + TypeScript, multi-page (`index.html` editor +
-      `landing.html`), ESLint + Prettier, konfigurasi test.
+- [x] Scaffold repo: Vite + TypeScript, multi-page (`index.html` landing +
+      `editor.html` editor), ESLint + Prettier, konfigurasi test.
 - [x] `core/project.ts`: tipe `Project`, `createEmptyProject`, `validate`,
       `migrate` (kerangka), serialisasi round-trip.
 - [x] `core/storage.ts`: antarmuka `Storage` + `WebStorage` (localStorage +

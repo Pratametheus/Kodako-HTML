@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 /* eslint-disable @typescript-eslint/no-explicit-any -- browser debug hooks intentionally mirror Blockly's untyped E2E boundary */
 
 test('the global error boundary paints a Bahasa Indonesia recovery overlay', async ({ page }) => {
-  await page.goto('/index.html#/');
+  await page.goto('/editor.html#/');
   await page.getByRole('button', { name: 'Project Baru' }).click();
   await expect(page).toHaveURL(/#\/editor\/proj_/);
 
@@ -23,7 +23,7 @@ test('the global error boundary paints a Bahasa Indonesia recovery overlay', asy
 test('keyboard: Tab reaches Project Baru with a visible focus ring, and mode tabs respond to ArrowRight', async ({
   page,
 }) => {
-  await page.goto('/index.html#/');
+  await page.goto('/editor.html#/');
   await expect(page.getByRole('heading', { name: 'Project Saya' })).toBeVisible();
 
   let landed = false;
@@ -54,7 +54,7 @@ test('keyboard: Tab reaches Project Baru with a visible focus ring, and mode tab
 });
 
 test('the themed (Zelos) sprite workspace still loads a block and runs it', async ({ page }) => {
-  await page.goto('/index.html#/');
+  await page.goto('/editor.html#/');
   await page.getByRole('button', { name: 'Project Baru' }).click();
   await expect(page).toHaveURL(/#\/editor\/proj_/);
 
