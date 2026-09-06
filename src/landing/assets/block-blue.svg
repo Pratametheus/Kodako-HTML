@@ -1,0 +1,24 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 120 64"
+  fill="none"
+  stroke="#2B2B38"
+  stroke-width="2"
+  stroke-linejoin="round"
+  stroke-linecap="round"
+>
+  <path
+    fill="#1E88E5"
+    d="M20 12H46Q50 12 50 8Q50 4 54 4H66Q70 4 70 8Q70 12 74 12H106Q114 12 114 20V50Q114 58 106 58H74Q70 58 70 54Q70 50 66 50H54Q50 50 50 54Q50 58 46 58H20Q12 58 12 50V42Q12 38 8 38Q4 38 4 34V28Q4 24 8 24Q12 24 12 20Q12 12 20 12Z"
+  />
+  <path
+    fill="#2B2B38"
+    fill-opacity="0.12"
+    d="M20 12H46Q50 12 50 8Q50 4 54 4H66Q70 4 70 8Q70 12 74 12H106Q114 12 114 20H74Q64 20 64 12H56Q56 20 46 20H20Q12 20 12 24V20Q12 12 20 12Z"
+  />
+  <path
+    fill="#FFFFFF"
+    opacity="0.7"
+    d="M49 25L37 33L49 41L52 37L45 33L52 29ZM73 25L85 33L73 41L70 37L77 33L70 29Z"
+  />
+</svg>
