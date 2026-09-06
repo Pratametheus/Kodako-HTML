@@ -23,7 +23,8 @@ test('create, name, reload, still listed', async ({ page }) => {
 
 test('landing page is served at the site root and links to the editor', async ({ page }) => {
   await page.goto('/');
-  await expect(page.getByRole('heading', { name: 'Game HTML' })).toBeVisible();
+  await expect(page.getByRole('heading', { level: 1 })).toHaveText('Kodako HTML');
+  await expect(page.locator('[data-demo]')).toBeVisible();
   await page.getByRole('link', { name: 'Mulai Buat' }).click();
   await expect(page).toHaveURL(/editor\.html/);
 });
