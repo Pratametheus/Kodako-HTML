@@ -163,6 +163,14 @@ kategori Mode Sprite disamakan dengan Scratch Indonesia, dan tombol
 "Jalankan" untuk pratinjau HTML. Lihat
 `docs/superpowers/specs/2026-09-05-scratch-familiar-editor-ux-design.md`.
 
+Fase B (perombakan UI/UX editor, dipecah dua PR): landing page = Fase A
+(sudah); **PR-B1 (2026-09-06)** — rail kategori jadi pil warna penuh + state
+"drawer terbuka" menyatu ke flyout, chrome editor "playful-lite", tombol
+jalankan ikon saja (bendera hijau di Sprite, `▶` di HTML), dan perbaikan bug
+zoom-workspace-ikut-memperbesar-flyout-toolbox. Lihat
+`docs/superpowers/specs/2026-09-06-phase-b1-editor-chrome-design.md`. PR-B2
+menyusul: panel yang bisa di-*drag* untuk ubah ukuran.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini

@@ -1,6 +1,7 @@
 import * as Blockly from 'blockly/core';
 import 'blockly/blocks';
 import * as Id from 'blockly/msg/id';
+import { registerKodakoFlyout } from './flyout';
 import { registerHtmlBlocks } from './html/blocks';
 import { registerHtmlGenerator } from './html/generator';
 import { registerSpriteBlocks } from './sprite/blocks';
@@ -8,6 +9,8 @@ import { registerSpriteGenerators } from './sprite/generator';
 import { spriteTheme } from './theme';
 
 export { Blockly, spriteTheme };
+export { attachToolboxWash } from './toolbox-wash';
+export { KodakoVerticalFlyout } from './flyout';
 export { setHtmlAssetOptionsProvider } from './html/blocks';
 export { generateHtml } from './html/generator';
 export type { GeneratedHtml } from './html/generator';
@@ -26,6 +29,7 @@ let htmlInstalled = false;
 
 export function installSpriteBlockly(): void {
   if (spriteInstalled) return;
+  registerKodakoFlyout();
   Blockly.setLocale(Id as unknown as Record<string, string>);
   registerSpriteBlocks();
   registerSpriteGenerators();
@@ -34,6 +38,7 @@ export function installSpriteBlockly(): void {
 
 export function installHtmlBlockly(): void {
   if (htmlInstalled) return;
+  registerKodakoFlyout();
   Blockly.setLocale(Id as unknown as Record<string, string>);
   registerHtmlBlocks();
   registerHtmlGenerator();

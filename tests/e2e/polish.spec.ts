@@ -101,4 +101,23 @@ test('the themed (Zelos) sprite workspace still loads a block and runs it', asyn
 
   const after = await page.evaluate(() => (window as any).__kodakoStage.spriteState()[0]);
   expect(Math.abs(after.x - 30)).toBeLessThan(1);
+
+  // Zooming the canvas must not resize the toolbox rail — the flyout scale is
+  // pinned by KodakoVerticalFlyout (Fase B1).
+  const railBefore = await page.locator('.blocklyToolboxDiv').boundingBox();
+  await page.evaluate(() => {
+    const w = window as unknown as { Blockly?: any };
+    const B = w.Blockly ?? (window as any).__kodakoBlockly;
+    B.getMainWorkspace().setScale(2);
+  });
+  await page.waitForTimeout(150);
+  const railAfter = await page.locator('.blocklyToolboxDiv').boundingBox();
+  expect(Math.abs((railAfter?.width ?? 0) - (railBefore?.width ?? 1))).toBeLessThan(2);
+
+  // Clicking a category still selects it and washes the flyout (rail wiring
+  // survives the zoom). data-kodako-open is set on the injection div by
+  // src/blocks/toolbox-wash.ts.
+  await page.locator('.blocklyToolboxDiv .blocklyTreeRow').nth(1).click();
+  await expect(page.locator('.injectionDiv[data-kodako-open]')).toHaveCount(1);
+  await expect(page.locator('.blocklyToolboxDiv')).toBeVisible();
 });
