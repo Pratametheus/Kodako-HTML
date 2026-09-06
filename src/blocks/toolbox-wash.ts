@@ -30,8 +30,13 @@ interface SelectableItem {
  * No-op / never throws when there is no toolbox.
  */
 export function attachToolboxWash(workspace: Blockly.WorkspaceSvg): () => void {
-  const root = workspace.getInjectionDiv() as HTMLElement | null;
-  const toolbox = workspace.getToolbox();
+  // Tolerate a stubbed workspace (view tests inject a fake) — missing methods
+  // are just "nothing to wire".
+  const root =
+    typeof workspace.getInjectionDiv === 'function'
+      ? (workspace.getInjectionDiv() as HTMLElement | null)
+      : null;
+  const toolbox = typeof workspace.getToolbox === 'function' ? workspace.getToolbox() : null;
   const toolboxDiv = root?.querySelector<HTMLElement>('.blocklyToolboxDiv') ?? null;
   if (!root || !toolbox || !toolboxDiv) return () => {};
 

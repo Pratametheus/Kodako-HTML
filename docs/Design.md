@@ -209,6 +209,18 @@ Scratch (Kejadian kuning, Gerak biru, Tampilan ungu, Suara merah muda, Kontrol
 oranye, Sensor biru muda, Operator hijau, Variabel merah-oranye), font besar,
 kontras tinggi. Toolbox bergaya kategori berwarna.
 
+Rail kategori (Fase B1, `src/blocks/theme.css`): tiap baris kategori adalah
+pil warna penuh sesuai `CATEGORY_COLORS`; label/glyph putih atau ink `#2B2B38`
+menurut kontras. Kategori yang dibuka membesar, kehilangan sudut kanannya, dan
+"menyatu" dengan flyout yang di-_wash_ warna kategori (~12% opasitas); kategori
+lain diredupkan ke 82%. Digerakkan oleh `src/blocks/toolbox-wash.ts` lewat
+click-delegation di `.blocklyToolboxDiv`. Blok pratinjau di flyout dikunci
+skala 1× oleh `KodakoVerticalFlyout` (`src/blocks/flyout.ts`) supaya zoom
+workspace tidak ikut memperbesarnya. Chrome editor "playful-lite": token
+`--ed-*` di `src/app/editor/editor.css` (border 2px, radius 16px, bayangan
+halus, tombol pil). Tombol jalankan = ikon saja — bendera hijau di Mode
+Sprite, `▶` di Mode HTML — dengan `aria-label` + `title`.
+
 ### 4.3 Daftar blok — Mode Sprite
 
 Topi (hat):
