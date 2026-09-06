@@ -43,6 +43,8 @@
 
 - [ ] **Step 1: Update `blocks-html-defs.test.ts` (will fail)**
 
+**First delete the now-obsolete test** `it('style blocks keep friendly Indonesian labels', () => { … })` (the one asserting `message0('html_style_color')` contains `'warna teks'` and `message0('html_style_bold')` contains `'tebal'`) — it is superseded by the CSS-property cases added below.
+
 Add to the `HTML block definitions` describe:
 
 ```ts
