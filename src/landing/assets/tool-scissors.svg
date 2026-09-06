@@ -1,0 +1,17 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 48 48"
+  fill="none"
+  stroke="#2B2B38"
+  stroke-width="2"
+  stroke-linejoin="round"
+  stroke-linecap="round"
+>
+  <path d="M19 29L36 7Q40 15 28 27L24 31M29 29L12 7Q8 15 20 27L24 31" />
+  <path
+    fill="#4C97FF"
+    fill-rule="evenodd"
+    d="M17 27C6 23 3 38 12 42C21 46 29 32 17 27ZM15 32C10 30 8 37 13 38C18 40 20 33 15 32ZM31 27C42 23 45 38 36 42C27 46 19 32 31 27ZM33 32C38 30 40 37 35 38C30 40 28 33 33 32Z"
+  />
+  <path d="M23 26H25" />
+</svg>

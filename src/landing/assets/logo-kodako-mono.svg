@@ -1,0 +1,15 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  fill="none"
+  stroke="#2B2B38"
+  stroke-width="2"
+  stroke-linejoin="round"
+  stroke-linecap="round"
+>
+  <path
+    fill="#2B2B38"
+    fill-rule="evenodd"
+    d="M16 5H36Q44 5 44 13V17H50Q59 17 59 26V50Q59 59 50 59H28Q20 59 20 51V47H14Q5 47 5 38V16Q5 5 16 5ZM20 17H28V28L38 17H48L34 32L48 48H38L28 37V48H20Z"
+  />
+</svg>

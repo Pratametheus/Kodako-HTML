@@ -447,11 +447,16 @@ interface Storage {
 ## 10. Landing page (`index.html`, di root situs)
 
 - Statis, dibangun oleh Vite sebagai salah satu halaman (`build.rollupOptions.input`).
-- Bagian: Hero (nama, tagline, tombol "Mulai Buat" → `editor.html`, "Unduh
-  Aplikasi" → GitHub Releases) · "Apa ini?" · 3 langkah cara pakai · cuplikan
-  mode Sprite & HTML (gambar statis) · bagian untuk guru (tautan unduh modul
-  ajar — placeholder di rilis 1) · footer (lisensi kode, kredit aset CC0).
-- Bahasa Indonesia. `<meta>` deskripsi + `og:image`. Tanpa skrip pihak ketiga.
+- Arah visual "Blocky Playground" (lihat
+  `docs/superpowers/specs/2026-09-06-phase-a-landing-page-design.md`): nama merek
+  "Kodako HTML", palet warna kategori editor, tombol tebal dengan bayangan solid.
+- Bagian: nav sticky · Hero (judul kartu-huruf beranimasi, tagline, tombol
+  "Mulai Buat" → `editor.html`, "Unduh Aplikasi" → GitHub Releases) · pita demo
+  (loop SVG/CSS) · "Apa ini?" · 3 langkah cara pakai · dua kartu mode · bagian
+  untuk guru (tautan Jurnal Mengajar) · footer.
+- Aset ilustrasi orisinal CC0 di `src/landing/assets/`; judul memakai Fredoka
+  (SIL OFL 1.1) yang di-*bundle* di `src/landing/fonts/` — tanpa CDN, jalan
+  offline. Semua animasi mati di bawah `prefers-reduced-motion`.
 
 ## 11. i18n (`src/app/i18n`)
 
