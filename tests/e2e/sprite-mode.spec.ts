@@ -70,3 +70,35 @@ test('green flag runs a script and the sprite moves; workspace persists', async 
   expect(reloaded.count).toBeGreaterThanOrEqual(2);
   expect(reloaded.hasMove).toBe(true);
 });
+
+test('the blocks pane is resizable and the split persists across reload', async ({ page }) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page).toHaveURL(/#\/editor\/proj_/);
+
+  const gutter = page.locator('.sprite-mode .ed-split-gutter');
+  await expect(gutter).toHaveAttribute('role', 'separator');
+
+  const readLeft = () =>
+    page.evaluate(() =>
+      document.querySelector<HTMLElement>('.sprite-mode')!.style.getPropertyValue('--split-left'),
+    );
+  const initial = parseFloat(await readLeft());
+
+  // Arrow-key the focused gutter to widen the blocks pane, then check it stuck.
+  await gutter.focus();
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowRight');
+  const widened = parseFloat(await readLeft());
+  expect(widened).toBeGreaterThan(initial);
+
+  await page.reload();
+  await expect(page.locator('#blocklyDiv')).toBeVisible();
+  const afterReload = parseFloat(await readLeft());
+  expect(Math.abs(afterReload - widened)).toBeLessThan(6);
+
+  await gutter.dblclick();
+  const reset = parseFloat(await readLeft());
+  expect(Math.abs(reset - initial)).toBeLessThan(6);
+});

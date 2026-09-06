@@ -60,3 +60,27 @@
   place-items: stretch;
   overflow: hidden;
 }
+
+/* Draggable gutter inserted by src/app/editor/resizable-split.ts between the
+   blocks pane and the right side. 6px grid track, 2px visible line. */
+.ed-split-gutter {
+  position: relative;
+  cursor: col-resize;
+  background: transparent;
+  touch-action: none;
+}
+.ed-split-gutter::before {
+  content: '';
+  position: absolute;
+  inset: 8px 2px;
+  border-radius: 3px;
+  background: var(--ed-line);
+  transition: background 0.12s ease;
+}
+.ed-split-gutter:hover::before,
+.ed-split-gutter:focus-visible::before {
+  background: #4c97ff;
+}
+.ed-split-gutter:focus-visible {
+  outline: none;
+}

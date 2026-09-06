@@ -168,8 +168,11 @@ Fase B (perombakan UI/UX editor, dipecah dua PR): landing page = Fase A
 "drawer terbuka" menyatu ke flyout, chrome editor "playful-lite", tombol
 jalankan ikon saja (bendera hijau di Sprite, `▶` di HTML), dan perbaikan bug
 zoom-workspace-ikut-memperbesar-flyout-toolbox. Lihat
-`docs/superpowers/specs/2026-09-06-phase-b1-editor-chrome-design.md`. PR-B2
-menyusul: panel yang bisa di-*drag* untuk ubah ukuran.
+`docs/superpowers/specs/2026-09-06-phase-b1-editor-chrome-design.md`.
+**PR-B2 (2026-09-06)** — panel blok ↔ sisi kanan bisa di-*drag* ubah ukurannya
+di kedua mode (`src/app/editor/resizable-split.ts`): gutter dengan
+`role="separator"` + panah + klik-ganda reset, posisi disimpan per mode di
+`localStorage`.
 
 ---
 
