@@ -1,7 +1,7 @@
 .html-mode {
   --html-ink: #173042;
   --html-paper: #fffef9;
-  --html-line: #cfdde4;
+  --html-line: var(--ed-line);
   --html-blue: #1e88e5;
   --html-green: #2e8b57;
   display: grid;
@@ -9,7 +9,7 @@
   width: 100%;
   height: 100%;
   min-height: 0;
-  background: #edf4f6;
+  background: var(--ed-ground);
   color: var(--html-ink);
 }
 
@@ -28,10 +28,10 @@
 #htmlBlocklyDiv,
 .html-mode__output {
   overflow: hidden;
-  border: 1px solid var(--html-line);
-  border-radius: 14px;
+  border: 2px solid var(--html-line);
+  border-radius: var(--ed-radius);
   background: #fff;
-  box-shadow: 0 10px 28px rgb(30 72 90 / 9%);
+  box-shadow: var(--ed-shadow);
 }
 
 #htmlBlocklyDiv {
@@ -60,14 +60,17 @@
 }
 
 .html-mode__run {
-  min-height: 40px;
-  padding: 8px 16px;
-  border: 1px solid var(--html-green);
-  border-radius: 10px;
+  width: 44px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2px solid var(--html-green);
+  border-radius: 12px;
   background: var(--html-green);
   color: #fff;
   font: inherit;
-  font-weight: 700;
+  font-size: 1rem;
   cursor: pointer;
   justify-self: start;
 }
@@ -95,8 +98,8 @@
 .html-mode__upload {
   min-height: 36px;
   padding: 7px 11px;
-  border: 1px solid var(--html-line);
-  border-radius: 9px;
+  border: 2px solid var(--html-line);
+  border-radius: 12px;
   background: #fff;
   color: inherit;
   font: inherit;

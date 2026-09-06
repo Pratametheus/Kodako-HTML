@@ -71,7 +71,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       </section>
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
         <div class="html-mode__toolbar">
-          <button type="button" class="html-mode__run" data-run-html>▶ ${t('editor.html.run')}</button>
+          <button type="button" class="html-mode__run" data-run-html aria-label="${t('editor.html.run')}" title="${t('editor.html.run')}">▶</button>
           <div class="html-mode__tabs" role="tablist" aria-label="${t('a11y.previewTablist')}">
             <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
             <button type="button" role="tab" id="html-tab-code" data-tab="code" aria-selected="false" aria-controls="html-panel-code">${t('editor.html.tabCode')}</button>

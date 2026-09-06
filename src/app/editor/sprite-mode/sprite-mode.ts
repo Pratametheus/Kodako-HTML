@@ -79,7 +79,12 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
         <section class="sprite-stage-card" aria-label="Panggung">
           <canvas aria-label="${t('editor.sprite.stageLabel')}" role="img"></canvas>
           <div class="sprite-stage-toolbar">
-            <button type="button" data-green-flag aria-label="${t('editor.sprite.run')}">▶ ${t('editor.sprite.run')}</button>
+            <button type="button" data-green-flag aria-label="${t('editor.sprite.run')}" title="${t('editor.sprite.run')}">
+              <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                <path d="M6 3v18" fill="none" stroke="#1f3b2e" stroke-width="2.4" stroke-linecap="round" />
+                <path d="M7 4c3-2 6 2 9 0v8c-3 2-6-2-9 0z" fill="#20a464" stroke="#1f3b2e" stroke-width="1.6" stroke-linejoin="round" />
+              </svg>
+            </button>
             <button type="button" data-stop aria-label="${t('editor.sprite.stop')}">■ ${t('editor.sprite.stop')}</button>
           </div>
         </section>
