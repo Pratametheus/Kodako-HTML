@@ -114,3 +114,78 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
     return blocks.some((block: any) => block.type === 'sprite_move');
   });
 });
+
+test('document skeleton blocks drive the head + the code panel shows the full page', async ({
+  page,
+}) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await page.getByRole('tab', { name: 'Mode HTML' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const w = window as unknown as { Blockly?: any };
+    const B = w.Blockly ?? (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_document',
+              x: 20,
+              y: 20,
+              inputs: {
+                CONTENT: {
+                  block: {
+                    type: 'html_head',
+                    inputs: {
+                      CONTENT: {
+                        block: {
+                          type: 'html_title',
+                          inputs: {
+                            TEXT: {
+                              shadow: { type: 'html_text', fields: { VALUE: 'Halaman Saya' } },
+                            },
+                          },
+                        },
+                      },
+                    },
+                    next: {
+                      block: {
+                        type: 'html_body',
+                        inputs: {
+                          CONTENT: {
+                            block: {
+                              type: 'html_paragraph',
+                              inputs: {
+                                TEXT: {
+                                  shadow: { type: 'html_text', fields: { VALUE: 'Halo dunia' } },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      B.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('<!doctype html>');
+  await expect(code).toContainText('<title>Halaman Saya</title>');
+  await expect(code).toContainText('<body>');
+  await expect(code).toContainText('Halo dunia');
+  await expect(code).not.toContainText('Content-Security-Policy');
+});
