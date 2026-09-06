@@ -21,6 +21,7 @@ import { createHtmlPreview } from '../../../runtime/html/preview';
 import { BUILTIN_COSTUMES, loadUploadedImage } from '../../../runtime/sprite/assets';
 import { t } from '../../i18n';
 import { showToast } from '../../toast';
+import { makeResizableSplit } from '../resizable-split';
 import { renderCodePanel } from './code-panel';
 
 export type HtmlModeDeps = {
@@ -105,6 +106,13 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     move: { scrollbars: true },
   });
   const detachWash = attachToolboxWash(workspace);
+  const detachSplit = makeResizableSplit(host.querySelector<HTMLElement>('.html-mode'), {
+    storageKey: 'kodako:split:html',
+    minLeft: 320,
+    minRight: 300,
+    defaultFraction: 0.56,
+    onResize: () => Blockly.svgResize(workspace),
+  });
 
   const savedWorkspace = migrateHtmlWorkspaceJson(htmlWorkspaceJson(project));
   if (Object.keys(savedWorkspace).length > 0) {
@@ -232,6 +240,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     preview.dispose();
     codePanel.dispose();
     detachWash();
+    detachSplit();
     workspace.dispose();
     setHtmlAssetOptionsProvider(() => [['(tidak ada gambar)', '']]);
     delete debugWindow.__kodakoHtml;

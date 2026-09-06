@@ -9,6 +9,7 @@ import {
   attachToolboxWash,
 } from '../../../blocks';
 import { spriteToolbox } from '../../../blocks/sprite/toolbox';
+import { makeResizableSplit } from '../resizable-split';
 import { newId } from '../../../core/ids';
 import type { Project, SpriteData } from '../../../core/project';
 import {
@@ -114,6 +115,13 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     move: { scrollbars: true },
   });
   const detachWash = attachToolboxWash(workspace);
+  const detachSplit = makeResizableSplit(host.querySelector<HTMLElement>('.sprite-mode'), {
+    storageKey: 'kodako:split:sprite',
+    minLeft: 320,
+    minRight: 300,
+    defaultFraction: 0.66,
+    onResize: () => Blockly.svgResize(workspace),
+  });
 
   const debugWindow = window as Window & {
     Blockly?: Partial<typeof Blockly> & { getMainWorkspace?: () => Blockly.WorkspaceSvg };
@@ -553,6 +561,7 @@ export function renderSpriteMode(host: HTMLElement, deps: SpriteModeDeps): () =>
     scheduler.stopAll();
     workspace.removeChangeListener(onWorkspaceChange);
     detachWash();
+    detachSplit();
     workspace.dispose();
     stage.dispose();
     spritePanel.dispose();

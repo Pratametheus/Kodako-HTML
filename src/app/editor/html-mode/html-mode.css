@@ -5,7 +5,7 @@
   --html-blue: #1e88e5;
   --html-green: #2e8b57;
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+  grid-template-columns: var(--split-left, 56%) 6px minmax(300px, 1fr);
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -193,6 +193,11 @@
     grid-template-columns: 1fr;
     grid-template-rows: minmax(440px, 1fr) minmax(440px, 1fr);
     overflow: auto;
+  }
+
+  /* stacked layout — no horizontal split */
+  .html-mode .ed-split-gutter {
+    display: none;
   }
 
   .html-mode__blocks,
