@@ -221,6 +221,15 @@ workspace tidak ikut memperbesarnya. Chrome editor "playful-lite": token
 halus, tombol pil). Tombol jalankan = ikon saja — bendera hijau di Mode
 Sprite, `▶` di Mode HTML — dengan `aria-label` + `title`.
 
+Panel bisa di-*drag* (PR-B2, `src/app/editor/resizable-split.ts`): satu gutter
+6px (`role="separator"`, bisa panah-kiri/kanan saat fokus, klik-ganda untuk
+reset) di antara panel blok dan sisi kanan tiap mode. Grid memakai
+`var(--split-left, …)`; posisi disimpan sebagai fraksi di
+`localStorage` (`kodako:split:sprite` / `kodako:split:html`), dipasang ulang
+(dengan clamp min 320/300 px) saat mount & saat jendela di-*resize*;
+`onResize` memanggil `Blockly.svgResize`. Gutter disembunyikan di layout
+bertumpuk Mode HTML (`@media (max-width: 900px)`).
+
 ### 4.3 Daftar blok — Mode Sprite
 
 Topi (hat):
