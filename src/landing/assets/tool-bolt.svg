@@ -1,0 +1,15 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 48 48"
+  fill="none"
+  stroke="#2B2B38"
+  stroke-width="2"
+  stroke-linejoin="round"
+  stroke-linecap="round"
+>
+  <path
+    fill="#FFAB19"
+    d="M27 4L10 25Q8 28 12 28H21L18 42Q17 46 21 42L39 21Q41 18 37 18H27L30 6Q31 2 27 4Z"
+  />
+  <path d="M8 11L5 8M38 36L42 39" />
+</svg>
