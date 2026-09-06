@@ -251,7 +251,7 @@ const OPEN_CLASS = 'kodako-cat--open';
 export function paleWash(hex: string, alpha: number): string {
   const match = /^#?([0-9a-f]{6})$/i.exec(hex.trim());
   if (!match) return `rgba(120, 130, 150, ${alpha})`;
-  const n = parseInt(match[1], 16);
+  const n = parseInt(match[1]!, 16); // one capture group → [1] is defined on a match
   return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
 }
 
