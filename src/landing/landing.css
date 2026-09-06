@@ -403,34 +403,42 @@ img {
   border: 2px solid var(--ink);
   border-radius: 8px;
 }
+/* Resting state (also what shows under reduced motion or without JS): all
+   three blocks stacked in place. `.is-playing` (added by landing.ts when the
+   band scrolls into view) replays a one-time assemble; only the sprite loops. */
 .demo__block--1 {
   top: 24px;
   background: var(--block-blue);
-  animation: demo-slide 7s ease-in-out infinite;
 }
 .demo__block--2 {
   top: 60px;
   background: var(--block-green);
-  animation: demo-slide 7s ease-in-out infinite 0.5s;
 }
 .demo__block--3 {
   top: 96px;
   background: var(--block-amber);
-  animation: demo-slide 7s ease-in-out infinite 1s;
 }
-@keyframes demo-slide {
+.demo.is-playing .demo__block--1 {
+  animation: demo-assemble 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.15s both;
+}
+.demo.is-playing .demo__block--2 {
+  animation: demo-assemble 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.45s both;
+}
+.demo.is-playing .demo__block--3 {
+  animation: demo-assemble 0.9s cubic-bezier(0.2, 1.4, 0.4, 1) 0.75s both;
+}
+@keyframes demo-assemble {
   0% {
-    transform: translateX(-320px);
+    transform: translateX(-340px);
   }
-  18%,
-  82% {
+  72% {
     transform: translateX(0);
   }
-  22% {
-    transform: translateX(0) scaleX(1.06);
+  84% {
+    transform: translateX(0) scaleX(1.07);
   }
   100% {
-    transform: translateX(-320px);
+    transform: translateX(0);
   }
 }
 .demo__sprite {
@@ -442,7 +450,9 @@ img {
   background: var(--block-magenta);
   border: 2px solid var(--ink);
   border-radius: 10px;
-  animation: demo-hop 7s ease-in-out infinite 1.4s;
+}
+.demo.is-playing .demo__sprite {
+  animation: demo-hop 3.2s ease-in-out 1.4s infinite;
 }
 .demo__sprite::before,
 .demo__sprite::after {
@@ -591,21 +601,37 @@ img {
 .mode__art {
   position: relative;
   height: 110px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 .mode__art img {
   position: absolute;
-  height: 96px;
 }
-.mode__art img:first-child {
+/* Sprite card: the coder-kid plus one small block chip */
+.mode--sprite .mode__art img:first-child {
+  height: 100px;
   left: 8px;
-  top: 0;
+  bottom: 0;
 }
-.mode__chip,
-.mode__art img:nth-child(2) {
-  height: 44px !important;
-  left: 90px;
-  top: 30px;
+.mode--sprite .mode__chip {
+  height: 30px;
+  left: 104px;
+  top: 34px;
+  transform: rotate(-7deg);
+  filter: drop-shadow(0 3px 4px rgba(43, 43, 56, 0.18));
+}
+/* HTML card: a tidy little stack of blocks */
+.mode--html .mode__art img {
+  height: 30px;
+  left: 50%;
+  filter: drop-shadow(0 3px 4px rgba(43, 43, 56, 0.15));
+}
+.mode--html .mode__art img:first-child {
+  top: 26px;
+  transform: translateX(-62%) rotate(-3deg);
+}
+.mode--html .mode__art img:nth-child(2) {
+  top: 54px;
+  transform: translateX(-40%) rotate(3deg);
 }
 .mode h3 {
   margin: 0 0 6px;
