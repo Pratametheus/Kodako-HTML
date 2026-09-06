@@ -6,60 +6,160 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
-      content="Editor blok berbahasa Indonesia untuk belajar membuat animasi dan halaman web, ala Scratch. Gratis, bisa dipakai offline."
+      content="Kodako HTML — editor blok berbahasa Indonesia untuk belajar membuat animasi dan halaman web, ala Scratch. Gratis, bisa dipakai offline."
     />
-    <meta property="og:title" content="Game HTML" />
+    <meta property="og:title" content="Kodako HTML" />
     <meta
       property="og:description"
       content="Belajar membuat animasi dan halaman web dengan blok, berbahasa Indonesia."
     />
     <meta property="og:image" content="/favicon.svg" />
-    <title>Game HTML — Belajar coding dengan blok</title>
+    <title>Kodako HTML — Belajar coding dengan blok</title>
     <link rel="stylesheet" href="/src/landing/landing.css" />
   </head>
   <body>
+    <nav class="nav" data-nav>
+      <a class="nav__brand" href="/">
+        <img
+          class="nav__logo"
+          src="/src/landing/assets/logo-kodako.svg"
+          alt=""
+          width="32"
+          height="32"
+        />
+        <span>Kodako HTML</span>
+      </a>
+      <div class="nav__links">
+        <a href="#apa-ini">Apa ini?</a>
+        <a href="#cara-pakai">Cara pakai</a>
+        <a href="#guru">Untuk Guru</a>
+      </div>
+      <a class="btn btn--nav" href="/editor.html">Buka Editor</a>
+    </nav>
+
     <header class="hero">
-      <h1>Game HTML</h1>
+      <div class="hero__decor" aria-hidden="true">
+        <img
+          class="float-block"
+          data-parallax
+          data-parallax-depth="0.12"
+          style="--x: 6%; --y: 12%; --r: -10deg"
+          src="/src/landing/assets/block-amber.svg"
+          alt=""
+        />
+        <img
+          class="float-block"
+          data-parallax
+          data-parallax-depth="0.2"
+          style="--x: 83%; --y: 8%; --r: 8deg"
+          src="/src/landing/assets/block-sky.svg"
+          alt=""
+        />
+        <img
+          class="float-block"
+          data-parallax
+          data-parallax-depth="0.08"
+          style="--x: 10%; --y: 68%; --r: 6deg"
+          src="/src/landing/assets/block-green.svg"
+          alt=""
+        />
+        <img
+          class="float-block"
+          data-parallax
+          data-parallax-depth="0.16"
+          style="--x: 80%; --y: 64%; --r: -8deg"
+          src="/src/landing/assets/block-magenta.svg"
+          alt=""
+        />
+        <img
+          class="hero__tool"
+          style="--x: 28%; --y: 6%; --r: -18deg"
+          src="/src/landing/assets/tool-sparkle.svg"
+          alt=""
+        />
+        <img
+          class="hero__tool"
+          style="--x: 66%; --y: 80%; --r: 12deg"
+          src="/src/landing/assets/tool-paintbrush.svg"
+          alt=""
+        />
+        <img class="hero__mascot" src="/src/landing/assets/mascot-peek.svg" alt="" />
+      </div>
+      <h1 class="hero__title" data-hero-title>Kodako HTML</h1>
       <p class="hero__tagline">
         Susun blok, buat animasi dan halaman web sendiri. Berbahasa Indonesia, bisa dipakai tanpa
         internet.
       </p>
       <div class="hero__cta">
-        <a class="btn btn-primary" data-cta-editor href="/editor.html">Mulai Buat</a>
+        <a class="btn btn--primary" data-cta-editor href="/editor.html">▶ Mulai Buat</a>
         <a class="btn" data-cta-download href="https://github.com/Pratametheus/Kodako-HTML/releases"
           >Unduh Aplikasi</a
         >
       </div>
     </header>
 
+    <section class="demo" data-demo aria-label="Contoh blok bekerja">
+      <div class="demo__stage" aria-hidden="true">
+        <span class="demo__block demo__block--1"></span>
+        <span class="demo__block demo__block--2"></span>
+        <span class="demo__block demo__block--3"></span>
+        <span class="demo__sprite"></span>
+      </div>
+      <p class="demo__caption">Seret blok, sambungkan, lalu lihat tokohnya bergerak.</p>
+    </section>
+
     <main class="landing">
-      <section>
-        <h2>Apa ini?</h2>
-        <p>
-          Game HTML adalah alat belajar pemrograman berbasis blok, mirip Scratch. Ada dua mode:
-          <strong>Mode Sprite</strong> untuk membuat animasi dan permainan sederhana, dan
-          <strong>Mode HTML</strong> untuk menyusun halaman web dan melihat kodenya.
-        </p>
+      <section id="apa-ini" class="sec sec--apa">
+        <div class="sec__body">
+          <h2>Apa ini?</h2>
+          <p>
+            Kodako HTML adalah alat belajar pemrograman berbasis blok, mirip Scratch. Ada dua mode:
+            <strong>Mode Sprite</strong> untuk membuat animasi dan permainan sederhana, dan
+            <strong>Mode HTML</strong> untuk menyusun halaman web dan melihat kodenya.
+          </p>
+        </div>
+        <div class="sec__decor" aria-hidden="true">
+          <img src="/src/landing/assets/block-blue.svg" alt="" />
+          <img src="/src/landing/assets/block-orange.svg" alt="" />
+          <img class="sec__mascot" src="/src/landing/assets/mascot-point.svg" alt="" />
+        </div>
       </section>
 
-      <section>
+      <section id="cara-pakai" class="sec sec--steps">
         <h2>Cara pakai</h2>
-        <ol>
-          <li>Buka editor dan buat project baru.</li>
-          <li>Seret blok dari palet, susun jadi program.</li>
-          <li>Klik bendera hijau atau lihat pratinjau, lalu simpan project-mu.</li>
+        <ol class="steps">
+          <li class="step">
+            <span class="step__badge">1</span><span class="step__icon" aria-hidden="true">📂</span>
+            Buka editor dan buat project baru.
+          </li>
+          <li class="step">
+            <span class="step__badge">2</span><span class="step__icon" aria-hidden="true">🧩</span>
+            Seret blok dari palet, susun jadi program.
+          </li>
+          <li class="step">
+            <span class="step__badge">3</span><span class="step__icon" aria-hidden="true">▶️</span>
+            Klik bendera hijau atau lihat pratinjau, lalu simpan project-mu.
+          </li>
         </ol>
       </section>
 
-      <section class="modes">
-        <article>
+      <section class="sec sec--modes">
+        <article class="mode mode--sprite">
+          <div class="mode__art" aria-hidden="true">
+            <img src="/src/landing/assets/mascot-point.svg" alt="" />
+            <img class="mode__chip" src="/src/landing/assets/block-blue.svg" alt="" />
+          </div>
           <h3>Mode Sprite</h3>
           <p>
             Gerakkan tokoh di panggung dengan blok: gerak, ulangi, jika, dan kejadian "saat bendera
             hijau diklik".
           </p>
         </article>
-        <article>
+        <article class="mode mode--html">
+          <div class="mode__art" aria-hidden="true">
+            <img src="/src/landing/assets/block-green.svg" alt="" />
+            <img src="/src/landing/assets/block-magenta.svg" alt="" />
+          </div>
           <h3>Mode HTML</h3>
           <p>
             Susun judul, paragraf, gambar, dan warna. Lihat halaman jadi sungguhan lengkap dengan
@@ -68,10 +168,10 @@
         </article>
       </section>
 
-      <section id="guru">
+      <section id="guru" class="sec sec--guru">
         <h2>Untuk Guru</h2>
         <p>
-          Game HTML adalah alat editor blok untuk mengajar animasi dan HTML dasar — bisa langsung
+          Kodako HTML adalah alat editor blok untuk mengajar animasi dan HTML dasar — bisa langsung
           dipakai di kelas, gratis, dan tanpa internet. Panduan singkat cara pakainya ada di tombol
           "Bantuan" di dalam editor.
         </p>
@@ -83,8 +183,8 @@
     </main>
 
     <footer class="foot">
-      <p>&copy; <span data-year>2026</span> Game HTML. Kode sumber terbuka.</p>
-      <p>Aset gambar dan suara bawaan berlisensi CC0 / domain publik.</p>
+      <p>&copy; <span data-year>2026</span> Kodako HTML. Kode sumber terbuka.</p>
+      <p>Aset ilustrasi buatan sendiri (CC0). Judul memakai font Fredoka (SIL OFL 1.1).</p>
     </footer>
 
     <script type="module" src="/src/landing/landing.ts"></script>
