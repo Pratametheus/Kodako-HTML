@@ -1,6 +1,6 @@
 # Fase D — Poles Home & panel kanan editor — Design
 
-Status: Draft (menunggu review user) · Tanggal: 2026-09-07 ·
+Status: Selesai (PR #12 + #13 merged 2026-09-08) · Tanggal: 2026-09-07 ·
 Menyertai: `PRD.md`, `Design.md`, `ROADMAP.md`
 
 ## Ringkasan
