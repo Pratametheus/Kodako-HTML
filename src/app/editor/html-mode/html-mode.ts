@@ -20,6 +20,7 @@ import { exportHtmlProject } from '../../../runtime/html/export';
 import { composeDisplayDocument } from '../../../runtime/html/document';
 import { attachBlockInfo } from './block-info';
 import { createHtmlPreview } from '../../../runtime/html/preview';
+import { extractTitle, slugifyTitle } from '../../../runtime/html/page-title';
 import { BUILTIN_COSTUMES, loadUploadedImage } from '../../../runtime/sprite/assets';
 import { t } from '../../i18n';
 import { showToast } from '../../toast';
@@ -73,13 +74,8 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
         <p class="html-mode__hint" data-html-hint>${t('editor.html.canvasHint')}</p>
       </section>
       <aside class="html-mode__output" aria-label="Hasil halaman HTML">
-        <div class="html-mode__toolbar">
-          <p class="html-mode__blockinfo" data-block-info></p>
+        <div class="html-mode__actionbar">
           <button type="button" class="html-mode__run" data-run-html aria-label="${t('editor.html.run')}" title="${t('editor.html.run')}">▶</button>
-          <div class="html-mode__tabs" role="tablist" aria-label="${t('a11y.previewTablist')}">
-            <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
-            <button type="button" role="tab" id="html-tab-code" data-tab="code" aria-selected="false" aria-controls="html-panel-code">${t('editor.html.tabCode')}</button>
-          </div>
           <div class="html-mode__actions">
             <label class="html-mode__upload">
               ${t('editor.html.uploadImage')}
@@ -88,11 +84,28 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
             <button type="button" data-export-html>${t('editor.html.exportHtml')}</button>
           </div>
         </div>
+        <div class="html-mode__tabs" role="tablist" aria-label="${t('a11y.previewTablist')}">
+          <button type="button" role="tab" id="html-tab-preview" data-tab="preview" aria-selected="true" aria-controls="html-panel-preview">${t('editor.html.tabPreview')}</button>
+          <button type="button" role="tab" id="html-tab-code" data-tab="code" aria-selected="false" aria-controls="html-panel-code">${t('editor.html.tabCode')}</button>
+        </div>
         <p class="html-mode__error" data-html-error hidden></p>
         <div class="html-mode__panel" id="html-panel-preview" data-panel="preview" role="tabpanel" aria-labelledby="html-tab-preview">
-          <iframe title="${t('editor.html.previewTitle')}"></iframe>
+          <div class="html-mode__browser" role="group" aria-label="${t('a11y.previewChrome')}">
+            <div class="html-mode__browserbar" aria-hidden="true">
+              <span class="html-mode__dots"><i></i><i></i><i></i></span>
+              <span class="html-mode__browsertab">
+                <span class="html-mode__fav"></span>
+                <span data-preview-tab>${t('editor.html.previewTitle')}</span>
+              </span>
+              <span class="html-mode__browseraddr"><span data-preview-url></span></span>
+            </div>
+            <div class="html-mode__viewport">
+              <iframe title="${t('editor.html.previewTitle')}"></iframe>
+            </div>
+          </div>
         </div>
         <div class="html-mode__panel html-mode__code" id="html-panel-code" data-panel="code" role="tabpanel" aria-labelledby="html-tab-code" hidden></div>
+        <p class="html-mode__infobar"><span class="html-mode__blockinfo" data-block-info></span></p>
       </aside>
     </div>
   `;
@@ -134,6 +147,9 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   const codeHost = host.querySelector<HTMLElement>('[data-panel="code"]')!;
   const codePanel = renderCodePanel(codeHost);
   const errorElement = host.querySelector<HTMLElement>('[data-html-error]')!;
+  const previewTabLabel = host.querySelector<HTMLElement>('[data-preview-tab]')!;
+  const previewUrlLabel = host.querySelector<HTMLElement>('[data-preview-url]')!;
+  previewUrlLabel.textContent = slugifyTitle(project.meta.name);
 
   const hint = host.querySelector<HTMLElement>('[data-html-hint]')!;
   const syncHint = (): void => {
@@ -154,6 +170,10 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     codePanel.setCode(
       composeDisplayDocument({ headHtml, bodyHtml, fallbackTitle: project.meta.name }),
     );
+    const title = extractTitle(headHtml, project.meta.name);
+    iframe.title = title;
+    previewTabLabel.textContent = title;
+    previewUrlLabel.textContent = slugifyTitle(title);
   };
 
   const onWorkspaceChange = (event: Blockly.Events.Abstract): void => {

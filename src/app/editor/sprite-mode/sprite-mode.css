@@ -395,6 +395,39 @@
   cursor: pointer;
 }
 
+.sprite-stage-toolbar button,
+.sprite-tabs button,
+.sprite-panel__add,
+.sprite-chip,
+.costume-tile,
+.sound-tile {
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    filter 0.12s ease;
+}
+
+.sprite-tabs button:not([aria-selected='true']):hover,
+.sprite-panel__add:hover,
+.sprite-chip:not([aria-pressed='true']):hover,
+.costume-tile:not([aria-pressed='true']):hover,
+.sound-tile:hover,
+.sprite-stage-toolbar [data-stop]:hover {
+  background: #eef4ff;
+  border-color: #4c97ff;
+}
+
+.sprite-tabs button[aria-selected='true']:hover,
+.sprite-chip[aria-pressed='true']:hover,
+.costume-tile[aria-pressed='true']:hover {
+  background: #e0efff;
+}
+
+.sprite-stage-toolbar [data-green-flag]:hover,
+.sprite-ask button:hover {
+  filter: brightness(0.95);
+}
+
 @media (max-width: 850px) {
   .sprite-mode {
     grid-template-columns: 1fr;

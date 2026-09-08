@@ -181,6 +181,17 @@ identik tanpa `html_document`); panel "Lihat Kode" menampilkan dokumen penuh
 `tooltip` + strip "Info blok" di setiap blok HTML; `html_section` → `<section>`.
 Lihat `docs/superpowers/specs/2026-09-06-phase-c-html-document-blocks-design.md`.
 
+Fase D (2026-09-07) — poles pasca-Fase C, dua PR. **PR-D1:** Home
+("Project Saya") disamakan rasanya dengan landing page (font Fredoka,
+tombol "stiker" amber, kartu membulat + hover, empty state ramah).
+**PR-D2:** panel kanan Mode HTML dirapikan (bar aksi / strip tab
+segmented / status bar "Info blok" di bawah), pratinjau dibungkus
+"bingkai browser" dengan tab judul halaman
+(`src/runtime/html/page-title.ts`), efek hover untuk semua tombol editor,
+dan perbaikan bug hint kanvas kosong yang tidak hilang
+(`.html-mode__hint[hidden]`). Lihat
+`docs/superpowers/specs/2026-09-07-phase-d-editor-home-polish-design.md`.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini
