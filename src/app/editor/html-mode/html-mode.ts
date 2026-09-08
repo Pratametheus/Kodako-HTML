@@ -90,7 +90,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
         </div>
         <p class="html-mode__error" data-html-error hidden></p>
         <div class="html-mode__panel" id="html-panel-preview" data-panel="preview" role="tabpanel" aria-labelledby="html-tab-preview">
-          <div class="html-mode__browser" aria-label="${t('a11y.previewChrome')}">
+          <div class="html-mode__browser" role="group" aria-label="${t('a11y.previewChrome')}">
             <div class="html-mode__browserbar" aria-hidden="true">
               <span class="html-mode__dots"><i></i><i></i><i></i></span>
               <span class="html-mode__browsertab">
@@ -171,6 +171,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
       composeDisplayDocument({ headHtml, bodyHtml, fallbackTitle: project.meta.name }),
     );
     const title = extractTitle(headHtml, project.meta.name);
+    iframe.title = title;
     previewTabLabel.textContent = title;
     previewUrlLabel.textContent = slugifyTitle(title);
   };
