@@ -192,7 +192,13 @@ test('document skeleton blocks drive the head + the code panel shows the full pa
   // "Info blok" strip: starts as a hint, shows the clicked block's tooltip.
   const info = page.locator('[data-block-info]');
   await expect(info).toHaveText('Klik sebuah blok untuk melihat penjelasannya.');
-  await page.locator('.blocklyDraggable').first().click();
+  // Click near the top-left of the outer block: the bounding box of a tall nested
+  // stack has its centre over a gap between child blocks, where the actionability
+  // check never resolves in headless CI. A fixed offset lands on the block header.
+  await page
+    .locator('.blocklyDraggable')
+    .first()
+    .click({ position: { x: 15, y: 15 }, force: true });
   await expect(info).not.toHaveText('Klik sebuah blok untuk melihat penjelasannya.');
   await expect(info).toContainText('<');
 });
