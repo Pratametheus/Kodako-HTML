@@ -140,11 +140,6 @@
   cursor: pointer;
 }
 
-.html-mode__tabs {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-}
-
 .html-mode__tabs button[aria-selected='true'] {
   border-color: var(--html-blue);
   background: #eaf4ff;
@@ -304,6 +299,32 @@
 .html-mode__viewport {
   flex: 1;
   min-height: 0;
+}
+
+.html-mode__tabs button,
+.html-mode__actions button,
+.html-mode__upload,
+.html-mode__run {
+  transition:
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    filter 0.12s ease;
+}
+
+.html-mode__tabs button:not([aria-selected='true']):hover,
+.html-mode__actions button:not([data-export-html]):hover,
+.html-mode__upload:hover {
+  background: #eef4ff;
+  border-color: #4c97ff;
+}
+
+.html-mode__tabs button[aria-selected='true']:hover {
+  background: #e0efff;
+}
+
+.html-mode__run:hover,
+.html-mode__actions [data-export-html]:hover {
+  filter: brightness(0.95);
 }
 
 @media (max-width: 900px) {
