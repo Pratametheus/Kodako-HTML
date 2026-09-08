@@ -183,6 +183,10 @@ test('document skeleton blocks drive the head + the code panel shows the full pa
   });
 
   await page.getByRole('button', { name: 'Jalankan' }).click();
+
+  await expect(page.locator('[data-preview-tab]')).toHaveText('Halaman Saya');
+  await expect(page.locator('[data-preview-url]')).toHaveText('halaman-saya.html');
+
   await page.getByRole('tab', { name: 'Lihat Kode' }).click();
 
   const code = page.locator('.html-mode__code, [class*="code"]').first();
