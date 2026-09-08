@@ -58,6 +58,9 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
     );
   });
 
+  // Bug fix (Fase D): the empty-canvas hint must disappear once blocks exist.
+  await expect(page.locator('.html-mode__hint')).toBeHidden();
+
   await expect(page.getByRole('button', { name: 'Jalankan' })).toBeVisible();
   await page.getByRole('button', { name: 'Jalankan' }).click();
 

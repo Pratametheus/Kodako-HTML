@@ -93,6 +93,10 @@
   pointer-events: none;
 }
 
+.html-mode__hint[hidden] {
+  display: none;
+}
+
 .html-mode__tabs button,
 .html-mode__actions button,
 .html-mode__upload {
