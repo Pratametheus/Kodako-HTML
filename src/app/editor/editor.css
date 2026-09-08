@@ -84,3 +84,35 @@
 .ed-split-gutter:focus-visible {
   outline: none;
 }
+
+.editor .btn {
+  transition:
+    transform 0.12s ease,
+    box-shadow 0.12s ease,
+    border-color 0.12s ease,
+    background-color 0.12s ease;
+}
+
+.editor .btn:hover {
+  border-color: #c3cce0;
+  background: #f4f7ff;
+  transform: translateY(-1px);
+  box-shadow:
+    0 2px 6px rgb(30 41 80 / 12%),
+    0 10px 22px rgb(30 41 80 / 8%);
+}
+
+.editor__modes .btn[aria-pressed='true']:hover {
+  background: #3f86ec;
+  border-color: #3f86ec;
+  color: #fff;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .editor .btn,
+  .editor .btn:hover {
+    transition: none;
+    transform: none;
+  }
+}
