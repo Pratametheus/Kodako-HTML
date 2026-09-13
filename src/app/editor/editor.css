@@ -46,7 +46,6 @@
   background: var(--ed-ground);
 }
 
-.editor__workspace:has(.sprite-mode),
 .editor__workspace:has(.html-mode) {
   place-items: stretch;
   overflow: hidden;
