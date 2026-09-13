@@ -8,7 +8,6 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
   await page.getByRole('button', { name: 'Project Baru' }).click();
   await expect(page).toHaveURL(/#\/editor\/proj_/);
 
-  await page.getByRole('tab', { name: 'Mode HTML' }).click();
   await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
   await expect(page.locator('.html-mode iframe')).toBeVisible();
 
@@ -94,28 +93,6 @@ test('HTML mode previews, highlights, exports, and preserves a page', async ({ p
   const exported = await readFile(downloadPath!, 'utf8');
   expect(exported).toContain('<!doctype html>');
   expect(exported).toContain('<p style="font-weight:bold">Dunia</p>');
-
-  await page.getByRole('tab', { name: 'Mode Sprite' }).click();
-  await expect(page.locator('#blocklyDiv')).toBeVisible();
-  await page.evaluate(() => {
-    const B = (window as any).__kodakoBlockly;
-    B.getMainWorkspace().newBlock('sprite_move');
-  });
-  await page.getByRole('tab', { name: 'Mode HTML' }).click();
-  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
-  await page.waitForFunction(() => {
-    const blocks = (window as any).__kodakoBlockly.getMainWorkspace().getAllBlocks(false);
-    return (
-      blocks.some((block: any) => block.type === 'html_heading') &&
-      blocks.some((block: any) => block.type === 'html_paragraph')
-    );
-  });
-  await page.getByRole('tab', { name: 'Mode Sprite' }).click();
-  await expect(page.locator('#blocklyDiv')).toBeVisible();
-  await page.waitForFunction(() => {
-    const blocks = (window as any).__kodakoBlockly.getMainWorkspace().getAllBlocks(false);
-    return blocks.some((block: any) => block.type === 'sprite_move');
-  });
 });
 
 test('document skeleton blocks drive the head + the code panel shows the full page', async ({
@@ -123,7 +100,6 @@ test('document skeleton blocks drive the head + the code panel shows the full pa
 }) => {
   await page.goto('/editor.html#/');
   await page.getByRole('button', { name: 'Project Baru' }).click();
-  await page.getByRole('tab', { name: 'Mode HTML' }).click();
   await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
 
   await page.evaluate(() => {

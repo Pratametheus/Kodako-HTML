@@ -1,4 +1,4 @@
-import { Blockly, generateHtml, installHtmlBlockly } from '../../blocks';
+import { Blockly, generateHtml, installBlockly } from '../../blocks';
 import { htmlWorkspaceJson } from '../../core/html-project';
 import type { Project } from '../../core/project';
 import type { Storage } from '../../core/storage';
@@ -24,7 +24,7 @@ export function buildStandaloneDocument(
 }
 
 export async function exportHtmlProject(project: Project, storage: Storage): Promise<void> {
-  installHtmlBlockly();
+  installBlockly();
   const workspace = new Blockly.Workspace();
   try {
     Blockly.serialization.workspaces.load(htmlWorkspaceJson(project), workspace);

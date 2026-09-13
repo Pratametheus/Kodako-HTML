@@ -30,7 +30,7 @@ describe('renderHelpPanel', () => {
     expect(dialog.hasAttribute('aria-labelledby')).toBe(true);
 
     const headings = [...dialog.querySelectorAll('h3')].map((h) => h.textContent);
-    expect(headings.length).toBe(5);
+    expect(headings.length).toBe(4);
     panel.dispose();
   });
 

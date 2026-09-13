@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { Blockly, installHtmlBlockly } from '../../src/blocks';
+import { Blockly, installBlockly } from '../../src/blocks';
 import { HTML_BLOCK_TYPES } from '../../src/blocks/html/blocks';
 import { htmlToolbox } from '../../src/blocks/html/toolbox';
 
-installHtmlBlockly();
-installHtmlBlockly();
+installBlockly();
+installBlockly();
 
 function message0(type: string): string {
   const ws = new Blockly.Workspace();

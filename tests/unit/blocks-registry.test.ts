@@ -1,18 +1,17 @@
 import { describe, expect, it } from 'vitest';
-import { Blockly, installSpriteBlockly } from '../../src/blocks';
-import { spriteTheme } from '../../src/blocks/theme';
+import { Blockly, blocklyTheme, installBlockly } from '../../src/blocks';
 
-describe('installSpriteBlockly', () => {
+describe('installBlockly', () => {
   it('is idempotent and registers a headless workspace cleanly', () => {
-    installSpriteBlockly();
-    installSpriteBlockly();
+    installBlockly();
+    installBlockly();
     const ws = new Blockly.Workspace();
     expect(ws).toBeTruthy();
     ws.dispose();
   });
 
-  it('exposes a theme with the seven category colours', () => {
-    expect(spriteTheme).toBeTruthy();
-    expect(Blockly.registry.hasItem(Blockly.registry.Type.THEME, 'kodako-sprite')).toBe(true);
+  it('exposes a theme with the three category colours', () => {
+    expect(blocklyTheme).toBeTruthy();
+    expect(Blockly.registry.hasItem(Blockly.registry.Type.THEME, 'kodako-html')).toBe(true);
   });
 });

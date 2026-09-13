@@ -1,11 +1,11 @@
 import './html-mode.css';
 import {
   Blockly,
+  blocklyTheme,
   generateHtml,
   htmlToolbox,
-  installHtmlBlockly,
+  installBlockly,
   setHtmlAssetOptionsProvider,
-  spriteTheme,
   attachToolboxWash,
 } from '../../../blocks';
 import {
@@ -53,7 +53,7 @@ function replaceProject(target: Project, next: Project): void {
 }
 
 export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => void {
-  installHtmlBlockly();
+  installBlockly();
   const project = deps.project;
   let loadingWorkspace = true;
   let disposed = false;
@@ -115,7 +115,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     testWorkspaceFactory ?? ((element, options) => Blockly.inject(element, options))
   )(blocklyHost, {
     toolbox: htmlToolbox,
-    theme: spriteTheme,
+    theme: blocklyTheme,
     renderer: 'zelos',
     trashcan: true,
     zoom: { controls: true, wheel: true },
