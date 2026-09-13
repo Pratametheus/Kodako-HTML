@@ -66,38 +66,6 @@
 }
 
 /* glyph shapes — mask URIs mirror src/blocks/category-icons.ts (source of truth) */
-.blocklyToolboxDiv .kodako-cat-icon--motion {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%2010h10l-4-4%201.4-1.4L18%2010l-7.6%207.4L9%2016l4-4H3z%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%2010h10l-4-4%201.4-1.4L18%2010l-7.6%207.4L9%2016l4-4H3z%22%2F%3E%3C%2Fsvg%3E');
-}
-.blocklyToolboxDiv .kodako-cat-icon--looks {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%204h14v9H8l-4%203v-3H3z%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%204h14v9H8l-4%203v-3H3z%22%2F%3E%3C%2Fsvg%3E');
-}
-.blocklyToolboxDiv .kodako-cat-icon--sound {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%208h3l4-4v12l-4-4H3z%22%2F%3E%3Cpath%20d%3D%22M13%206q3%204%200%208%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%208h3l4-4v12l-4-4H3z%22%2F%3E%3Cpath%20d%3D%22M13%206q3%204%200%208%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
-}
-.blocklyToolboxDiv .kodako-cat-icon--events {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M5%202v16H3.4V2zM6%203h10l-2.2%203L16%209H6z%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M5%202v16H3.4V2zM6%203h10l-2.2%203L16%209H6z%22%2F%3E%3C%2Fsvg%3E');
-}
-.blocklyToolboxDiv .kodako-cat-icon--control {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%201h4v2H8zM10%204a7%207%200%201%200%200%2014%207%207%200%200%200%200-14zm.9%203v4l3%201.8-.9%201.5L9%2011.4V7z%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%201h4v2H8zM10%204a7%207%200%201%200%200%2014%207%207%200%200%200%200-14zm.9%203v4l3%201.8-.9%201.5L9%2011.4V7z%22%2F%3E%3C%2Fsvg%3E');
-}
-.blocklyToolboxDiv .kodako-cat-icon--sensing {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8.5%203a5.5%205.5%200%200%201%204.2%209l3.6%203.6-1.5%201.5L11.2%2013A5.5%205.5%200%201%201%208.5%203zm0%202a3.5%203.5%200%201%200%200%207%203.5%203.5%200%200%200%200-7z%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8.5%203a5.5%205.5%200%200%201%204.2%209l3.6%203.6-1.5%201.5L11.2%2013A5.5%205.5%200%201%201%208.5%203zm0%202a3.5%203.5%200%201%200%200%207%203.5%203.5%200%200%200%200-7z%22%2F%3E%3C%2Fsvg%3E');
-}
-.blocklyToolboxDiv .kodako-cat-icon--operators {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M10%201l9%209-9%209-9-9z%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M10%201l9%209-9%209-9-9z%22%2F%3E%3C%2Fsvg%3E');
-}
-.blocklyToolboxDiv .kodako-cat-icon--variables {
-  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%203h7l7%207-7%207-7-7zm4%202.5A1.7%201.7%200%201%200%207%209a1.7%201.7%200%200%200%200-3.5z%22%2F%3E%3C%2Fsvg%3E');
-  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%203h7l7%207-7%207-7-7zm4%202.5A1.7%201.7%200%201%200%207%209a1.7%201.7%200%200%200%200-3.5z%22%2F%3E%3C%2Fsvg%3E');
-}
 .blocklyToolboxDiv .kodako-cat-icon--structure {
   -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%204%203%2010l5%206%201.5-1.5L6%2010l3.5-4.5zM12%204l5%206-5%206-1.5-1.5L14%2010l-3.5-4.5z%22%2F%3E%3C%2Fsvg%3E');
   mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%204%203%2010l5%206%201.5-1.5L6%2010l3.5-4.5zM12%204l5%206-5%206-1.5-1.5L14%2010l-3.5-4.5z%22%2F%3E%3C%2Fsvg%3E');
@@ -112,30 +80,6 @@
 }
 
 /* pill colour per category */
-.blocklyToolboxDiv .kodako-cat--motion .blocklyTreeRow {
-  background: #4c97ff;
-}
-.blocklyToolboxDiv .kodako-cat--looks .blocklyTreeRow {
-  background: #9966ff;
-}
-.blocklyToolboxDiv .kodako-cat--sound .blocklyTreeRow {
-  background: #cf63cf;
-}
-.blocklyToolboxDiv .kodako-cat--events .blocklyTreeRow {
-  background: #ffbf00;
-}
-.blocklyToolboxDiv .kodako-cat--control .blocklyTreeRow {
-  background: #ffab19;
-}
-.blocklyToolboxDiv .kodako-cat--sensing .blocklyTreeRow {
-  background: #5cb1d6;
-}
-.blocklyToolboxDiv .kodako-cat--operators .blocklyTreeRow {
-  background: #59c059;
-}
-.blocklyToolboxDiv .kodako-cat--variables .blocklyTreeRow {
-  background: #ff8c1a;
-}
 .blocklyToolboxDiv .kodako-cat--structure .blocklyTreeRow {
   background: #1e88e5;
 }
@@ -144,23 +88,6 @@
 }
 .blocklyToolboxDiv .kodako-cat--style .blocklyTreeRow {
   background: #8e24aa;
-}
-
-/* light categories: dark ink label + glyph, no text-shadow */
-.blocklyToolboxDiv .kodako-cat--events .blocklyTreeRow,
-.blocklyToolboxDiv .kodako-cat--control .blocklyTreeRow,
-.blocklyToolboxDiv .kodako-cat--sensing .blocklyTreeRow {
-  color: #2b2b38;
-}
-.blocklyToolboxDiv .kodako-cat--events .blocklyTreeLabel,
-.blocklyToolboxDiv .kodako-cat--control .blocklyTreeLabel,
-.blocklyToolboxDiv .kodako-cat--sensing .blocklyTreeLabel {
-  text-shadow: none;
-}
-.blocklyToolboxDiv .kodako-cat--events .kodako-cat-icon,
-.blocklyToolboxDiv .kodako-cat--control .kodako-cat-icon,
-.blocklyToolboxDiv .kodako-cat--sensing .kodako-cat-icon {
-  background-color: #2b2b38;
 }
 
 /* hover */

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { Blockly, installHtmlBlockly } from '../../src/blocks';
+import { Blockly, installBlockly } from '../../src/blocks';
 import {
   __htmlModeHandle,
   renderHtmlMode,
@@ -8,7 +8,7 @@ import {
 import { createEmptyProject, type Project } from '../../src/core/project';
 import type { ProjectSummary, Storage } from '../../src/core/storage';
 
-installHtmlBlockly();
+installBlockly();
 
 class FakeStorage implements Storage {
   exported: { name: string; html: string }[] = [];

@@ -2,11 +2,11 @@ import { beforeEach, describe, expect, it } from 'vitest';
 import {
   Blockly,
   generateHtml,
-  installHtmlBlockly,
+  installBlockly,
   setHtmlAssetOptionsProvider,
 } from '../../src/blocks';
 
-installHtmlBlockly();
+installBlockly();
 
 function statement(workspace: Blockly.Workspace, type: string): Blockly.Block {
   return workspace.newBlock(type);

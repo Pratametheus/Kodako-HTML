@@ -18,7 +18,7 @@ test('create, name, reload, still listed', async ({ page }) => {
   await expect(page.locator('[data-name]')).toHaveValue('Latihan Kelas 4');
 
   await page.getByRole('button', { name: 'Kembali' }).click();
-  await expect(page.getByText('Latihan Kelas 4')).toBeVisible();
+  await expect(page.locator('.home').getByText('Latihan Kelas 4')).toBeVisible();
 });
 
 test('landing page is served at the site root and links to the editor', async ({ page }) => {

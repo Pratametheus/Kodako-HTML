@@ -1,11 +1,11 @@
 import './html-mode.css';
 import {
   Blockly,
+  blocklyTheme,
   generateHtml,
   htmlToolbox,
-  installHtmlBlockly,
+  installBlockly,
   setHtmlAssetOptionsProvider,
-  spriteTheme,
   attachToolboxWash,
 } from '../../../blocks';
 import {
@@ -21,7 +21,7 @@ import { composeDisplayDocument } from '../../../runtime/html/document';
 import { attachBlockInfo } from './block-info';
 import { createHtmlPreview } from '../../../runtime/html/preview';
 import { extractTitle, slugifyTitle } from '../../../runtime/html/page-title';
-import { BUILTIN_COSTUMES, loadUploadedImage } from '../../../runtime/sprite/assets';
+import { BUILTIN_IMAGES, loadUploadedImage } from '../../../runtime/asset-library';
 import { t } from '../../i18n';
 import { showToast } from '../../toast';
 import { makeResizableSplit } from '../resizable-split';
@@ -53,13 +53,13 @@ function replaceProject(target: Project, next: Project): void {
 }
 
 export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => void {
-  installHtmlBlockly();
+  installBlockly();
   const project = deps.project;
   let loadingWorkspace = true;
   let disposed = false;
 
   const assetOptions = (): [string, string][] => {
-    const builtins: [string, string][] = BUILTIN_COSTUMES.map((asset) => [asset.name, asset.id]);
+    const builtins: [string, string][] = BUILTIN_IMAGES.map((asset) => [asset.name, asset.id]);
     const uploaded: [string, string][] = Object.entries(project.assets)
       .filter(([id, asset]) => asset.kind === 'image' && !id.startsWith('builtin:'))
       .map(([id, asset]) => [asset.name, id]);
@@ -115,7 +115,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
     testWorkspaceFactory ?? ((element, options) => Blockly.inject(element, options))
   )(blocklyHost, {
     toolbox: htmlToolbox,
-    theme: spriteTheme,
+    theme: blocklyTheme,
     renderer: 'zelos',
     trashcan: true,
     zoom: { controls: true, wheel: true },

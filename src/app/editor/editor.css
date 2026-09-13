@@ -32,19 +32,10 @@
 .editor__spacer {
   flex: 1;
 }
-.editor__modes {
-  display: flex;
-  gap: 6px;
-}
 .editor .btn {
   border: 2px solid var(--ed-line);
   border-radius: 999px;
   box-shadow: var(--ed-shadow);
-}
-.editor__modes .btn[aria-pressed='true'] {
-  background: #4c97ff;
-  border-color: #4c97ff;
-  color: #fff;
 }
 .editor__workspace {
   flex: 1;
@@ -55,7 +46,6 @@
   background: var(--ed-ground);
 }
 
-.editor__workspace:has(.sprite-mode),
 .editor__workspace:has(.html-mode) {
   place-items: stretch;
   overflow: hidden;
@@ -100,13 +90,6 @@
   box-shadow:
     0 2px 6px rgb(30 41 80 / 12%),
     0 10px 22px rgb(30 41 80 / 8%);
-}
-
-.editor__modes .btn[aria-pressed='true']:hover {
-  background: #3f86ec;
-  border-color: #3f86ec;
-  color: #fff;
-  transform: none;
 }
 
 @media (prefers-reduced-motion: reduce) {

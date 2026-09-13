@@ -4,43 +4,24 @@ import * as Id from 'blockly/msg/id';
 import { registerKodakoFlyout } from './flyout';
 import { registerHtmlBlocks } from './html/blocks';
 import { registerHtmlGenerator } from './html/generator';
-import { registerSpriteBlocks } from './sprite/blocks';
-import { registerSpriteGenerators } from './sprite/generator';
-import { spriteTheme } from './theme';
+import { blocklyTheme } from './theme';
 
-export { Blockly, spriteTheme };
+export { Blockly, blocklyTheme };
 export { attachToolboxWash } from './toolbox-wash';
 export { KodakoVerticalFlyout } from './flyout';
 export { setHtmlAssetOptionsProvider } from './html/blocks';
 export { generateHtml } from './html/generator';
 export type { GeneratedHtml } from './html/generator';
 export { htmlToolbox } from './html/toolbox';
-export {
-  setCostumeOptionsProvider,
-  setSensingTargetsProvider,
-  setSoundOptionsProvider,
-} from './sprite/blocks';
-export { generateThreads } from './sprite/generator';
-export type { ThreadCode } from './sprite/generator';
 export const BLOCKLY_LOCALE = 'id';
 
-let spriteInstalled = false;
-let htmlInstalled = false;
+let installed = false;
 
-export function installSpriteBlockly(): void {
-  if (spriteInstalled) return;
-  registerKodakoFlyout();
-  Blockly.setLocale(Id as unknown as Record<string, string>);
-  registerSpriteBlocks();
-  registerSpriteGenerators();
-  spriteInstalled = true;
-}
-
-export function installHtmlBlockly(): void {
-  if (htmlInstalled) return;
+export function installBlockly(): void {
+  if (installed) return;
   registerKodakoFlyout();
   Blockly.setLocale(Id as unknown as Record<string, string>);
   registerHtmlBlocks();
   registerHtmlGenerator();
-  htmlInstalled = true;
+  installed = true;
 }

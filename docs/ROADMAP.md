@@ -192,6 +192,17 @@ dan perbaikan bug hint kanvas kosong yang tidak hilang
 (`.html-mode__hint[hidden]`). Lihat
 `docs/superpowers/specs/2026-09-07-phase-d-editor-home-polish-design.md`.
 
+Fase E (2026-09-13) — **Mode Sprite dihapus.** Editor sekarang HTML-only:
+tidak ada lagi pemilih mode, blok/generator/toolbox/runtime Sprite (gerak,
+tampilan, suara, sensor, panggung) dan panel editornya dihapus dari repo.
+Infrastruktur unggah/pilih gambar yang ternyata dipakai bersama HTML mode
+dipindah ke `src/runtime/asset-library.ts`. Skema `Project` kehilangan
+`activeMode`/`sprite` (project lama tetap bisa dibuka — field itu jadi
+tidak terpakai, bukan galat). Tema Blockly & ikon kategori dipangkas ke
+3 kategori HTML (Struktur/Konten/Gaya). Dokumentasi produk (PRD, Design,
+README, landing) ditulis ulang terpisah — lihat
+`docs/superpowers/specs/2026-09-13-remove-sprite-mode-design.md`.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini

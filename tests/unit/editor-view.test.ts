@@ -43,7 +43,6 @@ beforeEach(() => {
   root = document.createElement('div');
   storage = new FakeStorage();
   project = createEmptyProject('Judul Awal');
-  project.activeMode = 'html';
 });
 
 afterEach(() => {
@@ -65,14 +64,6 @@ describe('renderEditor', () => {
     expect(storage.saved).toHaveLength(0); // debounced
     vi.advanceTimersByTime(300);
     expect(storage.saved.at(-1)!.meta.name).toBe('Judul Baru');
-  });
-
-  it('the mode toggle updates activeMode and pressed state', () => {
-    renderEditor(root, { id: 'p1', project, storage, onBack: vi.fn() });
-    root.querySelector<HTMLButtonElement>('[data-mode="html"]')!.click();
-    expect(root.querySelector('[data-mode="html"]')!.getAttribute('aria-pressed')).toBe('true');
-    vi.advanceTimersByTime(300);
-    expect(storage.saved.at(-1)!.activeMode).toBe('html');
   });
 
   it('flushes a pending debounced save when the view is unmounted before the timer fires', () => {

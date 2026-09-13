@@ -7,11 +7,10 @@ export type HelpPanel = {
   dispose(): void;
 };
 
-type Section = { key: 'start' | 'sprite' | 'html' | 'save' | 'trouble' };
+type Section = { key: 'start' | 'html' | 'save' | 'trouble' };
 
 const SECTIONS: Section[] = [
   { key: 'start' },
-  { key: 'sprite' },
   { key: 'html' },
   { key: 'save' },
   { key: 'trouble' },

@@ -12,21 +12,6 @@ describe('t', () => {
   it('returns the key itself when missing', () => {
     expect(t('nope.missing.key')).toBe('nope.missing.key');
   });
-  it('contains complete Bahasa Indonesia strings for sprite mode', () => {
-    expect(t('editor.sprite.run')).toBe('Jalankan');
-    expect(t('editor.sprite.stop')).toBe('Berhenti');
-    expect(t('editor.sprite.uploadTooBig')).toContain('2 MB');
-    expect(t('editor.sprite.tabSound')).toBe('Suara');
-    expect(t('editor.sprite.askPlaceholder')).toContain('jawabanmu');
-    expect(t('editor.sprite.askSubmit')).toBe('Kirim');
-    expect(t('editor.sprite.uploadSoundTooBig')).toContain('2 MB');
-    expect(t('editor.sprite.uploadNotAudio')).toContain('bukan suara');
-    expect(t('error.audioUnavailable')).toContain('tidak didukung');
-    const obviousEnglish = ['Run ', 'Stop', 'Costume', 'Upload', 'Delete', 'Backdrop'];
-    for (const value of Object.values(dict)) {
-      for (const word of obviousEnglish) expect(value).not.toContain(word);
-    }
-  });
   it('contains complete Bahasa Indonesia strings for HTML mode', () => {
     expect(t('editor.html.tabCode')).toBe('Lihat Kode');
     expect(t('editor.html.run')).toBe('Jalankan');
@@ -52,8 +37,6 @@ describe('t', () => {
     expect(t('boundary.reload')).toBe('Muat ulang');
     expect(t('boundary.copy')).toBe('Salin detail');
     expect(t('toast.close')).toBe('Tutup pesan');
-    expect(t('editor.sprite.stageLabel')).toBe('Panggung tempat sprite bergerak');
-    expect(t('a11y.modeTablist')).toBe('Pilih mode editor');
     expect(t('a11y.previewTablist')).toBe('Pratinjau atau kode');
 
     const obviousEnglish = ['Reload', 'Copy', 'Close'];
@@ -67,10 +50,7 @@ describe('t', () => {
     expect(t('help.title')).toBe('Bantuan');
     expect(t('help.close')).toBe('Tutup');
     expect(t('help.start')).toBe(
-      'Klik "Project Baru" di halaman depan untuk mulai. Pilih Mode Sprite untuk membuat animasi/permainan, atau Mode HTML untuk membuat halaman web.',
-    );
-    expect(t('help.sprite')).toBe(
-      'Seret blok dari kategori di kiri ke area kerja. Mulai dari blok "saat bendera hijau diklik", lalu sambungkan blok gerak/tampilan di bawahnya. Klik ▶ untuk menjalankan, ⏹ untuk berhenti. Tambah sprite baru dari panel Sprite di kanan bawah.',
+      'Klik "Project Baru" di halaman depan untuk mulai. Seret blok dari kiri untuk menyusun halaman HTML-mu.',
     );
     expect(t('help.html')).toBe(
       'Seret blok Struktur (judul, paragraf, gambar, daftar) langsung ke area kerja — blok yang tersusun dari atas ke bawah menjadi isi halaman. Bungkus dengan blok Gaya untuk warna/ukuran. Klik "Jalankan" untuk melihat hasilnya di tab Pratinjau, atau kodenya di tab Lihat Kode.',
@@ -79,7 +59,7 @@ describe('t', () => {
       'Project tersimpan otomatis di peramban ini. Gunakan tombol Simpan untuk menyimpan segera, atau Ekspor untuk mengunduh file project (.ghtml.json) atau halaman HTML mandiri.',
     );
     expect(t('help.trouble')).toBe(
-      'Blok tidak jalan? Pastikan tersambung di bawah blok "saat bendera hijau diklik". Suara tidak keluar? Sebagian peramban lama tidak mendukung suara. File project rusak? Buat project baru dan susun ulang bloknya.',
+      'Blok tidak tampil di pratinjau? Pastikan bloknya tersambung ke blok lain di atasnya. File project rusak? Buat project baru dan susun ulang bloknya.',
     );
 
     const obviousEnglish = ['Help', 'Close', 'New Project', 'Preview', 'View Code'];

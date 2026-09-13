@@ -27,7 +27,7 @@ const flush = (): Promise<void> => new Promise((resolve) => queueMicrotask(() =>
 function harness(item: { getDiv: () => Element | null } | null | 'none') {
   document.body.innerHTML =
     '<div class="injectionDiv"><div class="blocklyToolboxDiv">' +
-    '<div class="blocklyToolboxCategory kodako-cat kodako-cat--events">' +
+    '<div class="blocklyToolboxCategory kodako-cat kodako-cat--structure">' +
     '<div class="blocklyTreeRow"></div></div></div></div>';
   const root = document.querySelector<HTMLElement>('.injectionDiv')!;
   const toolboxDiv = document.querySelector<HTMLElement>('.blocklyToolboxDiv')!;
@@ -49,7 +49,7 @@ describe('attachToolboxWash', () => {
     h.click();
     await flush();
     expect(h.root.getAttribute('data-kodako-open')).toBe('true');
-    expect(h.root.style.getPropertyValue('--kodako-wash')).toBe('rgba(255, 191, 0, 0.12)'); // events #FFBF00
+    expect(h.root.style.getPropertyValue('--kodako-wash')).toBe('rgba(30, 136, 229, 0.12)'); // structure #1E88E5
     expect(h.catDiv.classList.contains('kodako-cat--open')).toBe(true);
 
     dispose();

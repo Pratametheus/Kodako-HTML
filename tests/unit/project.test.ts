@@ -8,28 +8,13 @@ import {
 } from '../../src/core/project';
 
 describe('createEmptyProject', () => {
-  it('has one default sprite and sprite mode', () => {
+  it('starts with an empty HTML workspace and no assets', () => {
     const p = createEmptyProject('Latihan 1');
     expect(p.formatVersion).toBe(1);
     expect(p.meta.name).toBe('Latihan 1');
     expect(p.meta.createdAt).toBe(p.meta.updatedAt);
-    expect(p.activeMode).toBe('sprite');
-    expect(p.sprite.sprites).toHaveLength(1);
-    expect(p.sprite.sprites[0]).toMatchObject({
-      x: 0,
-      y: 0,
-      direction: 90,
-      size: 100,
-      visible: true,
-      costumes: [{ assetId: 'builtin:cat' }],
-      currentCostume: 0,
-    });
-    expect(p.assets['builtin:cat']).toEqual({
-      kind: 'image',
-      name: 'Kucing',
-      source: 'builtin',
-      ref: 'builtin:cat',
-    });
+    expect(p.html.workspace).toEqual({});
+    expect(p.assets).toEqual({});
   });
 });
 
@@ -47,15 +32,18 @@ describe('validate', () => {
     const res = validate(bad);
     expect(res.ok).toBe(false);
   });
-  it('rejects an unknown activeMode', () => {
-    const bad = { ...createEmptyProject('X'), activeMode: 'game' };
+  it('rejects a project missing html.workspace', () => {
+    const bad = { ...createEmptyProject('X'), html: {} };
     const res = validate(bad);
     expect(res.ok).toBe(false);
   });
-  it('rejects a sprite with a non-numeric x', () => {
-    const p = createEmptyProject('X');
-    (p.sprite.sprites[0] as unknown as { x: unknown }).x = 'left';
-    expect(validate(p).ok).toBe(false);
+  it('ignores leftover activeMode/sprite fields from a pre-Fase-E project', () => {
+    const legacy = {
+      ...createEmptyProject('X'),
+      activeMode: 'sprite',
+      sprite: { stage: { backdrop: null }, sprites: [] },
+    };
+    expect(validate(legacy).ok).toBe(true);
   });
 });
 

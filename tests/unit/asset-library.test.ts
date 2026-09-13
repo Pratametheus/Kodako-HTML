@@ -2,22 +2,17 @@ import { readFile, stat } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
-  BUILTIN_BACKDROPS,
   BUILTIN_BY_ID,
-  BUILTIN_COSTUMES,
-  BUILTIN_SOUNDS,
+  BUILTIN_IMAGES,
   loadUploadedImage,
-  loadUploadedSound,
-  MAX_SOUND_UPLOAD_BYTES,
   MAX_UPLOAD_BYTES,
   resolveAssetUrl,
-} from '../../src/runtime/sprite/assets';
+} from '../../src/runtime/asset-library';
 
-describe('sprite asset catalog', () => {
-  it('contains unique builtin costumes and backdrops', () => {
-    expect(BUILTIN_COSTUMES).toHaveLength(15);
-    expect(BUILTIN_BACKDROPS).toHaveLength(6);
-    const ids = [...BUILTIN_COSTUMES, ...BUILTIN_BACKDROPS].map(({ id }) => id);
+describe('built-in image library', () => {
+  it('contains 15 unique builtin images', () => {
+    expect(BUILTIN_IMAGES).toHaveLength(15);
+    const ids = BUILTIN_IMAGES.map(({ id }) => id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids.every((id) => id.startsWith('builtin:'))).toBe(true);
     expect(BUILTIN_BY_ID.get('builtin:cat')?.name).toBe('Kucing');
@@ -30,15 +25,13 @@ describe('sprite asset catalog', () => {
     ['builtin:fish', 'Ikan'],
     ['builtin:rocket', 'Roket'],
     ['builtin:apple', 'Apel'],
-    ['builtin:bg-room', 'Ruangan'],
-    ['builtin:bg-space', 'Antariksa'],
-  ])('resolves new polished asset %s', (id, name) => {
+  ])('resolves %s', (id, name) => {
     expect(BUILTIN_BY_ID.get(id)?.name).toBe(name);
     expect(resolveAssetUrl(id, {})).toBeTruthy();
   });
 
   it('keeps every bundled SVG small and free of executable or external content', async () => {
-    const costumes = [
+    const names = [
       'cat',
       'ball',
       'arrow',
@@ -55,16 +48,11 @@ describe('sprite asset catalog', () => {
       'rocket',
       'apple',
     ];
-    const backdrops = ['bg-plain', 'bg-sky', 'bg-grid', 'bg-sunset', 'bg-room', 'bg-space'];
-
-    for (const [name, viewBox] of [
-      ...costumes.map((name) => [name, '0 0 100 100'] as const),
-      ...backdrops.map((name) => [name, '0 0 480 360'] as const),
-    ]) {
-      const file = resolve(process.cwd(), 'src/runtime/sprite/assets', `${name}.svg`);
+    for (const name of names) {
+      const file = resolve(process.cwd(), 'src/runtime/asset-library', `${name}.svg`);
       const source = await readFile(file, 'utf8');
       expect((await stat(file)).size, name).toBeLessThan(3072);
-      expect(source, name).toContain(`viewBox="${viewBox}"`);
+      expect(source, name).toContain('viewBox="0 0 100 100"');
       expect(source.toLowerCase(), name).not.toContain('<script');
       const withoutSvgNamespace = source.replace('http://www.w3.org/2000/svg', '');
       expect(withoutSvgNamespace, name).not.toMatch(/https?:\/\//i);
@@ -98,36 +86,5 @@ describe('sprite asset catalog', () => {
       'data:image/png;base64,eA==',
     );
     expect(resolveAssetUrl('missing', {})).toBeNull();
-  });
-
-  it('contains eight unique builtin sounds that resolve to bundled URLs', () => {
-    expect(BUILTIN_SOUNDS).toHaveLength(8);
-    const ids = BUILTIN_SOUNDS.map(({ id }) => id);
-    expect(new Set(ids).size).toBe(ids.length);
-    expect(ids.every((id) => id.startsWith('builtin:snd-'))).toBe(true);
-    expect(BUILTIN_SOUNDS.every(({ kind }) => kind === 'sound')).toBe(true);
-    expect(BUILTIN_BY_ID.get('builtin:snd-pop')?.name).toBe('Pop');
-    expect(resolveAssetUrl('builtin:snd-pop', {})).toBeTruthy();
-  });
-
-  it('rejects oversized and non-audio uploads in Bahasa Indonesia', async () => {
-    const oversized = new File([new Uint8Array(MAX_SOUND_UPLOAD_BYTES + 1)], 'besar.wav', {
-      type: 'audio/wav',
-    });
-    const text = new File(['halo'], 'catatan.txt', { type: 'text/plain' });
-
-    await expect(loadUploadedSound(oversized)).rejects.toThrow(/suara terlalu besar/i);
-    await expect(loadUploadedSound(text)).rejects.toThrow(/bukan suara/i);
-  });
-
-  it('loads a small sound as a data URL', async () => {
-    const file = new File([new Uint8Array([82, 73, 70, 70])], 'x.wav', {
-      type: 'audio/wav',
-    });
-
-    await expect(loadUploadedSound(file)).resolves.toEqual({
-      dataUrl: expect.stringMatching(/^data:audio\/wav;base64,/),
-      name: 'x.wav',
-    });
   });
 });
