@@ -1,4 +1,4 @@
-import { resolveAssetUrl } from '../sprite/assets';
+import { resolveAssetUrl } from '../asset-library';
 import { wrapBodyInDocument } from './document';
 import { escapeHtmlAttr } from './escape';
 

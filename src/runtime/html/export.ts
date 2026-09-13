@@ -2,7 +2,7 @@ import { Blockly, generateHtml, installHtmlBlockly } from '../../blocks';
 import { htmlWorkspaceJson } from '../../core/html-project';
 import type { Project } from '../../core/project';
 import type { Storage } from '../../core/storage';
-import { resolveAssetUrl } from '../sprite/assets';
+import { resolveAssetUrl } from '../asset-library';
 import { wrapBodyInDocument } from './document';
 import { escapeHtmlAttr } from './escape';
 
