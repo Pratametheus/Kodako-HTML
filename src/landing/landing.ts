@@ -11,8 +11,8 @@ initHeroLetters(document.querySelector<HTMLElement>('[data-hero-title]'), { redu
 initParallax(document.querySelectorAll<HTMLElement>('[data-parallax]'), { reducedMotion });
 
 // Demo band: the blocks assemble once, when the band first scrolls into view.
-// Under reduced motion we never add `is-playing`, so the CSS resting state (all
-// blocks stacked, sprite mid-stage) shows immediately. Without IntersectionObserver
+// Under reduced motion we never add `is-playing`, so the CSS resting state
+// (all blocks stacked) shows immediately. Without IntersectionObserver
 // support we start it right away.
 const demo = document.querySelector<HTMLElement>('[data-demo]');
 if (demo && !reducedMotion) {

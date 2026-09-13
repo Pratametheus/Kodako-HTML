@@ -25,7 +25,6 @@ describe('landing page (index.html)', () => {
     expect(html).toContain('data-demo');
     expect(html).toContain('id="apa-ini"');
     expect(html).toContain('id="cara-pakai"');
-    expect(html).toContain('class="sec sec--modes"');
     expect(html).toContain('id="guru"');
     expect(html).toContain('data-year');
     expect(html).toContain('Jurnal Mengajar');

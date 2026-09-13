@@ -441,53 +441,6 @@ img {
     transform: translateX(0);
   }
 }
-.demo__sprite {
-  position: absolute;
-  top: 54px;
-  left: 300px;
-  width: 34px;
-  height: 34px;
-  background: var(--block-magenta);
-  border: 2px solid var(--ink);
-  border-radius: 10px;
-}
-.demo.is-playing .demo__sprite {
-  animation: demo-hop 3.2s ease-in-out 1.4s infinite;
-}
-.demo__sprite::before,
-.demo__sprite::after {
-  content: '';
-  position: absolute;
-  top: 11px;
-  width: 5px;
-  height: 5px;
-  background: var(--paper);
-  border-radius: 50%;
-}
-.demo__sprite::before {
-  left: 8px;
-}
-.demo__sprite::after {
-  right: 8px;
-}
-@keyframes demo-hop {
-  0%,
-  100% {
-    transform: translate(0, 0);
-  }
-  20% {
-    transform: translate(40px, -22px);
-  }
-  40% {
-    transform: translate(80px, 0);
-  }
-  60% {
-    transform: translate(120px, -22px);
-  }
-  80% {
-    transform: translate(150px, 0);
-  }
-}
 .demo__caption {
   margin: 4px 0 0;
   font-weight: 600;
@@ -580,66 +533,6 @@ img {
   font-size: 1.3rem;
 }
 
-.sec--modes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
-}
-.mode {
-  padding: 22px;
-  border: 2px solid var(--ink);
-  border-radius: var(--radius);
-  background: var(--paper);
-  box-shadow: 0 6px 0 rgba(43, 43, 56, 0.15);
-}
-.mode--sprite {
-  border-bottom: 8px solid var(--brand-blue);
-}
-.mode--html {
-  border-bottom: 8px solid var(--block-green);
-}
-.mode__art {
-  position: relative;
-  height: 110px;
-  margin-bottom: 10px;
-}
-.mode__art img {
-  position: absolute;
-}
-/* Sprite card: the coder-kid plus one small block chip */
-.mode--sprite .mode__art img:first-child {
-  height: 100px;
-  left: 8px;
-  bottom: 0;
-}
-.mode--sprite .mode__chip {
-  height: 30px;
-  left: 104px;
-  top: 34px;
-  transform: rotate(-7deg);
-  filter: drop-shadow(0 3px 4px rgba(43, 43, 56, 0.18));
-}
-/* HTML card: a tidy little stack of blocks */
-.mode--html .mode__art img {
-  height: 30px;
-  left: 50%;
-  filter: drop-shadow(0 3px 4px rgba(43, 43, 56, 0.15));
-}
-.mode--html .mode__art img:first-child {
-  top: 26px;
-  transform: translateX(-62%) rotate(-3deg);
-}
-.mode--html .mode__art img:nth-child(2) {
-  top: 54px;
-  transform: translateX(-40%) rotate(3deg);
-}
-.mode h3 {
-  margin: 0 0 6px;
-}
-.mode p {
-  margin: 0;
-}
-
 .sec--guru p {
   max-width: 62ch;
 }
@@ -668,8 +561,7 @@ img {
   .nav .btn--nav {
     margin-left: auto;
   }
-  .sec--apa,
-  .sec--modes {
+  .sec--apa {
     grid-template-columns: 1fr;
   }
   .hero__mascot {
@@ -693,8 +585,5 @@ img {
   .demo__block--2,
   .demo__block--3 {
     transform: translateX(0);
-  }
-  .demo__sprite {
-    transform: translate(80px, 0);
   }
 }

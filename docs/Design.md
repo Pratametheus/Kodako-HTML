@@ -1,6 +1,7 @@
 # Design — Editor Blok "Game HTML"
 
-Status: Draft 1 · Tanggal: 2026-09-03 · Menyertai: `PRD.md`, `ROADMAP.md`
+Status: Draft 1 · Tanggal: 2026-09-03 · Diperbarui: 2026-09-13 (Fase E — Mode
+Sprite dihapus, editor HTML-only) · Menyertai: `PRD.md`, `ROADMAP.md`
 
 ---
 
@@ -22,13 +23,11 @@ ada permintaan jaringan saat dipakai. Satu basis kode web di-*build* menjadi:
 │    │                                                                   │
 │    ├── blocks/  ── definisi blok + generator (Blockly)                 │
 │    │     theme.ts                                                      │
-│    │     sprite/ blocks · generator(→JS) · toolbox                     │
 │    │     html/   blocks · generator(→HTML) · toolbox                   │
 │    │                                                                   │
 │    ├── runtime/                                                        │
-│    │     sprite/ stage(Canvas) · sprite · interpreter · api · assets   │
-│    │             · audio                                               │
-│    │     html/   preview(iframe sandbox)                               │
+│    │     html/   preview(iframe sandbox) · export · document           │
+│    │     asset-library.ts  ── pustaka gambar bawaan + unggah            │
 │    │                                                                   │
 │    └── ui/  ── komponen kecil: panel, tombol, modal, toast             │
 │                                                                       │
@@ -44,14 +43,27 @@ storage.ts memilih implementasi saat runtime:
 - `core/` tidak meng-*import* apa pun dari `blocks/`, `runtime/`, `ui/`, atau
   Blockly. Hanya tipe data & logika murni.
 - `blocks/` hanya bergantung pada Blockly + tipe dari `core/`. Tugasnya:
-  mendefinisikan blok dan **mengubah workspace menjadi teks** (JS atau HTML).
-  Tidak mengeksekusi apa pun.
-- `runtime/` mengeksekusi teks/model. `runtime/sprite` tidak tahu Blockly
-  (kecuali satu callback opsional untuk menyorot blok berdasarkan id).
+  mendefinisikan blok dan **mengubah workspace menjadi teks HTML**. Tidak
+  mengeksekusi apa pun.
+- `runtime/html` menampilkan/mengekspor teks yang dihasilkan `blocks/`; tidak
+  tahu Blockly.
 - `app/` merangkai semuanya + UI.
 
 Manfaat: tiap modul dapat dipahami & dites sendiri; mengganti Blockly, renderer,
 atau lapisan storage tidak merembet ke modul lain.
+
+> **Sejarah (Fase E, 2026-09-13):** rilis awal punya modul kedua — sebuah
+> mesin animasi ala Scratch ("Mode Sprite": `blocks/sprite/`,
+> `runtime/sprite/`, panel editor tersendiri) yang mengeksekusi kode anak
+> lewat **JS-Interpreter** langkah-per-langkah. Modul ini dihapus total atas
+> keputusan pemilik proyek — di luar kebutuhan yang sebenarnya ingin dilayani
+> alat ini. `js-interpreter` sudah tidak dipakai sama sekali (hilang dari
+> hasil build lewat *tree-shaking*). Satu bagian yang ternyata dipakai
+> bersama — pustaka gambar bawaan + unggah gambar — dipindah ke
+> `runtime/asset-library.ts` sebelum modul Sprite dihapus. Detail teknis
+> lengkap ada di `docs/superpowers/specs/2026-09-13-remove-sprite-mode-design.md`;
+> riwayat fitur Sprite (blok, tema, runtime) tetap tercatat di `ROADMAP.md`
+> Fase 1 & 3a untuk arsip.
 
 ## 2. Struktur repo
 
@@ -72,7 +84,7 @@ game-html/
         project-manager.ts   # daftar/CRUD project di localStorage
         project-card.ts
       editor/
-        editor-view.ts       # layout editor, switch mode
+        editor-view.ts       # layout editor: header + Mode HTML
         header.ts
       i18n/
         index.ts             # t(key), format tanggal id-ID
@@ -85,27 +97,18 @@ game-html/
     blocks/
       index.ts               # registrasi ke Blockly, set locale id
       theme.ts
-      sprite/
-        blocks.ts
-        generator.ts         # Blockly → JS
-        toolbox.ts
+      category-icons.ts
       html/
         blocks.ts
         generator.ts         # Blockly → HTML
         toolbox.ts
     runtime/
-      sprite/
-        stage.ts             # renderer Canvas 2D
-        sprite.ts            # model Sprite (data murni) + operasi
-        interpreter.ts       # bungkus JS-Interpreter: run/step/stop
-        scheduler.ts         # loop thread kooperatif per frame
-        api.ts               # fungsi yang diekspos ke kode terinterpretasi
-        event-bus.ts         # greenFlag, spriteClicked, keyPressed, broadcast
-        assets.ts            # pustaka kostum/suara CC0 bawaan
-        audio.ts             # bungkus Web Audio
+      asset-library.ts       # pustaka gambar bawaan CC0 + unggah + resolusi
       html/
         preview.ts           # tulis HTML ke iframe sandbox, debounce
-        export.ts            # susun & unduh file .html mandiri
+        document.ts           # bungkus dokumen (CSP, judul, dsb.)
+        page-title.ts         # ekstrak <title> + slug untuk tab pratinjau
+        export.ts             # susun & unduh file .html mandiri
     ui/
       panel.ts  button.ts  modal.ts  toast.ts  icon.ts
     styles/
@@ -115,7 +118,7 @@ game-html/
     src/main.rs
     icons/
   tests/
-    unit/  integration/  e2e/
+    unit/  e2e/
   vite.config.ts
   package.json
   tsconfig.json
@@ -127,34 +130,12 @@ Satu file `.ghtml.json`. Aset bawaan dirujuk dengan id; aset unggahan disematkan
 sebagai data URL agar project tetap satu file yang portabel.
 
 ```ts
-type AssetRef = { assetId: string }
-
 type Project = {
   formatVersion: 1
   meta: {
     name: string
     createdAt: string   // ISO 8601
     updatedAt: string   // ISO 8601
-  }
-  activeMode: "sprite" | "html"
-
-  sprite: {
-    stage: {
-      backdrop: AssetRef | null
-    }
-    sprites: Array<{
-      id: string
-      name: string
-      x: number            // -240..240, pusat panggung = 0
-      y: number            // -180..180
-      direction: number    // derajat, 90 = kanan (konvensi Scratch)
-      size: number         // persen, default 100
-      visible: boolean
-      costumes: AssetRef[]
-      currentCostume: number
-      sounds: AssetRef[]
-      script: BlocklyJson  // Blockly.serialization.workspaces.save()
-    }>
   }
 
   html: {
@@ -170,13 +151,20 @@ type Project = {
 }
 ```
 
+> `formatVersion` tetap `1` sejak rilis pertama — belum pernah ada perubahan
+> skema yang butuh migrasi bertingkat. Fase E melonggarkan (bukan menaikkan)
+> skema: `activeMode` dan `sprite` yang dulu wajib sekarang **diabaikan bila
+> ada** — sebuah file project lama yang masih membawa field itu tetap lolos
+> `validate()` dan tetap bisa dibuka; field-nya cuma jadi tidak terpakai.
+
 ### Aturan & operasi (`core/project.ts`)
 
-- `createEmptyProject(name)` → Project dengan satu sprite default & workspace
-  html kosong.
+- `createEmptyProject(name)` → Project dengan workspace HTML kosong & tanpa
+  aset.
 - `validate(json): { ok: true, project } | { ok: false, errors }` — memeriksa
-  `formatVersion`, keberadaan & tipe tiap field, rentang nilai numerik, rujukan
-  aset yang tidak menggantung.
+  `formatVersion`, keberadaan & tipe tiap field, rujukan aset yang tidak
+  menggantung. Field asing (mis. sisa `activeMode`/`sprite` dari project versi
+  lama) tidak ditolak — cuma diabaikan.
 - `migrate(json)` — menaikkan `formatVersion` lama ke terbaru; dipanggil sebelum
   `validate`. Untuk v1 hanya kerangka (belum ada versi lama).
 - `touch(project)` — set `meta.updatedAt`.
@@ -188,47 +176,47 @@ type Project = {
   - `ghtml:projects` → array `{ id, name, updatedAt, thumbnailDataUrl }`.
   - `ghtml:project:<id>` → Project terserialisasi.
   - `ghtml:project:<id>:tmp` → slot tulis sementara.
-- Autosave: debounce ~1 dtk setelah perubahan workspace/state → tulis ke `:tmp`
+- Autosave: debounce ~300 ms setelah perubahan workspace → tulis ke `:tmp`
   → bila sukses, ganti nama ke kunci utama & perbarui entri daftar. Mencegah
   korupsi bila tab ditutup di tengah penulisan.
-- Thumbnail: snapshot kecil panggung (atau preview HTML) saat autosave.
 
 ## 4. Mesin blok (Blockly)
 
 ### 4.1 Registrasi & locale
 
 - `blocks/index.ts` memuat Blockly, meng-set `Blockly.setLocale(id)` (paket
-  locale `id` bawaan Blockly), lalu mendaftarkan blok kustom + generator.
+  locale `id` bawaan Blockly), lalu mendaftarkan blok kustom + generator lewat
+  satu fungsi `installBlockly()`.
 - Label & tooltip blok kustom ditulis langsung dalam Bahasa Indonesia (tidak
   lewat `id.json`, agar dekat dengan definisi blok).
 
 ### 4.2 Tema (`blocks/theme.ts`)
 
-Tema Blockly kustom "rasa Scratch": sudut membulat, warna kategori mirip
-Scratch (Kejadian kuning, Gerak biru, Tampilan ungu, Suara merah muda, Kontrol
-oranye, Sensor biru muda, Operator hijau, Variabel merah-oranye), font besar,
+Tema Blockly kustom `blocklyTheme` ("kodako-html"): sudut membulat, tiga warna
+kategori (Struktur `#1E88E5`, Konten `#43A047`, Gaya `#8E24AA`), font besar,
 kontras tinggi. Toolbox bergaya kategori berwarna.
 
 Rail kategori (Fase B1, `src/blocks/theme.css`): tiap baris kategori adalah
-pil warna penuh sesuai `CATEGORY_COLORS`; label/glyph putih atau ink `#2B2B38`
-menurut kontras. Kategori yang dibuka membesar, kehilangan sudut kanannya, dan
-"menyatu" dengan flyout yang di-_wash_ warna kategori (~12% opasitas); kategori
-lain diredupkan ke 82%. Digerakkan oleh `src/blocks/toolbox-wash.ts` lewat
-click-delegation di `.blocklyToolboxDiv`. Blok pratinjau di flyout dikunci
-skala 1× oleh `KodakoVerticalFlyout` (`src/blocks/flyout.ts`) supaya zoom
-workspace tidak ikut memperbesarnya. Chrome editor "playful-lite": token
+pil warna penuh sesuai `CATEGORY_COLORS`; label/glyph putih (semua tiga
+kategori HTML memakai teks putih — tidak ada kategori "terang" yang butuh ink
+gelap). Kategori yang dibuka membesar, kehilangan sudut kanannya, dan
+"menyatu" dengan flyout yang di-_wash_ warna kategori (~12% opasitas);
+kategori lain diredupkan ke 82%. Digerakkan oleh `src/blocks/toolbox-wash.ts`
+lewat click-delegation di `.blocklyToolboxDiv`. Blok pratinjau di flyout
+dikunci skala 1× oleh `KodakoVerticalFlyout` (`src/blocks/flyout.ts`) supaya
+zoom workspace tidak ikut memperbesarnya. Chrome editor "playful-lite": token
 `--ed-*` di `src/app/editor/editor.css` (border 2px, radius 16px, bayangan
-halus, tombol pil). Tombol jalankan = ikon saja — bendera hijau di Mode
-Sprite, `▶` di Mode HTML — dengan `aria-label` + `title`.
+halus, tombol pil + efek hover). Tombol jalankan (`▶`) ikon saja, dengan
+`aria-label` + `title`.
 
 Panel bisa di-*drag* (PR-B2, `src/app/editor/resizable-split.ts`): satu gutter
 6px (`role="separator"`, bisa panah-kiri/kanan saat fokus, klik-ganda untuk
-reset) di antara panel blok dan sisi kanan tiap mode. Grid memakai
+reset) di antara panel blok dan sisi kanan editor. Grid memakai
 `var(--split-left, …)`; posisi disimpan sebagai fraksi di
-`localStorage` (`kodako:split:sprite` / `kodako:split:html`), dipasang ulang
-(dengan clamp min 320/300 px) saat mount & saat jendela di-*resize*;
-`onResize` memanggil `Blockly.svgResize`. Gutter disembunyikan di layout
-bertumpuk Mode HTML (`@media (max-width: 900px)`).
+`localStorage` (`kodako:split:html`), dipasang ulang (dengan clamp min
+320/300 px) saat mount & saat jendela di-*resize*; `onResize` memanggil
+`Blockly.svgResize`. Gutter disembunyikan di layout bertumpuk
+(`@media (max-width: 900px)`).
 
 Blok kerangka dokumen (Fase C): `<html>` / `<head>` / `<body>` / `<title>`
 opsional di kategori Struktur. `generateHtml` mengembalikan
@@ -239,48 +227,24 @@ tetap ada di pratinjau & ekspor lewat `wrapBodyInDocument`). Label blok gaya
 memakai notasi properti CSS (`color:`, `background:`, `text-align:`,
 `font-size:`, `font-weight: bold`, `font-style: italic`) — field & nilai
 dropdown tak berubah. Tiap blok HTML punya `tooltip`; strip "Info blok" di
-toolbar keluaran mencerminkan tooltip blok yang dipilih
-(`src/app/editor/html-mode/block-info.ts`, click-delegation). Perbaikan
-sampingan: `html_section` kini meng-emit `<section>` (dulu `<div>`).
+status bar bawah panel keluaran mencerminkan tooltip blok yang dipilih
+(`src/app/editor/html-mode/block-info.ts`, click-delegation).
 
-### 4.3 Daftar blok — Mode Sprite
+Panel kanan (Fase D): bar aksi (Jalankan · Unggah gambar · Ekspor HTML) di
+atas, strip tab segmented (Pratinjau / Lihat Kode) di bawahnya, lalu panel,
+lalu status bar "Info blok" di paling bawah. Panel Pratinjau dibungkus tampilan
+"jendela browser" (`src/runtime/html/page-title.ts` mengekstrak `<title>` dari
+blok kerangka dokumen untuk ditampilkan di tab).
 
-Topi (hat):
-
-| Blok | Generator (inti) |
-|---|---|
-| saat bendera hijau diklik | daftarkan handler `greenFlag` |
-| saat sprite ini diklik | handler `spriteClicked` |
-| saat tombol [tombol] ditekan | handler `keyPressed(tombol)` |
-| saat terima pesan [pesan] | handler `broadcast(pesan)` |
-
-Perintah:
-
-| Kategori | Blok |
-|---|---|
-| Kejadian | kirim pesan [pesan] · kirim pesan [pesan] dan tunggu |
-| Gerak | gerak [n] langkah · putar ↻ [n]° · putar ↺ [n]° · ke x:[x] y:[y] · ubah x [n] · ubah y [n] · arah ke [d] · luncur [dtk] ke x:[x] y:[y] · jika di tepi, pantul |
-| Tampilan | katakan [teks] · katakan [teks] selama [dtk] · sembunyikan gelembung · ganti kostum ke [kostum] · kostum berikutnya · ubah ukuran [n] · atur ukuran [n]% · tampil · sembunyi |
-| Kontrol | tunggu [dtk] detik · ulangi [n] kali · ulangi terus · jika [b] maka · jika [b] maka … kalau tidak · tunggu sampai [b] · hentikan [semua / skrip ini / skrip lain sprite ini] |
-
-Pelapor (reporter) / boolean:
-
-| Kategori | Blok |
-|---|---|
-| Operator | [a] + [b] · − · × · ÷ · sisa bagi · [a] < [b] · [a] = [b] · [a] > [b] · [b1] dan [b2] · [b1] atau [b2] · tidak [b] · acak [a] sampai [b] · gabung [a] [b] · panjang [teks] |
-| Sensor (MVP ringan) | menyentuh [tepi / sprite X]? · tombol [t] ditekan? · mouse ditekan? · pengatur waktu · reset pengatur waktu |
-| Variabel | [nama] (nilai) · atur [nama] ke [v] · ubah [nama] sebanyak [v] · buat variabel |
-
-> Kategori **Suara** penuh (mainkan suara, mainkan sampai selesai, hentikan
-> semua suara, ubah volume) dan **Sensor** penuh (jarak ke, warna menyentuh
-> warna, jawab/tanya) masuk Fase 3.
-
-### 4.4 Daftar blok — Mode HTML
+### 4.3 Daftar blok
 
 | Kelompok | Blok | Hasil |
 |---|---|---|
-| Struktur | halaman { … } | dokumen `<body>` berisi anak-anaknya |
-| | bagian { … } | `<div>…</div>` |
+| Struktur | `<html>` { … } _(opsional)_ | dokumen penuh — lihat §4.2 |
+| | `<head>` { … } _(opsional, di dalam `<html>`)_ | `<head>…</head>` |
+| | judul halaman [teks] _(opsional, di dalam `<head>`)_ | `<title>` |
+| | `<body>` { … } _(opsional, di dalam `<html>`)_ | isi `<body>` |
+| | bagian { … } | `<section>…</section>` |
 | | judul besar [teks] (level 1–3) | `<h1>`/`<h2>`/`<h3>` |
 | | paragraf [teks] | `<p>` |
 | | daftar { item… } | `<ul>` |
@@ -290,48 +254,22 @@ Pelapor (reporter) / boolean:
 | | tautan ke [url] tulisan [teks] | `<a>` |
 | | tombol [teks] | `<button>` (tanpa aksi) |
 | | garis pemisah | `<hr>` |
-| Gaya (pembungkus) | warna teks [warna] { … } | `style="color:…"` pada anak |
-| | warna latar [warna] { … } | `style="background:…"` |
-| | rata [kiri/tengah/kanan] { … } | `style="text-align:…"` |
-| | ukuran [kecil/sedang/besar] { … } | `style="font-size:…"` |
-| | tebal { … } · miring { … } | `style="font-weight:bold"` / `font-style:italic` |
+| Gaya (pembungkus) | `color:` [warna] { … } | `style="color:…"` pada anak |
+| | `background:` [warna] { … } | `style="background:…"` |
+| | `text-align:` [kiri/tengah/kanan] { … } | `style="text-align:…"` |
+| | `font-size:` [kecil/sedang/besar] { … } | `style="font-size:…"` |
+| | `font-weight: bold` { … } · `font-style: italic` { … } | `style="font-weight:bold"` / `font-style:italic` |
 
 Blok gaya menggabungkan `style` bila ditumpuk. Tidak ada blok "HTML mentah" dan
-tidak ada blok skrip.
+tidak ada blok skrip. Tanpa `html_document`, blok top-level = isi `<body>`
+langsung (perilaku sejak sebelum Fase C, dipertahankan untuk kompatibilitas).
 
-### 4.5 Toolbox
+### 4.4 Toolbox
 
-- `sprite/toolbox.ts` & `html/toolbox.ts` mendefinisikan kategori berwarna,
-  urutan blok, dan blok default pada input (shadow blocks) agar anak jarang
-  bertemu input kosong.
+- `html/toolbox.ts` mendefinisikan kategori berwarna, urutan blok, dan blok
+  default pada input (shadow blocks) agar anak jarang bertemu input kosong.
 
-## 5. Generator
-
-### 5.1 Sprite → JavaScript (`blocks/sprite/generator.ts`)
-
-- Tiap topi menghasilkan satu fungsi bernama, mis.:
-
-  ```js
-  // "saat bendera hijau diklik"
-  async function onGreenFlag_<spriteId>_<i>() {
-    await api.move(10);
-    for (let _i = 0; _i < 4; _i++) {
-      await api.turn(90);
-      await api.wait(0.5);
-    }
-  }
-  ```
-
-- Blok berdurasi (`wait`, `glide`, `say ... selama`, `move` dengan animasi)
-  menghasilkan pemanggilan `await api.*`. Ini titik *yield* natural untuk
-  scheduler.
-- `ulangi terus` → `while (true) { … await api.frameYield(); }` — selalu ada
-  `await` di badan loop.
-- `hentikan [...]` → memanggil `api.stop(scope)`.
-- Kode yang dihasilkan **tidak dieksekusi sebagai JS asli**; ia diberikan ke
-  JS-Interpreter (lihat §6.1).
-
-### 5.2 HTML → HTML (`blocks/html/generator.ts`)
+## 5. Generator (`blocks/html/generator.ts`)
 
 - Menghasilkan string HTML ter-indent. Contoh:
 
@@ -343,119 +281,56 @@ tidak ada blok skrip.
   </div>
   ```
 
-- `asset:<id>` di-*resolve* ke data URL / URL bawaan saat render preview & saat
-  ekspor.
-- Selalu memancarkan dokumen valid; teks anak selalu di-*escape*.
+- `asset:<id>` di-*resolve* ke data URL / URL bawaan (lewat
+  `runtime/asset-library.ts`) saat render preview & saat ekspor.
+- `safeUrl()` menyaring skema URL pada `<a href>`/`<img src>` — hanya
+  `http(s):`, `mailto:`, path relatif, dan `#` yang diloloskan; skema lain
+  (`javascript:`, dsb.) dikosongkan.
+- Selalu memancarkan dokumen valid; teks anak selalu di-*escape*
+  (`runtime/html/escape.ts`).
+- Dengan `html_document`, generator mengembalikan `{ headHtml, bodyHtml,
+  assetIds }` — lihat §4.2.
 
-## 6. Runtime — Mode Sprite
+## 6. Runtime (`runtime/html/*`)
 
-### 6.1 Interpreter (`runtime/sprite/interpreter.ts`)
-
-- Membungkus **JS-Interpreter** (parser Acorn, eksekusi langkah-demi-langkah).
-- Untuk tiap topi: buat instance interpreter dengan kode fungsinya + *API
-  bindings* (`api.move`, `api.turn`, …) yang diekspos sebagai fungsi native
-  asinkron ke sandbox.
-- Ekspos `step()`, `run(maxSteps)`, `stop()`. Menyimpan pemetaan
-  *node AST → block id* untuk penyorotan.
-
-### 6.2 Scheduler (`runtime/sprite/scheduler.ts`)
-
-- Menyimpan daftar *thread* (satu per topi yang sedang aktif).
-- Tiap frame (`requestAnimationFrame`):
-  - untuk tiap thread: jalankan hingga `MAX_STEPS_PER_FRAME` langkah atau
-    hingga thread *yield* (menunggu durasi) atau selesai;
-  - jika sebuah thread melewati batas langkah tanpa yield (loop ketat) →
-    paksa yield agar UI tak beku;
-  - render panggung sekali di akhir frame.
-- **Pengaman loop tak-hingga**: badan `ulangi terus` selalu memuat
-  `await api.frameYield()`, jadi loop tak pernah menahan thread lebih dari satu
-  frame. Loop `ulangi [n] kali` yang sangat besar tetap tunduk pada batas
-  langkah/frame.
-- `stop()` mengosongkan daftar thread & menghapus semua sorotan.
-
-### 6.3 API (`runtime/sprite/api.ts`)
-
-Fungsi yang mengubah **model** `Sprite` (data murni), lalu scheduler yang
-me-render:
-
-- Gerak: `move`, `turn`, `gotoXY`, `changeX/Y`, `pointInDirection`, `glide`
-  (asinkron, mem-*yield* per frame), `ifOnEdgeBounce`.
-- Tampilan: `say`, `sayForSecs`, `switchCostume`, `nextCostume`,
-  `changeSize`, `setSize`, `show`, `hide`.
-- Kontrol/kejadian: `wait`, `frameYield`, `broadcast`, `broadcastAndWait`,
-  `stop(scope)`.
-- Sensor: `isTouching(target)`, `isKeyPressed(key)`, `isMouseDown`, `timer`,
-  `resetTimer`.
-- Semua fungsi berdurasi mengembalikan Promise yang *resolve* pada frame
-  berikutnya / setelah durasi.
-
-### 6.4 Model Sprite (`runtime/sprite/sprite.ts`)
-
-- Struktur data murni: `{ id, name, x, y, direction, size, visible, costumes,
-  currentCostume, sounds, variables, bubble }`.
-- Fungsi operasi murni (mudah diuji): `moved(sprite, steps) → sprite'` dst.
-- Tidak menyentuh DOM/Canvas.
-
-### 6.5 Renderer panggung (`runtime/sprite/stage.ts`)
-
-- `<canvas>` 480×360 (di-*scale* ke ukuran tampilan, DPR-aware).
-- Tiap frame: gambar backdrop → tiap sprite (kostum, posisi, rotasi, skala,
-  visibilitas) → gelembung "katakan".
-- Menangani hit-test klik sprite untuk kejadian `spriteClicked`.
-
-### 6.6 Event bus (`runtime/sprite/event-bus.ts`)
-
-- Kejadian bertipe: `greenFlag`, `spriteClicked(id)`, `keyPressed(key)`,
-  `broadcast(msg)`.
-- Bendera hijau: hentikan semua thread → mulai ulang semua topi `greenFlag`.
-- `broadcastAndWait`: memulai thread terkait, menahan pemanggil sampai semua
-  selesai.
-
-### 6.7 Aset & audio
-
-- `assets.ts`: modul yang meng-*import* berkas kostum/suara CC0 lewat Vite
-  (`import url from './assets/kucing.svg'`), diekspos sebagai katalog
-  `{ id, kind, name, url }`.
-- Aset unggahan: dibaca sebagai data URL, dimasukkan ke `project.assets` dengan
-  `source: "embedded"`, dibatasi ~2 MB.
-- `audio.ts`: bungkus Web Audio (`decodeAudioData`, mainkan, hentikan semua).
-
-## 7. Runtime — Mode HTML
-
-### 7.1 Preview (`runtime/html/preview.ts`)
+### 6.1 Preview (`preview.ts`)
 
 - `<iframe sandbox="allow-same-origin">` — **tanpa** `allow-scripts`.
-- Pada perubahan workspace (debounce ~300 ms): generator → HTML → set
-  `iframe.srcdoc` dengan dokumen lengkap (reset CSS minimal + isi `<body>`).
+- Pada perubahan workspace (klik "Jalankan", debounce ~300 ms): generator →
+  HTML → set `iframe.srcdoc` dengan dokumen lengkap (`document.ts`: reset CSS
+  minimal + CSP `script-src 'none'` + isi `<body>`).
 - `asset:<id>` di-*resolve* ke data URL sebelum di-*inject*.
+- Dibungkus tampilan "jendela browser" (Fase D) di panel kanan editor: titik
+  lampu dekoratif, tab yang menunjukkan `<title>` halaman (`page-title.ts`
+  `extractTitle`), dan bilah alamat non-interaktif berisi slug nama halaman
+  (`slugifyTitle`).
 
-### 7.2 Panel "Lihat Kode"
+### 6.2 Panel "Lihat Kode"
 
-- Menampilkan HTML `<body>` yang rapi (bukan dokumen penuh) dengan sorot
-  sintaks (highlight.js, dibundel). Read-only.
+- Menampilkan dokumen HTML penuh (`composeDisplayDocument`, tanpa CSP — hanya
+  kosmetik untuk dibaca anak) dengan sorot sintaks (highlight.js, dibundel).
+  Read-only.
 
-### 7.3 Ekspor (`runtime/html/export.ts`)
+### 6.3 Ekspor (`export.ts`)
 
 - Susun dokumen `.html` lengkap & mandiri: `<!doctype html>`, `<meta charset>`,
-  `<title>` dari nama project, gaya reset minimal, `<body>` hasil generator,
-  semua aset sebagai data URL.
+  CSP, `<title>` dari blok judul atau nama project, gaya reset minimal,
+  `<body>` hasil generator, semua aset sebagai data URL.
 - Picu unduhan (Web) atau dialog simpan (Tauri).
 
-## 8. Shell & navigasi (`src/app`)
+## 7. Shell & navigasi (`src/app`)
 
 - **Router hash** (`router.ts`): `#/` → Home, `#/editor/:id` → Editor. Tanpa
   library.
 - **Home** (`home/project-manager.ts`): daftar kartu project dari
   `ghtml:projects`; aksi Baru / Buka File / (per kartu) buka, ganti nama,
   duplikat, hapus, unduh.
-- **Editor** (`editor/editor-view.ts`): header + area kerja. Header:
-  nama project (edit inline), Simpan, Buka, Ekspor, kembali ke Home, dan
-  pemilih **Mode Sprite / HTML**.
-- Kedua Blockly workspace dibuat sekali dan disembunyikan/ditampilkan saat ganti
-  mode; keduanya diserialisasi ke project.
-- Autosave dipicu oleh listener perubahan workspace + perubahan state sprite.
+- **Editor** (`editor/editor-view.ts`): header + area kerja. Header: nama
+  project (edit inline), Simpan, Buka, Ekspor, kembali ke Home. Editor
+  merender langsung Mode HTML — tidak ada pemilih mode (dihapus di Fase E).
+- Autosave dipicu oleh listener perubahan workspace.
 
-## 9. Lapisan storage (`core/storage.ts`)
+## 8. Lapisan storage (`core/storage.ts`)
 
 Satu antarmuka, dua implementasi, dipilih saat runtime:
 
@@ -478,7 +353,7 @@ interface Storage {
   `localStorage` (webview Tauri menyediakannya) — konsisten & sederhana.
 - Pemilihan: `const storage = ('__TAURI__' in window) ? new TauriStorage() : new WebStorage()`.
 
-## 10. Landing page (`index.html`, di root situs)
+## 9. Landing page (`index.html`, di root situs)
 
 - Statis, dibangun oleh Vite sebagai salah satu halaman (`build.rollupOptions.input`).
 - Arah visual "Blocky Playground" (lihat
@@ -486,13 +361,14 @@ interface Storage {
   "Kodako HTML", palet warna kategori editor, tombol tebal dengan bayangan solid.
 - Bagian: nav sticky · Hero (judul kartu-huruf beranimasi, tagline, tombol
   "Mulai Buat" → `editor.html`, "Unduh Aplikasi" → GitHub Releases) · pita demo
-  (loop SVG/CSS) · "Apa ini?" · 3 langkah cara pakai · dua kartu mode · bagian
-  untuk guru (tautan Jurnal Mengajar) · footer.
+  (loop SVG/CSS blok tersusun) · "Apa ini?" · 3 langkah cara pakai · bagian
+  untuk guru (tautan Jurnal Mengajar) · footer. Copy ditulis ulang di Fase E
+  untuk menghapus framing "dua mode".
 - Aset ilustrasi orisinal CC0 di `src/landing/assets/`; judul memakai Fredoka
   (SIL OFL 1.1) yang di-*bundle* di `src/landing/fonts/` — tanpa CDN, jalan
   offline. Semua animasi mati di bawah `prefers-reduced-motion`.
 
-## 11. i18n (`src/app/i18n`)
+## 10. i18n (`src/app/i18n`)
 
 - `t(key, params?)` membaca `id.json` (satu berkas datar bertingkat).
 - `formatDate(iso)` pakai `Intl.DateTimeFormat('id-ID', …)`.
@@ -500,56 +376,53 @@ interface Storage {
   Indonesia.
 - Struktur siap multi-bahasa (peta `locale → dict`) tetapi rilis 1 hanya `id`.
 
-## 12. Penanganan error & keamanan
+## 11. Penanganan error & keamanan
 
-- **Kode terinterpretasi**: JS-Interpreter menangkap exception → hentikan thread
-  itu, tampilkan toast ramah + sorot blok penyebab. App tidak crash.
-- **Loop tak-hingga**: pengaman paksa-yield (§6.2); tombol Stop selalu bekerja.
-- **Batas sumber daya**: maks ~30 sprite; aset unggahan ≤ 2 MB; tolak dengan
-  pesan jelas.
 - **Preview HTML**: `iframe` ber-*sandbox* tanpa skrip; teks anak di-*escape*;
-  hanya struktur/atribut dari blok yang jadi markup; tidak ada blok HTML mentah.
+  hanya struktur/atribut dari blok yang jadi markup; tidak ada blok HTML
+  mentah; `safeUrl()` menyaring skema URL berbahaya.
+- **Batas sumber daya**: aset unggahan ≤ 2 MB; tolak dengan pesan jelas.
 - **File project**: `migrate` → `validate`; file rusak/asing → dialog jelas +
   opsi "coba muat sebisanya" vs batal; autosave tidak ditimpa sampai muat
-  sukses.
+  sukses. Field asing dari format project versi lama diabaikan, bukan ditolak
+  (lihat §3).
 - **Autosave defensif**: tulis `:tmp` → tukar.
 - **Error boundary global**: layar "Maaf, ada yang salah" + Muat ulang + salin
   detail; autosave terakhir aman.
 - **Privasi**: tidak ada permintaan jaringan pihak ketiga, tidak ada telemetry.
 
-## 13. Testing
+## 12. Testing
 
 | Lapis | Alat | Contoh kasus |
 |---|---|---|
-| Unit | Vitest | `validate`/`migrate` project; round-trip serialisasi idempoten; generator sprite→JS (snapshot); generator html→HTML (snapshot); operasi model Sprite (`moved`, `turned`); pengaman loop menghentikan `ulangi terus` saat Stop |
-| Integrasi | Vitest + jsdom | muat project fixture → generate → jalankan interpreter N frame → assert posisi/kostum/variabel sprite; `broadcastAndWait` menahan pemanggil hingga selesai |
-| E2E | Playwright (headless) | project baru → seret 2 blok → bendera hijau → sprite berpindah; mode HTML → tambah judul → preview memuat teks; simpan → reload → project pulih; ekspor HTML → berkas ter-unduh |
-| Manual | checklist | tema/warna blok; layout pada 1366×768; performa 10 sprite di perangkat kelas bawah |
+| Unit | Vitest | `validate`/`migrate` project (termasuk: field `activeMode`/`sprite` peninggalan project lama diabaikan, bukan ditolak); round-trip serialisasi idempoten; generator html→HTML (snapshot); pustaka aset (`asset-library.ts`: unggah gambar, resolusi `asset:<id>`) |
+| E2E | Playwright (headless) | project baru → tambah judul + paragraf + gambar → Jalankan → preview memuat teks di tab & bilah alamat "jendela browser" → Lihat Kode; simpan → reload → project pulih; ekspor HTML → berkas ter-unduh |
+| Manual | checklist | tema/warna blok; layout pada 1366×768; a11y dasar (kontras, target klik, fokus keyboard) |
 
-CI (GitHub Actions): `lint` + `test:unit` + `test:integration` + `test:e2e`
-pada tiap push/PR. Build desktop hanya pada tag `v*`.
+CI (GitHub Actions): `lint` + `test` (unit) + `test:e2e` + `check:chunks` pada
+tiap push/PR. Build desktop hanya pada tag `v*`.
 
-## 14. Build & rilis
+## 13. Build & rilis
 
 - **Web**: `vite build` → `dist/` berisi `index.html` (landing, di root) +
-  `editor.html` (editor SPA) + aset. Deploy statis ke GitHub Pages / Netlify /
-  Cloudflare Pages.
+  `editor.html` (editor SPA) + aset. Deploy statis ke Cloudflare Pages.
 - **Desktop**: `tauri build` → installer Windows (`.msi` / `.exe`), di-*attach*
   ke GitHub Releases. Tombol "Unduh Aplikasi" di landing menunjuk ke rilis
-  terbaru. macOS/Linux menyusul (Fase 3+).
+  terbaru. macOS/Linux menyusul (belum dijadwalkan).
 - **Versi format**: `formatVersion` project dinaikkan hanya lewat `migrate`
   yang diuji; catat perubahan di `Design.md` §3.
 - **Aset**: seluruh aset bawaan CC0/domain publik; sumber & kredit dicatat di
   `docs/` dan footer landing.
 
-## 15. Keputusan yang sudah diambil
+## 14. Keputusan yang sudah diambil
 
-- Mesin blok: **Blockly** + blok & generator kustom + tema "rasa Scratch"
-  (bukan scratch-blocks/scratch-gui, bukan mesin sendiri).
+- Mesin blok: **Blockly** + blok & generator kustom + tema kustom (bukan
+  scratch-blocks/scratch-gui, bukan mesin sendiri).
 - UI: **TypeScript vanilla + store pub/sub kecil** (bukan React); Preact sebagai
   jalur ganti bila UI tumbuh.
 - Desktop: **Tauri** (fallback Electron bila toolchain Rust menghambat).
 - Bahasa antarmuka: **Bahasa Indonesia saja** untuk rilis 1.
-- Tanpa backend, akun, cloud, komunitas, atau API pihak ketiga di rilis 1.
-- Eksekusi kode anak: **JS-Interpreter** (bukan `eval`/`Function` asli, bukan
-  Web Worker) demi langkah-per-langkah + sorot blok + penghentian aman.
+- Tanpa backend, akun, cloud, komunitas, atau API pihak ketiga.
+- Editor **HTML-only** (Fase E, 2026-09-13) — tidak ada eksekusi kode anak
+  sama sekali; blok hanya menghasilkan markup statis lewat generator teks,
+  tidak pernah lewat `eval`/`Function`/interpreter.
