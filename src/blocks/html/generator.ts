@@ -22,6 +22,10 @@ const COLORS = new Set([
 ]);
 const ALIGNS = new Set(['left', 'center', 'right']);
 const FONT_SIZES = new Set(['0.85rem', '1rem', '1.5rem']);
+const SPACING_SIZES = new Set(['8px', '16px', '32px']);
+const RADIUS_SIZES = new Set(['8px', '16px', '9999px']);
+const FONTS = new Set(['inherit', 'Georgia, serif', '"Courier New", monospace']);
+const IMAGE_WIDTHS = new Set(['120px', '240px', '480px']);
 
 export function registerHtmlGenerator(): void {
   // Registration is intentionally a no-op: generateHtml is a tree walker.
@@ -103,6 +107,24 @@ function styleFragment(block: Blockly.Block): string {
       return 'font-weight:bold';
     case 'html_style_italic':
       return 'font-style:italic';
+    case 'html_style_padding': {
+      const value = field(block, 'SIZE');
+      return `padding:${SPACING_SIZES.has(value) ? value : '8px'}`;
+    }
+    case 'html_style_margin': {
+      const value = field(block, 'SIZE');
+      return `margin:${SPACING_SIZES.has(value) ? value : '8px'}`;
+    }
+    case 'html_style_radius': {
+      const value = field(block, 'SIZE');
+      return `border-radius:${RADIUS_SIZES.has(value) ? value : '8px'}`;
+    }
+    case 'html_style_shadow':
+      return 'box-shadow:0 4px 10px rgba(30,41,80,.15)';
+    case 'html_style_font': {
+      const value = field(block, 'FONT');
+      return `font-family:${FONTS.has(value) ? value : 'inherit'}`;
+    }
     default:
       return '';
   }
@@ -126,7 +148,7 @@ function emitChain(
 function emitContainer(
   block: Blockly.Block,
   inputName: string,
-  tag: 'section' | 'ul',
+  tag: 'section' | 'ul' | 'ol' | 'header' | 'main' | 'footer' | 'div' | 'tr',
   depth: number,
   assetIds: string[],
   styleFragments: string[],
@@ -153,6 +175,14 @@ function emitBlock(
       return emitContainer(block, 'BODY', 'section', depth, assetIds, styleFragments);
     case 'html_list':
       return emitContainer(block, 'ITEMS', 'ul', depth, assetIds, styleFragments);
+    case 'html_list_ordered':
+      return emitContainer(block, 'ITEMS', 'ol', depth, assetIds, styleFragments);
+    case 'html_header':
+      return emitContainer(block, 'BODY', 'header', depth, assetIds, styleFragments);
+    case 'html_main':
+      return emitContainer(block, 'BODY', 'main', depth, assetIds, styleFragments);
+    case 'html_footer':
+      return emitContainer(block, 'BODY', 'footer', depth, assetIds, styleFragments);
     case 'html_heading': {
       const requestedLevel = field(block, 'LEVEL');
       const level = HEADING_LEVELS.has(requestedLevel) ? requestedLevel : 'h1';
@@ -170,16 +200,21 @@ function emitBlock(
     case 'html_image_asset': {
       const assetId = field(block, 'ASSET');
       if (assetId) assetIds.push(assetId);
+      const width = field(block, 'WIDTH');
+      const sizeFragment = IMAGE_WIDTHS.has(width) ? [`width:${width}`] : [];
       return withStyles(
         `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
-        styleFragments,
+        [...sizeFragment, ...styleFragments],
       );
     }
-    case 'html_image_url':
+    case 'html_image_url': {
+      const width = field(block, 'WIDTH');
+      const sizeFragment = IMAGE_WIDTHS.has(width) ? [`width:${width}`] : [];
       return withStyles(
         `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
-        styleFragments,
+        [...sizeFragment, ...styleFragments],
       );
+    }
     case 'html_link':
       return withStyles(
         `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}">${escapeHtmlText(field(block, 'LABEL'))}</a>\n`,
@@ -197,7 +232,12 @@ function emitBlock(
     case 'html_style_align':
     case 'html_style_size':
     case 'html_style_bold':
-    case 'html_style_italic': {
+    case 'html_style_italic':
+    case 'html_style_padding':
+    case 'html_style_margin':
+    case 'html_style_radius':
+    case 'html_style_shadow':
+    case 'html_style_font': {
       const child = block.getInputTargetBlock('BODY');
       if (!child) return '';
       return emitChain(child, depth, assetIds, [...styleFragments, styleFragment(block)]);
