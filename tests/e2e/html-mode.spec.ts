@@ -185,3 +185,87 @@ test('document skeleton blocks drive the head + the code panel shows the full pa
   await expect(info).not.toHaveText('Klik sebuah blok untuk melihat penjelasannya.');
   await expect(info).toContainText('<');
 });
+
+test('quick-win blocks (ol, header/footer, image size, spacing styles) render end to end', async ({
+  page,
+}) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_header',
+              x: 20,
+              y: 20,
+              inputs: {
+                BODY: {
+                  block: {
+                    type: 'html_heading',
+                    fields: { LEVEL: 'h1' },
+                    inputs: { TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Judul' } } } },
+                  },
+                },
+              },
+              next: {
+                block: {
+                  type: 'html_list_ordered',
+                  inputs: {
+                    ITEMS: {
+                      block: {
+                        type: 'html_list_item',
+                        inputs: {
+                          TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Langkah 1' } } },
+                        },
+                      },
+                    },
+                  },
+                  next: {
+                    block: {
+                      type: 'html_style_padding',
+                      fields: { SIZE: '32px' },
+                      inputs: {
+                        BODY: {
+                          block: {
+                            type: 'html_footer',
+                            inputs: {
+                              BODY: {
+                                block: {
+                                  type: 'html_paragraph',
+                                  inputs: {
+                                    TEXT: {
+                                      shadow: { type: 'html_text', fields: { VALUE: 'Hak cipta' } },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      (window as any).__kodakoBlockly.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('<header>');
+  await expect(code).toContainText('<ol>');
+  await expect(code).toContainText('<li>Langkah 1</li>');
+  await expect(code).toContainText('<footer style="padding:32px">');
+});
