@@ -186,6 +186,65 @@ test('document skeleton blocks drive the head + the code panel shows the full pa
   await expect(info).toContainText('<');
 });
 
+test('table blocks render a bordered table end to end', async ({ page }) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_table',
+              x: 20,
+              y: 20,
+              inputs: {
+                ROWS: {
+                  block: {
+                    type: 'html_table_row',
+                    inputs: {
+                      CELLS: {
+                        block: {
+                          type: 'html_table_cell',
+                          inputs: {
+                            TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Senin' } } },
+                          },
+                          next: {
+                            block: {
+                              type: 'html_table_cell',
+                              inputs: {
+                                TEXT: {
+                                  shadow: { type: 'html_text', fields: { VALUE: 'Selasa' } },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      B.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('<table border="1">');
+  await expect(code).toContainText('<td>Senin</td>');
+  await expect(code).toContainText('<td>Selasa</td>');
+});
+
 test('quick-win blocks (ol, header/footer, image size, spacing styles) render end to end', async ({
   page,
 }) => {

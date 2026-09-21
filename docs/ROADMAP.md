@@ -207,7 +207,8 @@ Fase F (2026-09-21) — blok tambahan untuk menutup gap kurikulum kelas 6
 ("Pemrograman Web Statis HTML & CSS", dibandingkan dari project terpisah
 Jurnal Mengajar). **PR-F1:** daftar bernomor, `<header>`/`<main>`/`<footer>`,
 ukuran gambar, dan 5 blok Gaya baru (padding/margin/border-radius/box-shadow/
-font-family). Lihat
+font-family). **PR-F2:** blok Tabel (`<table>`/`<tr>`/`<td>`, border selalu
+nyala). Lihat
 `docs/superpowers/specs/2026-09-21-curriculum-gap-blocks-design.md`.
 
 ---

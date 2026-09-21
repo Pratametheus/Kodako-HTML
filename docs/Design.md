@@ -249,6 +249,9 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | paragraf [teks] | `<p>` |
 | | daftar { item… } | `<ul>` |
 | | item daftar [teks] | `<li>` |
+| | tabel { baris… } | `<table border="1">` |
+| | baris tabel { sel… } | `<tr>` |
+| | sel tabel [teks] | `<td>` |
 | | daftar bernomor { item… } | `<ol>` |
 | | `<header>`/`<main>`/`<footer>` { … } | tag sesuai nama |
 | Konten | teks [isi] | text node (di-*escape*) |
