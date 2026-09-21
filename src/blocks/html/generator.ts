@@ -126,7 +126,7 @@ function emitChain(
 function emitContainer(
   block: Blockly.Block,
   inputName: string,
-  tag: 'section' | 'ul',
+  tag: 'section' | 'ul' | 'tr',
   depth: number,
   assetIds: string[],
   styleFragments: string[],
@@ -134,6 +134,17 @@ function emitContainer(
   const prefix = indent(depth);
   const children = emitChain(block.getInputTargetBlock(inputName), depth + 1, assetIds);
   return withStyles(`${prefix}<${tag}>\n${children}${prefix}</${tag}>\n`, styleFragments);
+}
+
+function emitTable(
+  block: Blockly.Block,
+  depth: number,
+  assetIds: string[],
+  styleFragments: string[],
+): string {
+  const prefix = indent(depth);
+  const rows = emitChain(block.getInputTargetBlock('ROWS'), depth + 1, assetIds);
+  return withStyles(`${prefix}<table border="1">\n${rows}${prefix}</table>\n`, styleFragments);
 }
 
 function emitBlock(
@@ -153,6 +164,12 @@ function emitBlock(
       return emitContainer(block, 'BODY', 'section', depth, assetIds, styleFragments);
     case 'html_list':
       return emitContainer(block, 'ITEMS', 'ul', depth, assetIds, styleFragments);
+    case 'html_table':
+      return emitTable(block, depth, assetIds, styleFragments);
+    case 'html_table_row':
+      return emitContainer(block, 'CELLS', 'tr', depth, assetIds, styleFragments);
+    case 'html_table_cell':
+      return withStyles(`${prefix}<td>${textInput(block, 'TEXT')}</td>\n`, styleFragments);
     case 'html_heading': {
       const requestedLevel = field(block, 'LEVEL');
       const level = HEADING_LEVELS.has(requestedLevel) ? requestedLevel : 'h1';

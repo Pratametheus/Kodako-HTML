@@ -84,6 +84,58 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<ul>\n  <li>x</li>\n  <li>y</li>\n</ul>\n');
   });
 
+  it('emits a table with border=1 and nested rows/cells', () => {
+    const table = statement(workspace, 'html_table');
+    const row1 = statement(workspace, 'html_table_row');
+    const cellA = statement(workspace, 'html_table_cell');
+    const cellB = statement(workspace, 'html_table_cell');
+    connectText(cellA, 'Senin');
+    connectText(cellB, 'Selasa');
+    append(cellA, cellB);
+    connectStatement(row1, 'CELLS', cellA);
+    connectStatement(table, 'ROWS', row1);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table border="1">\n' +
+        '  <tr>\n' +
+        '    <td>Senin</td>\n' +
+        '    <td>Selasa</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('emits multiple table rows in order', () => {
+    const table = statement(workspace, 'html_table');
+    const row1 = statement(workspace, 'html_table_row');
+    const row2 = statement(workspace, 'html_table_row');
+    const cell1 = statement(workspace, 'html_table_cell');
+    const cell2 = statement(workspace, 'html_table_cell');
+    connectText(cell1, 'A');
+    connectText(cell2, 'B');
+    connectStatement(row1, 'CELLS', cell1);
+    connectStatement(row2, 'CELLS', cell2);
+    append(row1, row2);
+    connectStatement(table, 'ROWS', row1);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table border="1">\n' +
+        '  <tr>\n    <td>A</td>\n  </tr>\n' +
+        '  <tr>\n    <td>B</td>\n  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('applies a style wrapper to the whole table, not each row', () => {
+    const bold = statement(workspace, 'html_style_bold');
+    const table = statement(workspace, 'html_table');
+    connectStatement(bold, 'BODY', table);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table border="1" style="font-weight:bold">\n</table>\n',
+    );
+  });
+
   it('composes nested style wrappers onto the child element', () => {
     const bold = statement(workspace, 'html_style_bold');
     const color = statement(workspace, 'html_style_color');

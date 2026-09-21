@@ -96,6 +96,11 @@ describe('HTML block labels use real tags', () => {
     expect(message0('html_list')).toContain('<ul>');
     expect(message0('html_list_item')).toContain('<li>');
   });
+  it('table blocks show <table>, <tr>, and <td>', () => {
+    expect(message0('html_table')).toContain('<table>');
+    expect(message0('html_table_row')).toContain('<tr>');
+    expect(message0('html_table_cell')).toContain('<td>');
+  });
   it('image shows <img src= … alt= … >', () => {
     const m = message0('html_image_url');
     expect(m).toContain('<img');
