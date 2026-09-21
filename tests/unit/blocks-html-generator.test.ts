@@ -84,6 +84,31 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<ul>\n  <li>x</li>\n  <li>y</li>\n</ul>\n');
   });
 
+  it('emits an indented ordered list', () => {
+    const list = statement(workspace, 'html_list_ordered');
+    const first = statement(workspace, 'html_list_item');
+    const second = statement(workspace, 'html_list_item');
+    connectText(first, 'x');
+    connectText(second, 'y');
+    append(first, second);
+    connectStatement(list, 'ITEMS', first);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<ol>\n  <li>x</li>\n  <li>y</li>\n</ol>\n');
+  });
+
+  it.each(['html_header', 'html_main', 'html_footer'])(
+    'wraps children in a real %s tag',
+    (type) => {
+      const wrapper = statement(workspace, type);
+      const paragraph = statement(workspace, 'html_paragraph');
+      connectText(paragraph, 'A');
+      connectStatement(wrapper, 'BODY', paragraph);
+      const tag = type.replace('html_', '');
+
+      expect(generateHtml(workspace).bodyHtml).toBe(`<${tag}>\n  <p>A</p>\n</${tag}>\n`);
+    },
+  );
+
   it('composes nested style wrappers onto the child element', () => {
     const bold = statement(workspace, 'html_style_bold');
     const color = statement(workspace, 'html_style_color');
@@ -126,6 +151,32 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe(`<p style="${fragment}">A</p>\n`);
   });
 
+  it.each([
+    ['html_style_padding', 'SIZE', '16px', 'padding:16px'],
+    ['html_style_margin', 'SIZE', '32px', 'margin:32px'],
+    ['html_style_radius', 'SIZE', '9999px', 'border-radius:9999px'],
+    ['html_style_font', 'FONT', 'Georgia, serif', 'font-family:Georgia, serif'],
+  ])('emits the expected %s style fragment', (type, fieldName, value, fragment) => {
+    const wrapper = statement(workspace, type);
+    const paragraph = statement(workspace, 'html_paragraph');
+    wrapper.setFieldValue(value, fieldName);
+    connectText(paragraph, 'A');
+    connectStatement(wrapper, 'BODY', paragraph);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(`<p style="${fragment}">A</p>\n`);
+  });
+
+  it('emits a fixed shadow fragment with no dropdown', () => {
+    const shadow = statement(workspace, 'html_style_shadow');
+    const paragraph = statement(workspace, 'html_paragraph');
+    connectText(paragraph, 'A');
+    connectStatement(shadow, 'BODY', paragraph);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<p style="box-shadow:0 4px 10px rgba(30,41,80,.15)">A</p>\n',
+    );
+  });
+
   it('applies style wrappers directly to section and list opening tags', () => {
     const bold = statement(workspace, 'html_style_bold');
     const section = statement(workspace, 'html_section');
@@ -155,6 +206,20 @@ describe('HTML block generator', () => {
       bodyHtml: '<img src="asset:img_1" alt="Kucing &lt;x&gt;">\n',
       assetIds: ['img_1'],
     });
+  });
+
+  it('emits an image at a chosen width and omits width at the natural-size default', () => {
+    const sized = statement(workspace, 'html_image_url');
+    sized.setFieldValue('https://x/y.png', 'URL');
+    sized.setFieldValue('240px', 'WIDTH');
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<img src="https://x/y.png" alt="" style="width:240px">\n',
+    );
+
+    workspace.clear();
+    const natural = statement(workspace, 'html_image_url');
+    natural.setFieldValue('https://x/y.png', 'URL');
+    expect(generateHtml(workspace).bodyHtml).toBe('<img src="https://x/y.png" alt="">\n');
   });
 
   it('emits remote images, buttons, and rules exactly', () => {
