@@ -249,6 +249,8 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | paragraf [teks] | `<p>` |
 | | daftar { item… } | `<ul>` |
 | | item daftar [teks] | `<li>` |
+| | daftar bernomor { item… } | `<ol>` |
+| | `<header>`/`<main>`/`<footer>` { … } | tag sesuai nama |
 | Konten | teks [isi] | text node (di-*escape*) |
 | | gambar (aset [a] / URL [u]), teks alt [t] | `<img>` |
 | | tautan ke [url] tulisan [teks] | `<a>` |
@@ -259,10 +261,18 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | `text-align:` [kiri/tengah/kanan] { … } | `style="text-align:…"` |
 | | `font-size:` [kecil/sedang/besar] { … } | `style="font-size:…"` |
 | | `font-weight: bold` { … } · `font-style: italic` { … } | `style="font-weight:bold"` / `font-style:italic` |
+| | `padding:`/`margin:` [kecil/sedang/besar] { … } | `style="padding:…"` / `"margin:…"` |
+| | `border-radius:` [kecil/sedang/bulat] { … } | `style="border-radius:…"` |
+| | `box-shadow:` lembut { … } | `style="box-shadow:0 4px 10px rgba(30,41,80,.15)"` |
+| | `font-family:` [standar/rapi/mesin ketik] { … } | `style="font-family:…"` |
 
 Blok gaya menggabungkan `style` bila ditumpuk. Tidak ada blok "HTML mentah" dan
 tidak ada blok skrip. Tanpa `html_document`, blok top-level = isi `<body>`
 langsung (perilaku sejak sebelum Fase C, dipertahankan untuk kompatibilitas).
+Gambar (`html_image_asset`/`html_image_url`, Fase F) punya dropdown ukuran
+opsional (`asli`/`kecil`/`sedang`/`besar`) yang menambah `style="width:…"`
+bila bukan `asli` — `asli` (string kosong) selalu jadi pilihan pertama, jadi
+project yang disimpan sebelum Fase F tampil tak berubah.
 
 ### 4.4 Toolbox
 
