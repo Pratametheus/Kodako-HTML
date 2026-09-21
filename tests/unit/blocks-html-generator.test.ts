@@ -332,4 +332,30 @@ describe('HTML block generator', () => {
     connectStatement(outerBody, 'CONTENT', b1);
     expect(generateHtml(workspace).bodyHtml).toBe('<p>ok</p>\n');
   });
+
+  it('emits a flex row div with the chosen justify-content and always flex-wrap:wrap', () => {
+    const row = statement(workspace, 'html_row');
+    row.setFieldValue('space-between', 'JUSTIFY');
+    const first = statement(workspace, 'html_paragraph');
+    const second = statement(workspace, 'html_paragraph');
+    connectText(first, 'A');
+    connectText(second, 'B');
+    append(first, second);
+    connectStatement(row, 'BODY', first);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<div style="display:flex;justify-content:space-between;flex-wrap:wrap">\n' +
+        '  <p>A</p>\n  <p>B</p>\n' +
+        '</div>\n',
+    );
+  });
+
+  it('defaults an unrecognised JUSTIFY value to flex-start', () => {
+    const row = statement(workspace, 'html_row');
+    row.setFieldValue('nonsense', 'JUSTIFY');
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<div style="display:flex;justify-content:flex-start;flex-wrap:wrap">\n</div>\n',
+    );
+  });
 });
