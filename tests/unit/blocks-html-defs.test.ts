@@ -69,6 +69,11 @@ describe('HTML document + style block labels', () => {
     ['html_style_size', 'font-size:'],
     ['html_style_bold', 'font-weight: bold'],
     ['html_style_italic', 'font-style: italic'],
+    ['html_style_padding', 'padding:'],
+    ['html_style_margin', 'margin:'],
+    ['html_style_radius', 'border-radius:'],
+    ['html_style_shadow', 'box-shadow:'],
+    ['html_style_font', 'font-family:'],
   ])('%s label is CSS-property notation (%s)', (type, needle) => {
     expect(message0(type)).toContain(needle);
   });
@@ -100,6 +105,28 @@ describe('HTML block labels use real tags', () => {
     expect(message0('html_table')).toContain('<table>');
     expect(message0('html_table_row')).toContain('<tr>');
     expect(message0('html_table_cell')).toContain('<td>');
+  });
+  it('ordered list shows <ol> … </ol>', () => {
+    expect(message0('html_list_ordered')).toContain('<ol>');
+    expect(message0('html_list_ordered')).toContain('</ol>');
+  });
+  it('header, main, and footer show their real tags', () => {
+    expect(message0('html_header')).toContain('<header>');
+    expect(message0('html_main')).toContain('<main>');
+    expect(message0('html_footer')).toContain('<footer>');
+  });
+  it('image blocks expose a WIDTH size dropdown defaulting to natural size', () => {
+    const ws = new Blockly.Workspace();
+    for (const type of ['html_image_asset', 'html_image_url']) {
+      const block = ws.newBlock(type);
+      const dropdown = block.getField('WIDTH')!;
+      const options = (
+        dropdown as unknown as { getOptions: () => [string, string][] }
+      ).getOptions();
+      expect(options[0]![1], `${type} WIDTH default`).toBe('');
+      expect(options.map((o) => o[1])).toEqual(['', '120px', '240px', '480px']);
+    }
+    ws.dispose();
   });
   it('image shows <img src= … alt= … >', () => {
     const m = message0('html_image_url');
