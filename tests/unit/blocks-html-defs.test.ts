@@ -154,4 +154,18 @@ describe('HTML block labels use real tags', () => {
     expect(options.map((o) => o[1])).toEqual(['h1', 'h2', 'h3']); // values unchanged
     ws.dispose();
   });
+  it('row (flex) shows a <div> and exposes 5 justify options', () => {
+    expect(message0('html_row')).toContain('<div>');
+    const ws = new Blockly.Workspace();
+    const dropdown = ws.newBlock('html_row').getField('JUSTIFY')!;
+    const options = (dropdown as unknown as { getOptions: () => [string, string][] }).getOptions();
+    expect(options.map((o) => o[1])).toEqual([
+      'flex-start',
+      'center',
+      'flex-end',
+      'space-between',
+      'space-around',
+    ]);
+    ws.dispose();
+  });
 });

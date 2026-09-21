@@ -245,6 +245,7 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | judul halaman [teks] _(opsional, di dalam `<head>`)_ | `<title>` |
 | | `<body>` { … } _(opsional, di dalam `<html>`)_ | isi `<body>` |
 | | bagian { … } | `<section>…</section>` |
+| | wadah sejajar [posisi] { … } | `<div style="display:flex;justify-content:…;flex-wrap:wrap">` |
 | | judul besar [teks] (level 1–3) | `<h1>`/`<h2>`/`<h3>` |
 | | paragraf [teks] | `<p>` |
 | | daftar { item… } | `<ul>` |
@@ -272,6 +273,9 @@ blok kerangka dokumen untuk ditampilkan di tab).
 Blok gaya menggabungkan `style` bila ditumpuk. Tidak ada blok "HTML mentah" dan
 tidak ada blok skrip. Tanpa `html_document`, blok top-level = isi `<body>`
 langsung (perilaku sejak sebelum Fase C, dipertahankan untuk kompatibilitas).
+Wadah Sejajar (Fase F) adalah satu-satunya blok yang menyusun gaya dari
+field-nya sendiri alih-alih lewat blok Gaya pembungkus — lihat catatan
+arsitektur di `docs/superpowers/specs/2026-09-21-curriculum-gap-blocks-design.md`.
 Gambar (`html_image_asset`/`html_image_url`, Fase F) punya dropdown ukuran
 opsional (`asli`/`kecil`/`sedang`/`besar`) yang menambah `style="width:…"`
 bila bukan `asli` — `asli` (string kosong) selalu jadi pilihan pertama, jadi

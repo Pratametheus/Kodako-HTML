@@ -22,6 +22,13 @@ const COLORS = new Set([
 ]);
 const ALIGNS = new Set(['left', 'center', 'right']);
 const FONT_SIZES = new Set(['0.85rem', '1rem', '1.5rem']);
+const JUSTIFY_VALUES = new Set([
+  'flex-start',
+  'center',
+  'flex-end',
+  'space-between',
+  'space-around',
+]);
 const SPACING_SIZES = new Set(['8px', '16px', '32px']);
 const RADIUS_SIZES = new Set(['8px', '16px', '9999px']);
 const FONTS = new Set(['inherit', 'Georgia, serif', '"Courier New", monospace']);
@@ -184,6 +191,12 @@ function emitBlock(
       return '';
     case 'html_section':
       return emitContainer(block, 'BODY', 'section', depth, assetIds, styleFragments);
+    case 'html_row': {
+      const justify = field(block, 'JUSTIFY');
+      const value = JUSTIFY_VALUES.has(justify) ? justify : 'flex-start';
+      const fragment = `display:flex;justify-content:${value};flex-wrap:wrap`;
+      return emitContainer(block, 'BODY', 'div', depth, assetIds, [...styleFragments, fragment]);
+    }
     case 'html_list':
       return emitContainer(block, 'ITEMS', 'ul', depth, assetIds, styleFragments);
     case 'html_table':

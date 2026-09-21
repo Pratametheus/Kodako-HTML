@@ -21,6 +21,7 @@ export const htmlToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
         { kind: 'block', type: 'html_title', inputs: { TEXT: textShadow('Halaman Saya') } },
         { kind: 'block', type: 'html_body' },
         { kind: 'block', type: 'html_section' },
+        { kind: 'block', type: 'html_row' },
         { kind: 'block', type: 'html_heading', inputs: { TEXT: textShadow() } },
         { kind: 'block', type: 'html_paragraph', inputs: { TEXT: textShadow() } },
         { kind: 'block', type: 'html_list' },

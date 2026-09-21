@@ -186,6 +186,49 @@ test('document skeleton blocks drive the head + the code panel shows the full pa
   await expect(info).toContainText('<');
 });
 
+test('flex row block lays children out with display:flex end to end', async ({ page }) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_row',
+              x: 20,
+              y: 20,
+              fields: { JUSTIFY: 'center' },
+              inputs: {
+                BODY: {
+                  block: {
+                    type: 'html_paragraph',
+                    inputs: {
+                      TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Kotak 1' } } },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      B.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('display:flex');
+  await expect(code).toContainText('justify-content:center');
+  await expect(code).toContainText('Kotak 1');
+});
+
 test('table blocks render a bordered table end to end', async ({ page }) => {
   await page.goto('/editor.html#/');
   await page.getByRole('button', { name: 'Project Baru' }).click();
