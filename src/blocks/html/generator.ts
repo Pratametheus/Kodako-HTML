@@ -7,7 +7,7 @@ export type GeneratedHtml = {
   assetIds: string[];
 };
 
-const HEADING_LEVELS = new Set(['h1', 'h2', 'h3']);
+const HEADING_LEVELS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 const COLORS = new Set([
   '#000000',
   '#ffffff',
@@ -32,7 +32,9 @@ const JUSTIFY_VALUES = new Set([
 const SPACING_SIZES = new Set(['8px', '16px', '32px']);
 const RADIUS_SIZES = new Set(['8px', '16px', '9999px']);
 const FONTS = new Set(['inherit', 'Georgia, serif', '"Courier New", monospace']);
-const IMAGE_WIDTHS = new Set(['120px', '240px', '480px']);
+const BORDER_WIDTHS = new Set(['1px', '2px', '4px', '0']);
+const BORDER_STYLES = new Set(['solid', 'dashed', 'dotted']);
+const LIST_TYPES = new Set(['1', 'A', 'a', 'I', 'i']);
 
 export function registerHtmlGenerator(): void {
   // Registration is intentionally a no-op: generateHtml is a tree walker.
@@ -159,10 +161,110 @@ function emitContainer(
   depth: number,
   assetIds: string[],
   styleFragments: string[],
+  attrs = '',
 ): string {
   const prefix = indent(depth);
   const children = emitChain(block.getInputTargetBlock(inputName), depth + 1, assetIds);
-  return withStyles(`${prefix}<${tag}>\n${children}${prefix}</${tag}>\n`, styleFragments);
+  return withStyles(`${prefix}<${tag}${attrs}>\n${children}${prefix}</${tag}>\n`, styleFragments);
+}
+
+function tableBorderFragment(block: Blockly.Block): string {
+  const width = field(block, 'BORDER_WIDTH');
+  const w = BORDER_WIDTHS.has(width) ? width : '1px';
+  if (w === '0') return '';
+  const style = field(block, 'BORDER_STYLE');
+  const s = BORDER_STYLES.has(style) ? style : 'solid';
+  const color = field(block, 'BORDER_COLOR');
+  const c = COLORS.has(color) ? color : '#000000';
+  return `border:${w} ${s} ${c}`;
+}
+
+const TABLE_STYLE_BLOCK_TYPES = new Set([
+  'html_style_color',
+  'html_style_bg',
+  'html_style_align',
+  'html_style_size',
+  'html_style_bold',
+  'html_style_italic',
+  'html_style_padding',
+  'html_style_margin',
+  'html_style_radius',
+  'html_style_shadow',
+  'html_style_font',
+]);
+
+function emitTableCellChain(
+  block: Blockly.Block | null,
+  depth: number,
+  assetIds: string[],
+  cellBorder: string,
+  styleFragments: string[] = [],
+): string {
+  let html = '';
+  let current = block;
+  while (current) {
+    if (current.type === 'html_table_cell') {
+      const fragments = cellBorder ? [...styleFragments, cellBorder] : styleFragments;
+      html += withStyles(`${indent(depth)}<td>${textInput(current, 'TEXT')}</td>\n`, fragments);
+    } else if (TABLE_STYLE_BLOCK_TYPES.has(current.type)) {
+      const child = current.getInputTargetBlock('BODY');
+      if (child) {
+        html += emitTableCellChain(child, depth, assetIds, cellBorder, [
+          ...styleFragments,
+          styleFragment(current),
+        ]);
+      }
+    } else {
+      html += emitBlock(current, depth, assetIds, styleFragments);
+    }
+    current = current.getNextBlock();
+  }
+  return html;
+}
+
+function emitTableRow(
+  block: Blockly.Block,
+  depth: number,
+  assetIds: string[],
+  cellBorder: string,
+  styleFragments: string[],
+): string {
+  const prefix = indent(depth);
+  const cells = emitTableCellChain(
+    block.getInputTargetBlock('CELLS'),
+    depth + 1,
+    assetIds,
+    cellBorder,
+  );
+  return withStyles(`${prefix}<tr>\n${cells}${prefix}</tr>\n`, styleFragments);
+}
+
+function emitTableRowChain(
+  block: Blockly.Block | null,
+  depth: number,
+  assetIds: string[],
+  cellBorder: string,
+  styleFragments: string[] = [],
+): string {
+  let html = '';
+  let current = block;
+  while (current) {
+    if (current.type === 'html_table_row') {
+      html += emitTableRow(current, depth, assetIds, cellBorder, styleFragments);
+    } else if (TABLE_STYLE_BLOCK_TYPES.has(current.type)) {
+      const child = current.getInputTargetBlock('BODY');
+      if (child) {
+        html += emitTableRowChain(child, depth, assetIds, cellBorder, [
+          ...styleFragments,
+          styleFragment(current),
+        ]);
+      }
+    } else {
+      html += emitBlock(current, depth, assetIds, styleFragments);
+    }
+    current = current.getNextBlock();
+  }
+  return html;
 }
 
 function emitTable(
@@ -172,8 +274,12 @@ function emitTable(
   styleFragments: string[],
 ): string {
   const prefix = indent(depth);
-  const rows = emitChain(block.getInputTargetBlock('ROWS'), depth + 1, assetIds);
-  return withStyles(`${prefix}<table border="1">\n${rows}${prefix}</table>\n`, styleFragments);
+  const border = tableBorderFragment(block);
+  const tableFragments = border
+    ? [...styleFragments, 'border-collapse:collapse', border]
+    : styleFragments;
+  const rows = emitTableRowChain(block.getInputTargetBlock('ROWS'), depth + 1, assetIds, border);
+  return withStyles(`${prefix}<table>\n${rows}${prefix}</table>\n`, tableFragments);
 }
 
 function emitBlock(
@@ -205,8 +311,21 @@ function emitBlock(
       return emitContainer(block, 'CELLS', 'tr', depth, assetIds, styleFragments);
     case 'html_table_cell':
       return withStyles(`${prefix}<td>${textInput(block, 'TEXT')}</td>\n`, styleFragments);
-    case 'html_list_ordered':
-      return emitContainer(block, 'ITEMS', 'ol', depth, assetIds, styleFragments);
+    case 'html_list_ordered': {
+      const type = field(block, 'TYPE');
+      const typeAttr = LIST_TYPES.has(type) && type !== '1' ? ` type="${type}"` : '';
+      const start = Number(field(block, 'START'));
+      const startAttr = Number.isFinite(start) && start !== 1 ? ` start="${start}"` : '';
+      return emitContainer(
+        block,
+        'ITEMS',
+        'ol',
+        depth,
+        assetIds,
+        styleFragments,
+        `${typeAttr}${startAttr}`,
+      );
+    }
     case 'html_header':
       return emitContainer(block, 'BODY', 'header', depth, assetIds, styleFragments);
     case 'html_main':
@@ -230,26 +349,29 @@ function emitBlock(
     case 'html_image_asset': {
       const assetId = field(block, 'ASSET');
       if (assetId) assetIds.push(assetId);
-      const width = field(block, 'WIDTH');
-      const sizeFragment = IMAGE_WIDTHS.has(width) ? [`width:${width}`] : [];
+      const width = Number(field(block, 'WIDTH'));
+      const widthAttr = Number.isFinite(width) && width > 0 ? ` width="${width}"` : '';
       return withStyles(
-        `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
-        [...sizeFragment, ...styleFragments],
+        `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}"${widthAttr}>\n`,
+        styleFragments,
       );
     }
     case 'html_image_url': {
-      const width = field(block, 'WIDTH');
-      const sizeFragment = IMAGE_WIDTHS.has(width) ? [`width:${width}`] : [];
+      const width = Number(field(block, 'WIDTH'));
+      const widthAttr = Number.isFinite(width) && width > 0 ? ` width="${width}"` : '';
       return withStyles(
-        `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
-        [...sizeFragment, ...styleFragments],
-      );
-    }
-    case 'html_link':
-      return withStyles(
-        `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}">${escapeHtmlText(field(block, 'LABEL'))}</a>\n`,
+        `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}"${widthAttr}>\n`,
         styleFragments,
       );
+    }
+    case 'html_link': {
+      const newTab = field(block, 'NEW_TAB') === 'TRUE';
+      const targetAttr = newTab ? ' target="_blank"' : '';
+      return withStyles(
+        `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"${targetAttr}>${escapeHtmlText(field(block, 'LABEL'))}</a>\n`,
+        styleFragments,
+      );
+    }
     case 'html_button':
       return withStyles(
         `${prefix}<button type="button">${textInput(block, 'TEXT')}</button>\n`,

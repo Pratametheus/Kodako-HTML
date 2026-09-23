@@ -127,7 +127,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_heading',
-      tooltip: 'Judul bagian dengan ukuran h1, h2, atau h3 (<h1>).',
+      tooltip: 'Judul bagian dengan ukuran h1 sampai h6 (<h1>).',
       message0: '%1 %2',
       args0: [
         {
@@ -137,6 +137,9 @@ export function registerHtmlBlocks(): void {
             ['<h1>', 'h1'],
             ['<h2>', 'h2'],
             ['<h3>', 'h3'],
+            ['<h4>', 'h4'],
+            ['<h5>', 'h5'],
+            ['<h6>', 'h6'],
           ],
         },
         { type: 'input_value', name: 'TEXT', check: 'String' },
@@ -175,8 +178,30 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_table',
       tooltip: 'Tabel untuk menyusun data dalam baris dan kolom (<table>), bergaris.',
-      message0: '<table> %1 </table>',
-      args0: [{ type: 'input_statement', name: 'ROWS' }],
+      message0: '<table> garis: %1 %2 %3 %4 </table>',
+      args0: [
+        {
+          type: 'field_dropdown',
+          name: 'BORDER_WIDTH',
+          options: [
+            ['tipis', '1px'],
+            ['sedang', '2px'],
+            ['tebal', '4px'],
+            ['tidak ada', '0'],
+          ],
+        },
+        {
+          type: 'field_dropdown',
+          name: 'BORDER_STYLE',
+          options: [
+            ['penuh', 'solid'],
+            ['putus-putus', 'dashed'],
+            ['titik-titik', 'dotted'],
+          ],
+        },
+        { type: 'field_dropdown', name: 'BORDER_COLOR', options: COLOR_OPTIONS },
+        { type: 'input_statement', name: 'ROWS' },
+      ],
       previousStatement: null,
       nextStatement: null,
       style: 'structure_blocks',
@@ -202,8 +227,22 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_list_ordered',
       tooltip: 'Daftar bernomor (<ol>) — isi dengan blok <li>.',
-      message0: '<ol> %1 </ol>',
-      args0: [{ type: 'input_statement', name: 'ITEMS' }],
+      message0: '<ol> tipe %1 mulai %2 %3 </ol>',
+      args0: [
+        {
+          type: 'field_dropdown',
+          name: 'TYPE',
+          options: [
+            ['angka', '1'],
+            ['huruf besar', 'A'],
+            ['huruf kecil', 'a'],
+            ['romawi besar', 'I'],
+            ['romawi kecil', 'i'],
+          ],
+        },
+        { type: 'field_number', name: 'START', value: 1, min: 1, precision: 1 },
+        { type: 'input_statement', name: 'ITEMS' },
+      ],
       previousStatement: null,
       nextStatement: null,
       style: 'structure_blocks',
@@ -246,20 +285,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_image_asset',
       tooltip: 'Menampilkan gambar dari pustaka aset (<img>).',
-      message0: '<img src= %1 alt= %2 ukuran %3 >',
+      message0: '<img src= %1 alt= %2 lebar %3 piksel >',
       args0: [
         { type: 'field_dropdown', name: 'ASSET', options: () => getAssetOptions() },
         { type: 'field_input', name: 'ALT', text: '' },
-        {
-          type: 'field_dropdown',
-          name: 'WIDTH',
-          options: [
-            ['asli', ''],
-            ['kecil', '120px'],
-            ['sedang', '240px'],
-            ['besar', '480px'],
-          ],
-        },
+        { type: 'field_number', name: 'WIDTH', value: 0, min: 0, precision: 1 },
       ],
       previousStatement: null,
       nextStatement: null,
@@ -268,20 +298,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_image_url',
       tooltip: 'Menampilkan gambar dari alamat web (<img>).',
-      message0: '<img src= %1 alt= %2 ukuran %3 >',
+      message0: '<img src= %1 alt= %2 lebar %3 piksel >',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
         { type: 'field_input', name: 'ALT', text: '' },
-        {
-          type: 'field_dropdown',
-          name: 'WIDTH',
-          options: [
-            ['asli', ''],
-            ['kecil', '120px'],
-            ['sedang', '240px'],
-            ['besar', '480px'],
-          ],
-        },
+        { type: 'field_number', name: 'WIDTH', value: 0, min: 0, precision: 1 },
       ],
       previousStatement: null,
       nextStatement: null,
@@ -290,10 +311,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_link',
       tooltip: 'Tautan yang bisa diklik ke halaman lain (<a>).',
-      message0: '<a href= %1 > %2 </a>',
+      message0: '<a href= %1 > %2 </a> tab baru? %3',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
         { type: 'field_input', name: 'LABEL', text: 'Tulis di sini' },
+        { type: 'field_checkbox', name: 'NEW_TAB', checked: false },
       ],
       previousStatement: null,
       nextStatement: null,

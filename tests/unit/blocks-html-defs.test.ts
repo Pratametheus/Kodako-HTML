@@ -106,27 +106,58 @@ describe('HTML block labels use real tags', () => {
     expect(message0('html_table_row')).toContain('<tr>');
     expect(message0('html_table_cell')).toContain('<td>');
   });
+  it('table exposes border width/style/color controls defaulting to a visible thin black border', () => {
+    const ws = new Blockly.Workspace();
+    const table = ws.newBlock('html_table');
+    const width = table.getField('BORDER_WIDTH')!;
+    const widthOptions = (
+      width as unknown as { getOptions: () => [string, string][] }
+    ).getOptions();
+    expect(widthOptions.map((o) => o[1])).toEqual(['1px', '2px', '4px', '0']);
+    expect(width.getValue()).toBe('1px');
+
+    const style = table.getField('BORDER_STYLE')!;
+    const styleOptions = (
+      style as unknown as { getOptions: () => [string, string][] }
+    ).getOptions();
+    expect(styleOptions.map((o) => o[1])).toEqual(['solid', 'dashed', 'dotted']);
+    expect(style.getValue()).toBe('solid');
+
+    expect(table.getField('BORDER_COLOR')!.getValue()).toBe('#000000');
+    ws.dispose();
+  });
   it('ordered list shows <ol> … </ol>', () => {
     expect(message0('html_list_ordered')).toContain('<ol>');
     expect(message0('html_list_ordered')).toContain('</ol>');
+  });
+  it('ordered list exposes a TYPE dropdown and numeric START field, both defaulting to plain numbering', () => {
+    const ws = new Blockly.Workspace();
+    const block = ws.newBlock('html_list_ordered');
+    const type = block.getField('TYPE')!;
+    const options = (type as unknown as { getOptions: () => [string, string][] }).getOptions();
+    expect(options.map((o) => o[1])).toEqual(['1', 'A', 'a', 'I', 'i']);
+    expect(type.getValue()).toBe('1');
+    expect(block.getField('START')!.getValue()).toBe(1);
+    ws.dispose();
   });
   it('header, main, and footer show their real tags', () => {
     expect(message0('html_header')).toContain('<header>');
     expect(message0('html_main')).toContain('<main>');
     expect(message0('html_footer')).toContain('<footer>');
   });
-  it('image blocks expose a WIDTH size dropdown defaulting to natural size', () => {
+  it('image blocks expose a numeric WIDTH field defaulting to natural size (0)', () => {
     const ws = new Blockly.Workspace();
     for (const type of ['html_image_asset', 'html_image_url']) {
       const block = ws.newBlock(type);
-      const dropdown = block.getField('WIDTH')!;
-      const options = (
-        dropdown as unknown as { getOptions: () => [string, string][] }
-      ).getOptions();
-      expect(options[0]![1], `${type} WIDTH default`).toBe('');
-      expect(options.map((o) => o[1])).toEqual(['', '120px', '240px', '480px']);
+      const field = block.getField('WIDTH')!;
+      expect(field.getValue(), `${type} WIDTH default`).toBe(0);
     }
     ws.dispose();
+  });
+  it('image shows a "lebar ... piksel" label for the width field', () => {
+    const m = message0('html_image_url');
+    expect(m).toContain('lebar');
+    expect(m).toContain('piksel');
   });
   it('image shows <img src= … alt= … >', () => {
     const m = message0('html_image_url');
@@ -139,19 +170,25 @@ describe('HTML block labels use real tags', () => {
     expect(m).toContain('<a href=');
     expect(m).toContain('</a>');
   });
+  it('link exposes a NEW_TAB checkbox defaulting to unchecked', () => {
+    const ws = new Blockly.Workspace();
+    const field = ws.newBlock('html_link').getField('NEW_TAB')!;
+    expect(field.getValue()).toBe('FALSE');
+    ws.dispose();
+  });
   it('button shows <button> … </button>', () => {
     expect(message0('html_button')).toContain('<button>');
   });
   it('hr shows <hr>', () => {
     expect(message0('html_hr')).toContain('<hr>');
   });
-  it('heading level dropdown labels are the h-tags', () => {
+  it('heading level dropdown labels are the h-tags, full h1-h6', () => {
     const ws = new Blockly.Workspace();
     const b = ws.newBlock('html_heading');
     const dropdown = b.getField('LEVEL')!;
     const options = (dropdown as unknown as { getOptions: () => [string, string][] }).getOptions();
-    expect(options.map((o) => o[0])).toEqual(['<h1>', '<h2>', '<h3>']);
-    expect(options.map((o) => o[1])).toEqual(['h1', 'h2', 'h3']); // values unchanged
+    expect(options.map((o) => o[0])).toEqual(['<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>']);
+    expect(options.map((o) => o[1])).toEqual(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
     ws.dispose();
   });
   it('row (flex) shows a <div> and exposes 5 justify options', () => {

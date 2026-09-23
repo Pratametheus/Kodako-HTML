@@ -58,6 +58,14 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<h1>Judul</h1>\n');
   });
 
+  it.each(['h4', 'h5', 'h6'])('emits heading level %s', (level) => {
+    const heading = statement(workspace, 'html_heading');
+    heading.setFieldValue(level, 'LEVEL');
+    connectText(heading, 'Judul');
+
+    expect(generateHtml(workspace).bodyHtml).toBe(`<${level}>Judul</${level}>\n`);
+  });
+
   it('indents section children by two spaces', () => {
     const section = statement(workspace, 'html_section');
     const first = statement(workspace, 'html_paragraph');
@@ -84,7 +92,7 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<ul>\n  <li>x</li>\n  <li>y</li>\n</ul>\n');
   });
 
-  it('emits a table with border=1 and nested rows/cells', () => {
+  it('emits a table with the default thin black border, cascading onto every cell', () => {
     const table = statement(workspace, 'html_table');
     const row1 = statement(workspace, 'html_table_row');
     const cellA = statement(workspace, 'html_table_cell');
@@ -96,10 +104,10 @@ describe('HTML block generator', () => {
     connectStatement(table, 'ROWS', row1);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<table border="1">\n' +
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
         '  <tr>\n' +
-        '    <td>Senin</td>\n' +
-        '    <td>Selasa</td>\n' +
+        '    <td style="border:1px solid #000000">Senin</td>\n' +
+        '    <td style="border:1px solid #000000">Selasa</td>\n' +
         '  </tr>\n' +
         '</table>\n',
     );
@@ -119,20 +127,93 @@ describe('HTML block generator', () => {
     connectStatement(table, 'ROWS', row1);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<table border="1">\n' +
-        '  <tr>\n    <td>A</td>\n  </tr>\n' +
-        '  <tr>\n    <td>B</td>\n  </tr>\n' +
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <tr>\n    <td style="border:1px solid #000000">A</td>\n  </tr>\n' +
+        '  <tr>\n    <td style="border:1px solid #000000">B</td>\n  </tr>\n' +
         '</table>\n',
     );
   });
 
-  it('applies a style wrapper to the whole table, not each row', () => {
+  it('customizes table border width, style, and color, cascading onto every cell', () => {
+    const table = statement(workspace, 'html_table');
+    table.setFieldValue('2px', 'BORDER_WIDTH');
+    table.setFieldValue('dashed', 'BORDER_STYLE');
+    table.setFieldValue('#1e88e5', 'BORDER_COLOR');
+    const row = statement(workspace, 'html_table_row');
+    const cell = statement(workspace, 'html_table_cell');
+    connectText(cell, 'A');
+    connectStatement(row, 'CELLS', cell);
+    connectStatement(table, 'ROWS', row);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:2px dashed #1e88e5">\n' +
+        '  <tr>\n' +
+        '    <td style="border:2px dashed #1e88e5">A</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('omits all border styling when width is set to "tidak ada"', () => {
+    const table = statement(workspace, 'html_table');
+    table.setFieldValue('0', 'BORDER_WIDTH');
+    const row = statement(workspace, 'html_table_row');
+    const cell = statement(workspace, 'html_table_cell');
+    connectText(cell, 'A');
+    connectStatement(row, 'CELLS', cell);
+    connectStatement(table, 'ROWS', row);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table>\n  <tr>\n    <td>A</td>\n  </tr>\n</table>\n',
+    );
+  });
+
+  it('applies a style wrapper to the whole table only, not each cell', () => {
     const bold = statement(workspace, 'html_style_bold');
     const table = statement(workspace, 'html_table');
     connectStatement(bold, 'BODY', table);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<table border="1" style="font-weight:bold">\n</table>\n',
+      '<table style="font-weight:bold;border-collapse:collapse;border:1px solid #000000">\n</table>\n',
+    );
+  });
+
+  it('composes a Gaya wrapper around a single table cell without losing its border', () => {
+    const table = statement(workspace, 'html_table');
+    const row = statement(workspace, 'html_table_row');
+    const color = statement(workspace, 'html_style_color');
+    const cell = statement(workspace, 'html_table_cell');
+    color.setFieldValue('#e53935', 'COLOR');
+    connectText(cell, 'Merah');
+    connectStatement(color, 'BODY', cell);
+    connectStatement(row, 'CELLS', color);
+    connectStatement(table, 'ROWS', row);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <tr>\n' +
+        '    <td style="color:#e53935;border:1px solid #000000">Merah</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('composes a Gaya wrapper around a whole table row', () => {
+    const table = statement(workspace, 'html_table');
+    const bold = statement(workspace, 'html_style_bold');
+    const row = statement(workspace, 'html_table_row');
+    const cell = statement(workspace, 'html_table_cell');
+    connectText(cell, 'B');
+    connectStatement(row, 'CELLS', cell);
+    connectStatement(bold, 'BODY', row);
+    connectStatement(table, 'ROWS', bold);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <tr style="font-weight:bold">\n' +
+        '    <td style="border:1px solid #000000">B</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
     );
   });
 
@@ -146,6 +227,22 @@ describe('HTML block generator', () => {
     connectStatement(list, 'ITEMS', first);
 
     expect(generateHtml(workspace).bodyHtml).toBe('<ol>\n  <li>x</li>\n  <li>y</li>\n</ol>\n');
+  });
+
+  it('emits ordered list type and start attributes when non-default', () => {
+    const list = statement(workspace, 'html_list_ordered');
+    list.setFieldValue('A', 'TYPE');
+    list.setFieldValue(5, 'START');
+    const item = statement(workspace, 'html_list_item');
+    connectText(item, 'x');
+    connectStatement(list, 'ITEMS', item);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<ol type="A" start="5">\n  <li>x</li>\n</ol>\n');
+  });
+
+  it('omits type/start attributes at their defaults (angka/1)', () => {
+    statement(workspace, 'html_list_ordered');
+    expect(generateHtml(workspace).bodyHtml).toBe('<ol>\n</ol>\n');
   });
 
   it.each(['html_header', 'html_main', 'html_footer'])(
@@ -260,12 +357,12 @@ describe('HTML block generator', () => {
     });
   });
 
-  it('emits an image at a chosen width and omits width at the natural-size default', () => {
+  it('emits an image with a numeric width attribute and omits it at 0 (natural size)', () => {
     const sized = statement(workspace, 'html_image_url');
     sized.setFieldValue('https://x/y.png', 'URL');
-    sized.setFieldValue('240px', 'WIDTH');
+    sized.setFieldValue(240, 'WIDTH');
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<img src="https://x/y.png" alt="" style="width:240px">\n',
+      '<img src="https://x/y.png" alt="" width="240">\n',
     );
 
     workspace.clear();
@@ -304,6 +401,17 @@ describe('HTML block generator', () => {
     link.setFieldValue('klik', 'LABEL');
 
     expect(generateHtml(workspace).bodyHtml).toBe('<a href="https://a.b">klik</a>\n');
+  });
+
+  it('adds target="_blank" when the new-tab checkbox is checked', () => {
+    const link = statement(workspace, 'html_link');
+    link.setFieldValue('https://a.b', 'URL');
+    link.setFieldValue('klik', 'LABEL');
+    link.setFieldValue(true, 'NEW_TAB');
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<a href="https://a.b" target="_blank">klik</a>\n',
+    );
   });
 
   it.each([
