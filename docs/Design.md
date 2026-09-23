@@ -246,18 +246,18 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | `<body>` { … } _(opsional, di dalam `<html>`)_ | isi `<body>` |
 | | bagian { … } | `<section>…</section>` |
 | | wadah sejajar [posisi] { … } | `<div style="display:flex;justify-content:…;flex-wrap:wrap">` |
-| | judul besar [teks] (level 1–3) | `<h1>`/`<h2>`/`<h3>` |
+| | judul besar [teks] (level 1–6) | `<h1>`–`<h6>` |
 | | paragraf [teks] | `<p>` |
 | | daftar { item… } | `<ul>` |
 | | item daftar [teks] | `<li>` |
-| | tabel { baris… } | `<table border="1">` |
+| | tabel bergaris [tebal/gaya/warna] { baris… } | `<table style="border-collapse:collapse;border:…">` (+ `<td>` ikut bergaris) |
 | | baris tabel { sel… } | `<tr>` |
 | | sel tabel [teks] | `<td>` |
-| | daftar bernomor { item… } | `<ol>` |
+| | daftar bernomor [tipe/mulai] { item… } | `<ol type=… start=…>` (hanya ditulis bila bukan default) |
 | | `<header>`/`<main>`/`<footer>` { … } | tag sesuai nama |
 | Konten | teks [isi] | text node (di-*escape*) |
 | | gambar (aset [a] / URL [u]), teks alt [t] | `<img>` |
-| | tautan ke [url] tulisan [teks] | `<a>` |
+| | tautan ke [url] tulisan [teks], tab baru? | `<a>` (+ `target="_blank"` bila dicentang) |
 | | tombol [teks] | `<button>` (tanpa aksi) |
 | | garis pemisah | `<hr>` |
 | Gaya (pembungkus) | `color:` [warna] { … } | `style="color:…"` pada anak |
@@ -276,10 +276,16 @@ langsung (perilaku sejak sebelum Fase C, dipertahankan untuk kompatibilitas).
 Wadah Sejajar (Fase F) adalah satu-satunya blok yang menyusun gaya dari
 field-nya sendiri alih-alih lewat blok Gaya pembungkus — lihat catatan
 arsitektur di `docs/superpowers/specs/2026-09-21-curriculum-gap-blocks-design.md`.
-Gambar (`html_image_asset`/`html_image_url`, Fase F) punya dropdown ukuran
-opsional (`asli`/`kecil`/`sedang`/`besar`) yang menambah `style="width:…"`
-bila bukan `asli` — `asli` (string kosong) selalu jadi pilihan pertama, jadi
-project yang disimpan sebelum Fase F tampil tak berubah.
+Gambar (`html_image_asset`/`html_image_url`) punya field angka `lebar`
+opsional (piksel bebas, `0` = ukuran asli/tanpa atribut) yang menambah
+atribut HTML asli `width="…"` bila lebih dari 0.
+
+Fase G (2026-09-23) mengganti `WIDTH` gambar dari dropdown preset jadi
+angka piksel bebas (atribut `width="…"` asli, meniru kurikulum
+langsung) — project lama yang masih menyimpan nilai dropdown lama
+dikonversi otomatis oleh `migrateHtmlWorkspaceJson` saat dibuka (lihat
+§3, pola yang sama dengan pelonggaran skema `activeMode`/`sprite` di
+Fase E).
 
 ### 4.4 Toolbox
 

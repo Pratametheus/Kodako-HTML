@@ -202,7 +202,7 @@ describe('HTML block generator', () => {
   });
 
   it('omits type/start attributes at their defaults (angka/1)', () => {
-    const list = statement(workspace, 'html_list_ordered');
+    statement(workspace, 'html_list_ordered');
     expect(generateHtml(workspace).bodyHtml).toBe('<ol>\n</ol>\n');
   });
 

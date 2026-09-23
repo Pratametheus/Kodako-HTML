@@ -212,6 +212,15 @@ nyala). **PR-F3:** blok Wadah Sejajar (`<div>` flex dasar: rata
 kiri/tengah/kanan/renggang/sebar rata, `flex-wrap` selalu aktif). Lihat
 `docs/superpowers/specs/2026-09-21-curriculum-gap-blocks-design.md`.
 
+Fase G (2026-09-23) — kesetiaan blok terhadap HTML asli, dipicu laporan
+user bahwa blok tabel tidak punya kontrol border. Border tabel jadi
+field warna/gaya/tebal (bukan `border="1"` yang di-*hardcode*, cascading
+ke tiap `<td>`); lebar gambar jadi angka piksel bebas (`width="…"` asli,
+bukan dropdown preset — dengan migrasi otomatis untuk project lama);
+heading lengkap `<h1>`–`<h6>`; daftar bernomor dapat `type`/`start`;
+tautan dapat `target="_blank"`. Lihat
+`docs/superpowers/specs/2026-09-23-html-fidelity-blocks-design.md`.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini

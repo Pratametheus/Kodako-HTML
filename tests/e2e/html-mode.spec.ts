@@ -283,7 +283,9 @@ test('table blocks render a bordered table end to end', async ({ page }) => {
   await page.getByRole('button', { name: 'Jalankan' }).click();
   await page.getByRole('tab', { name: 'Lihat Kode' }).click();
   const code = page.locator('.html-mode__code, [class*="code"]').first();
-  await expect(code).toContainText('<table style="border-collapse:collapse;border:1px solid #000000">');
+  await expect(code).toContainText(
+    '<table style="border-collapse:collapse;border:1px solid #000000">',
+  );
   await expect(code).toContainText('<td style="border:1px solid #000000">Senin</td>');
   await expect(code).toContainText('<td style="border:1px solid #000000">Selasa</td>');
 });
@@ -370,4 +372,85 @@ test('quick-win blocks (ol, header/footer, image size, spacing styles) render en
   await expect(code).toContainText('<ol>');
   await expect(code).toContainText('<li>Langkah 1</li>');
   await expect(code).toContainText('<footer style="padding:32px">');
+});
+
+test('table border, numeric image width, ordered-list type/start, and link target render end to end', async ({
+  page,
+}) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_table',
+              x: 20,
+              y: 20,
+              fields: { BORDER_WIDTH: '2px', BORDER_STYLE: 'dashed', BORDER_COLOR: '#1e88e5' },
+              inputs: {
+                ROWS: {
+                  block: {
+                    type: 'html_table_row',
+                    inputs: {
+                      CELLS: {
+                        block: {
+                          type: 'html_table_cell',
+                          inputs: {
+                            TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'A' } } },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+              next: {
+                block: {
+                  type: 'html_image_url',
+                  fields: { URL: 'https://x/y.png', ALT: 'gbr', WIDTH: 300 },
+                  next: {
+                    block: {
+                      type: 'html_list_ordered',
+                      fields: { TYPE: 'A', START: 5 },
+                      inputs: {
+                        ITEMS: {
+                          block: {
+                            type: 'html_list_item',
+                            inputs: {
+                              TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Langkah' } } },
+                            },
+                          },
+                        },
+                      },
+                      next: {
+                        block: {
+                          type: 'html_link',
+                          fields: { URL: 'https://x', LABEL: 'Buka', NEW_TAB: true },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      B.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('border:2px dashed #1e88e5');
+  await expect(code).toContainText('width="300"');
+  await expect(code).toContainText('<ol type="A" start="5">');
+  await expect(code).toContainText('target="_blank"');
 });
