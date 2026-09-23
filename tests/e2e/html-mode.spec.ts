@@ -454,3 +454,120 @@ test('table border, numeric image width, ordered-list type/start, and link targe
   await expect(code).toContainText('<ol type="A" start="5">');
   await expect(code).toContainText('target="_blank"');
 });
+
+test('th/caption, nav, blockquote, figure/figcaption, and br render end to end', async ({
+  page,
+}) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_nav',
+              x: 20,
+              y: 20,
+              inputs: {
+                BODY: {
+                  block: {
+                    type: 'html_paragraph',
+                    inputs: { TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Menu' } } } },
+                    next: { block: { type: 'html_br' } },
+                  },
+                },
+              },
+              next: {
+                block: {
+                  type: 'html_table',
+                  inputs: {
+                    ROWS: {
+                      block: {
+                        type: 'html_caption',
+                        inputs: {
+                          TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Jadwal' } } },
+                        },
+                        next: {
+                          block: {
+                            type: 'html_table_row',
+                            inputs: {
+                              CELLS: {
+                                block: {
+                                  type: 'html_table_header_cell',
+                                  inputs: {
+                                    TEXT: {
+                                      shadow: { type: 'html_text', fields: { VALUE: 'Hari' } },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                  next: {
+                    block: {
+                      type: 'html_blockquote',
+                      inputs: {
+                        BODY: {
+                          block: {
+                            type: 'html_paragraph',
+                            inputs: {
+                              TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Kutipan' } } },
+                            },
+                          },
+                        },
+                      },
+                      next: {
+                        block: {
+                          type: 'html_figure',
+                          inputs: {
+                            BODY: {
+                              block: {
+                                type: 'html_image_url',
+                                fields: { URL: 'https://x/y.png', ALT: 'gbr' },
+                                next: {
+                                  block: {
+                                    type: 'html_figcaption',
+                                    inputs: {
+                                      TEXT: {
+                                        shadow: { type: 'html_text', fields: { VALUE: 'Foto' } },
+                                      },
+                                    },
+                                  },
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      B.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('<nav>');
+  await expect(code).toContainText('<br>');
+  await expect(code).toContainText('<caption>Jadwal</caption>');
+  await expect(code).toContainText('<th');
+  await expect(code).toContainText('<blockquote>');
+  await expect(code).toContainText('<figure>');
+  await expect(code).toContainText('<figcaption>Foto</figcaption>');
+});

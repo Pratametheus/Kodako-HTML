@@ -205,4 +205,27 @@ describe('HTML block labels use real tags', () => {
     ]);
     ws.dispose();
   });
+  it('table header cell shows <th> … </th>', () => {
+    const m = message0('html_table_header_cell');
+    expect(m).toContain('<th>');
+    expect(m).toContain('</th>');
+  });
+  it('caption shows <caption> … </caption>', () => {
+    const m = message0('html_caption');
+    expect(m).toContain('<caption>');
+    expect(m).toContain('</caption>');
+  });
+  it('nav and blockquote show their real tags', () => {
+    expect(message0('html_nav')).toContain('<nav>');
+    expect(message0('html_blockquote')).toContain('<blockquote>');
+  });
+  it('figure and figcaption show their real tags', () => {
+    expect(message0('html_figure')).toContain('<figure>');
+    const m = message0('html_figcaption');
+    expect(m).toContain('<figcaption>');
+    expect(m).toContain('</figcaption>');
+  });
+  it('br shows <br>', () => {
+    expect(message0('html_br')).toContain('<br>');
+  });
 });
