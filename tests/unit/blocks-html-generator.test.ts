@@ -217,6 +217,85 @@ describe('HTML block generator', () => {
     );
   });
 
+  it('emits a table header cell alongside a normal cell, both cascading the border', () => {
+    const table = statement(workspace, 'html_table');
+    const row = statement(workspace, 'html_table_row');
+    const th = statement(workspace, 'html_table_header_cell');
+    const td = statement(workspace, 'html_table_cell');
+    connectText(th, 'Nama');
+    connectText(td, 'Budi');
+    append(th, td);
+    connectStatement(row, 'CELLS', th);
+    connectStatement(table, 'ROWS', row);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <tr>\n' +
+        '    <th style="border:1px solid #000000">Nama</th>\n' +
+        '    <td style="border:1px solid #000000">Budi</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('emits a table caption as the first item inside the table', () => {
+    const table = statement(workspace, 'html_table');
+    const caption = statement(workspace, 'html_caption');
+    const row = statement(workspace, 'html_table_row');
+    const cell = statement(workspace, 'html_table_cell');
+    connectText(caption, 'Jadwal Pelajaran');
+    connectText(cell, 'A');
+    connectStatement(row, 'CELLS', cell);
+    append(caption, row);
+    connectStatement(table, 'ROWS', caption);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <caption>Jadwal Pelajaran</caption>\n' +
+        '  <tr>\n' +
+        '    <td style="border:1px solid #000000">A</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('wraps children in real <nav> and <blockquote> tags', () => {
+    for (const [type, tag] of [
+      ['html_nav', 'nav'],
+      ['html_blockquote', 'blockquote'],
+    ] as const) {
+      workspace.clear();
+      const wrapper = statement(workspace, type);
+      const paragraph = statement(workspace, 'html_paragraph');
+      connectText(paragraph, 'A');
+      connectStatement(wrapper, 'BODY', paragraph);
+
+      expect(generateHtml(workspace).bodyHtml).toBe(`<${tag}>\n  <p>A</p>\n</${tag}>\n`);
+    }
+  });
+
+  it('wraps an image and figcaption inside a <figure>', () => {
+    const figure = statement(workspace, 'html_figure');
+    const image = statement(workspace, 'html_image_url');
+    const caption = statement(workspace, 'html_figcaption');
+    image.setFieldValue('https://x/y.png', 'URL');
+    connectText(caption, 'Keterangan gambar');
+    append(image, caption);
+    connectStatement(figure, 'BODY', image);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<figure>\n' +
+        '  <img src="https://x/y.png" alt="">\n' +
+        '  <figcaption>Keterangan gambar</figcaption>\n' +
+        '</figure>\n',
+    );
+  });
+
+  it('emits a line break', () => {
+    statement(workspace, 'html_br');
+    expect(generateHtml(workspace).bodyHtml).toBe('<br>\n');
+  });
+
   it('emits an indented ordered list', () => {
     const list = statement(workspace, 'html_list_ordered');
     const first = statement(workspace, 'html_list_item');

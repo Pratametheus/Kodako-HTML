@@ -221,6 +221,15 @@ heading lengkap `<h1>`–`<h6>`; daftar bernomor dapat `type`/`start`;
 tautan dapat `target="_blank"`. Lihat
 `docs/superpowers/specs/2026-09-23-html-fidelity-blocks-design.md`.
 
+Fase H (2026-09-23) — bentuk blok & tag tambahan, dipicu laporan user
+bahwa blok kontainer (terutama `<table>` yang headernya jadi lebar
+setelah Fase G) tampil "gemuk"/tidak proporsional dibanding C-block
+Scratch. Semua blok Struktur berbentuk C dipecah jadi format 3 baris
+(header/isi/tag-penutup) — sudah diverifikasi langsung di browser
+sebelum diterapkan — supaya anak blok tersusun rapi ke bawah, bukan
+di samping header. Tujuh blok baru: `<th>`, `<caption>`, `<nav>`,
+`<blockquote>`, `<figure>`+`<figcaption>`, `<br>`.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini

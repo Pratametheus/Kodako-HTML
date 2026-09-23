@@ -157,7 +157,18 @@ function emitChain(
 function emitContainer(
   block: Blockly.Block,
   inputName: string,
-  tag: 'section' | 'ul' | 'ol' | 'header' | 'main' | 'footer' | 'div' | 'tr',
+  tag:
+    | 'section'
+    | 'ul'
+    | 'ol'
+    | 'header'
+    | 'main'
+    | 'footer'
+    | 'div'
+    | 'tr'
+    | 'nav'
+    | 'blockquote'
+    | 'figure',
   depth: number,
   assetIds: string[],
   styleFragments: string[],
@@ -193,6 +204,11 @@ const TABLE_STYLE_BLOCK_TYPES = new Set([
   'html_style_font',
 ]);
 
+const TABLE_CELL_TAGS: Record<string, 'td' | 'th'> = {
+  html_table_cell: 'td',
+  html_table_header_cell: 'th',
+};
+
 function emitTableCellChain(
   block: Blockly.Block | null,
   depth: number,
@@ -203,9 +219,13 @@ function emitTableCellChain(
   let html = '';
   let current = block;
   while (current) {
-    if (current.type === 'html_table_cell') {
+    const cellTag = TABLE_CELL_TAGS[current.type];
+    if (cellTag) {
       const fragments = cellBorder ? [...styleFragments, cellBorder] : styleFragments;
-      html += withStyles(`${indent(depth)}<td>${textInput(current, 'TEXT')}</td>\n`, fragments);
+      html += withStyles(
+        `${indent(depth)}<${cellTag}>${textInput(current, 'TEXT')}</${cellTag}>\n`,
+        fragments,
+      );
     } else if (TABLE_STYLE_BLOCK_TYPES.has(current.type)) {
       const child = current.getInputTargetBlock('BODY');
       if (child) {
@@ -311,6 +331,13 @@ function emitBlock(
       return emitContainer(block, 'CELLS', 'tr', depth, assetIds, styleFragments);
     case 'html_table_cell':
       return withStyles(`${prefix}<td>${textInput(block, 'TEXT')}</td>\n`, styleFragments);
+    case 'html_table_header_cell':
+      return withStyles(`${prefix}<th>${textInput(block, 'TEXT')}</th>\n`, styleFragments);
+    case 'html_caption':
+      return withStyles(
+        `${prefix}<caption>${textInput(block, 'TEXT')}</caption>\n`,
+        styleFragments,
+      );
     case 'html_list_ordered': {
       const type = field(block, 'TYPE');
       const typeAttr = LIST_TYPES.has(type) && type !== '1' ? ` type="${type}"` : '';
@@ -332,6 +359,17 @@ function emitBlock(
       return emitContainer(block, 'BODY', 'main', depth, assetIds, styleFragments);
     case 'html_footer':
       return emitContainer(block, 'BODY', 'footer', depth, assetIds, styleFragments);
+    case 'html_nav':
+      return emitContainer(block, 'BODY', 'nav', depth, assetIds, styleFragments);
+    case 'html_blockquote':
+      return emitContainer(block, 'BODY', 'blockquote', depth, assetIds, styleFragments);
+    case 'html_figure':
+      return emitContainer(block, 'BODY', 'figure', depth, assetIds, styleFragments);
+    case 'html_figcaption':
+      return withStyles(
+        `${prefix}<figcaption>${textInput(block, 'TEXT')}</figcaption>\n`,
+        styleFragments,
+      );
     case 'html_heading': {
       const requestedLevel = field(block, 'LEVEL');
       const level = HEADING_LEVELS.has(requestedLevel) ? requestedLevel : 'h1';
@@ -379,6 +417,8 @@ function emitBlock(
       );
     case 'html_hr':
       return withStyles(`${prefix}<hr>\n`, styleFragments);
+    case 'html_br':
+      return withStyles(`${prefix}<br>\n`, styleFragments);
     case 'html_style_color':
     case 'html_style_bg':
     case 'html_style_align':

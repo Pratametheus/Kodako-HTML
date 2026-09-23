@@ -250,16 +250,22 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | paragraf [teks] | `<p>` |
 | | daftar { item… } | `<ul>` |
 | | item daftar [teks] | `<li>` |
-| | tabel bergaris [tebal/gaya/warna] { baris… } | `<table style="border-collapse:collapse;border:…">` (+ `<td>` ikut bergaris) |
+| | tabel bergaris [tebal/gaya/warna] { baris… } | `<table style="border-collapse:collapse;border:…">` (+ `<td>`/`<th>` ikut bergaris) |
 | | baris tabel { sel… } | `<tr>` |
 | | sel tabel [teks] | `<td>` |
+| | sel judul tabel [teks] | `<th>` |
+| | judul tabel [teks] _(taruh sebagai blok pertama di dalam tabel)_ | `<caption>` |
 | | daftar bernomor [tipe/mulai] { item… } | `<ol type=… start=…>` (hanya ditulis bila bukan default) |
-| | `<header>`/`<main>`/`<footer>` { … } | tag sesuai nama |
+| | `<header>`/`<main>`/`<footer>`/`<nav>` { … } | tag sesuai nama |
+| | kutipan { … } | `<blockquote>…</blockquote>` |
+| | bungkus gambar { … } | `<figure>…</figure>` — isi dengan blok gambar lalu blok keterangan gambar |
+| | keterangan gambar [teks] | `<figcaption>` |
 | Konten | teks [isi] | text node (di-*escape*) |
 | | gambar (aset [a] / URL [u]), teks alt [t], lebar [piksel] | `<img>` (+ `width="…"` bila lebar > 0) |
 | | tautan ke [url] tulisan [teks], tab baru? | `<a>` (+ `target="_blank"` bila dicentang) |
 | | tombol [teks] | `<button>` (tanpa aksi) |
 | | garis pemisah | `<hr>` |
+| | baris baru | `<br>` |
 | Gaya (pembungkus) | `color:` [warna] { … } | `style="color:…"` pada anak |
 | | `background:` [warna] { … } | `style="background:…"` |
 | | `text-align:` [kiri/tengah/kanan] { … } | `style="text-align:…"` |
@@ -286,6 +292,22 @@ langsung) — project lama yang masih menyimpan nilai dropdown lama
 dikonversi otomatis oleh `migrateHtmlWorkspaceJson` saat dibuka (lihat
 §3, pola yang sama dengan pelonggaran skema `activeMode`/`sprite` di
 Fase E).
+
+Fase H (2026-09-23): semua blok Struktur berbentuk C (kontainer dengan
+tag pembuka+isi+penutup) memakai `message0`/`message1`/`message2`
+terpisah (header di baris pertama, `input_statement` di baris kedua,
+tag penutup di baris ketiga) alih-alih satu baris `'<tag> %1 </tag>'`.
+Sebelumnya, Blockly menaruh anak blok **di samping** header dalam satu
+baris yang sama — makin lebar headernya (mis. `<table>` dengan 3
+dropdown border), makin janggal bentuknya. Format 3-baris membuat anak
+blok tersusun rapi ke bawah dengan indentasi bersih, seperti C-block
+Scratch pada umumnya. Blok yang isinya cuma satu nilai teks (`<title>`,
+judul besar, `<p>`, item daftar, `<td>`/`<th>`) sengaja **tidak**
+diubah — satu baris memang bentuk yang tepat untuk itu. Blok Gaya juga
+tidak diubah (di luar cakupan permintaan). Tujuh blok baru: `<th>`,
+`<caption>`, `<nav>`, `<blockquote>`, `<figure>`+`<figcaption>`, dan
+`<br>` — semuanya penambahan blok murni mengikuti pola yang sudah ada,
+tidak ada migrasi yang dibutuhkan.
 
 ### 4.4 Toolbox
 
