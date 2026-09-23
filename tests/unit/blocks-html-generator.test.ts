@@ -294,12 +294,12 @@ describe('HTML block generator', () => {
     });
   });
 
-  it('emits an image at a chosen width and omits width at the natural-size default', () => {
+  it('emits an image with a numeric width attribute and omits it at 0 (natural size)', () => {
     const sized = statement(workspace, 'html_image_url');
     sized.setFieldValue('https://x/y.png', 'URL');
-    sized.setFieldValue('240px', 'WIDTH');
+    sized.setFieldValue(240, 'WIDTH');
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<img src="https://x/y.png" alt="" style="width:240px">\n',
+      '<img src="https://x/y.png" alt="" width="240">\n',
     );
 
     workspace.clear();

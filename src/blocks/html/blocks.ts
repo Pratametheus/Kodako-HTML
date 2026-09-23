@@ -268,20 +268,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_image_asset',
       tooltip: 'Menampilkan gambar dari pustaka aset (<img>).',
-      message0: '<img src= %1 alt= %2 ukuran %3 >',
+      message0: '<img src= %1 alt= %2 lebar %3 piksel >',
       args0: [
         { type: 'field_dropdown', name: 'ASSET', options: () => getAssetOptions() },
         { type: 'field_input', name: 'ALT', text: '' },
-        {
-          type: 'field_dropdown',
-          name: 'WIDTH',
-          options: [
-            ['asli', ''],
-            ['kecil', '120px'],
-            ['sedang', '240px'],
-            ['besar', '480px'],
-          ],
-        },
+        { type: 'field_number', name: 'WIDTH', value: 0, min: 0, precision: 1 },
       ],
       previousStatement: null,
       nextStatement: null,
@@ -290,20 +281,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_image_url',
       tooltip: 'Menampilkan gambar dari alamat web (<img>).',
-      message0: '<img src= %1 alt= %2 ukuran %3 >',
+      message0: '<img src= %1 alt= %2 lebar %3 piksel >',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
         { type: 'field_input', name: 'ALT', text: '' },
-        {
-          type: 'field_dropdown',
-          name: 'WIDTH',
-          options: [
-            ['asli', ''],
-            ['kecil', '120px'],
-            ['sedang', '240px'],
-            ['besar', '480px'],
-          ],
-        },
+        { type: 'field_number', name: 'WIDTH', value: 0, min: 0, precision: 1 },
       ],
       previousStatement: null,
       nextStatement: null,

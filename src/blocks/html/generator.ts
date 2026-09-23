@@ -32,7 +32,6 @@ const JUSTIFY_VALUES = new Set([
 const SPACING_SIZES = new Set(['8px', '16px', '32px']);
 const RADIUS_SIZES = new Set(['8px', '16px', '9999px']);
 const FONTS = new Set(['inherit', 'Georgia, serif', '"Courier New", monospace']);
-const IMAGE_WIDTHS = new Set(['120px', '240px', '480px']);
 const BORDER_WIDTHS = new Set(['1px', '2px', '4px', '0']);
 const BORDER_STYLES = new Set(['solid', 'dashed', 'dotted']);
 
@@ -266,19 +265,19 @@ function emitBlock(
     case 'html_image_asset': {
       const assetId = field(block, 'ASSET');
       if (assetId) assetIds.push(assetId);
-      const width = field(block, 'WIDTH');
-      const sizeFragment = IMAGE_WIDTHS.has(width) ? [`width:${width}`] : [];
+      const width = Number(field(block, 'WIDTH'));
+      const widthAttr = Number.isFinite(width) && width > 0 ? ` width="${width}"` : '';
       return withStyles(
-        `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
-        [...sizeFragment, ...styleFragments],
+        `${prefix}<img src="${escapeHtmlAttr(`asset:${assetId}`)}" alt="${escapeHtmlAttr(field(block, 'ALT'))}"${widthAttr}>\n`,
+        styleFragments,
       );
     }
     case 'html_image_url': {
-      const width = field(block, 'WIDTH');
-      const sizeFragment = IMAGE_WIDTHS.has(width) ? [`width:${width}`] : [];
+      const width = Number(field(block, 'WIDTH'));
+      const widthAttr = Number.isFinite(width) && width > 0 ? ` width="${width}"` : '';
       return withStyles(
-        `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}">\n`,
-        [...sizeFragment, ...styleFragments],
+        `${prefix}<img src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}" alt="${escapeHtmlAttr(field(block, 'ALT'))}"${widthAttr}>\n`,
+        styleFragments,
       );
     }
     case 'html_link':
