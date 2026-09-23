@@ -130,6 +130,16 @@ describe('HTML block labels use real tags', () => {
     expect(message0('html_list_ordered')).toContain('<ol>');
     expect(message0('html_list_ordered')).toContain('</ol>');
   });
+  it('ordered list exposes a TYPE dropdown and numeric START field, both defaulting to plain numbering', () => {
+    const ws = new Blockly.Workspace();
+    const block = ws.newBlock('html_list_ordered');
+    const type = block.getField('TYPE')!;
+    const options = (type as unknown as { getOptions: () => [string, string][] }).getOptions();
+    expect(options.map((o) => o[1])).toEqual(['1', 'A', 'a', 'I', 'i']);
+    expect(type.getValue()).toBe('1');
+    expect(block.getField('START')!.getValue()).toBe(1);
+    ws.dispose();
+  });
   it('header, main, and footer show their real tags', () => {
     expect(message0('html_header')).toContain('<header>');
     expect(message0('html_main')).toContain('<main>');
@@ -160,19 +170,25 @@ describe('HTML block labels use real tags', () => {
     expect(m).toContain('<a href=');
     expect(m).toContain('</a>');
   });
+  it('link exposes a NEW_TAB checkbox defaulting to unchecked', () => {
+    const ws = new Blockly.Workspace();
+    const field = ws.newBlock('html_link').getField('NEW_TAB')!;
+    expect(field.getValue()).toBe('FALSE');
+    ws.dispose();
+  });
   it('button shows <button> … </button>', () => {
     expect(message0('html_button')).toContain('<button>');
   });
   it('hr shows <hr>', () => {
     expect(message0('html_hr')).toContain('<hr>');
   });
-  it('heading level dropdown labels are the h-tags', () => {
+  it('heading level dropdown labels are the h-tags, full h1-h6', () => {
     const ws = new Blockly.Workspace();
     const b = ws.newBlock('html_heading');
     const dropdown = b.getField('LEVEL')!;
     const options = (dropdown as unknown as { getOptions: () => [string, string][] }).getOptions();
-    expect(options.map((o) => o[0])).toEqual(['<h1>', '<h2>', '<h3>']);
-    expect(options.map((o) => o[1])).toEqual(['h1', 'h2', 'h3']); // values unchanged
+    expect(options.map((o) => o[0])).toEqual(['<h1>', '<h2>', '<h3>', '<h4>', '<h5>', '<h6>']);
+    expect(options.map((o) => o[1])).toEqual(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
     ws.dispose();
   });
   it('row (flex) shows a <div> and exposes 5 justify options', () => {

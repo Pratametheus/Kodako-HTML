@@ -7,7 +7,7 @@ export type GeneratedHtml = {
   assetIds: string[];
 };
 
-const HEADING_LEVELS = new Set(['h1', 'h2', 'h3']);
+const HEADING_LEVELS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6']);
 const COLORS = new Set([
   '#000000',
   '#ffffff',
@@ -34,6 +34,7 @@ const RADIUS_SIZES = new Set(['8px', '16px', '9999px']);
 const FONTS = new Set(['inherit', 'Georgia, serif', '"Courier New", monospace']);
 const BORDER_WIDTHS = new Set(['1px', '2px', '4px', '0']);
 const BORDER_STYLES = new Set(['solid', 'dashed', 'dotted']);
+const LIST_TYPES = new Set(['1', 'A', 'a', 'I', 'i']);
 
 export function registerHtmlGenerator(): void {
   // Registration is intentionally a no-op: generateHtml is a tree walker.
@@ -160,10 +161,11 @@ function emitContainer(
   depth: number,
   assetIds: string[],
   styleFragments: string[],
+  attrs = '',
 ): string {
   const prefix = indent(depth);
   const children = emitChain(block.getInputTargetBlock(inputName), depth + 1, assetIds);
-  return withStyles(`${prefix}<${tag}>\n${children}${prefix}</${tag}>\n`, styleFragments);
+  return withStyles(`${prefix}<${tag}${attrs}>\n${children}${prefix}</${tag}>\n`, styleFragments);
 }
 
 function tableBorderFragment(block: Blockly.Block): string {
@@ -240,8 +242,21 @@ function emitBlock(
       return emitContainer(block, 'CELLS', 'tr', depth, assetIds, styleFragments);
     case 'html_table_cell':
       return withStyles(`${prefix}<td>${textInput(block, 'TEXT')}</td>\n`, styleFragments);
-    case 'html_list_ordered':
-      return emitContainer(block, 'ITEMS', 'ol', depth, assetIds, styleFragments);
+    case 'html_list_ordered': {
+      const type = field(block, 'TYPE');
+      const typeAttr = LIST_TYPES.has(type) && type !== '1' ? ` type="${type}"` : '';
+      const start = Number(field(block, 'START'));
+      const startAttr = Number.isFinite(start) && start !== 1 ? ` start="${start}"` : '';
+      return emitContainer(
+        block,
+        'ITEMS',
+        'ol',
+        depth,
+        assetIds,
+        styleFragments,
+        `${typeAttr}${startAttr}`,
+      );
+    }
     case 'html_header':
       return emitContainer(block, 'BODY', 'header', depth, assetIds, styleFragments);
     case 'html_main':
@@ -280,11 +295,14 @@ function emitBlock(
         styleFragments,
       );
     }
-    case 'html_link':
+    case 'html_link': {
+      const newTab = field(block, 'NEW_TAB') === 'TRUE';
+      const targetAttr = newTab ? ' target="_blank"' : '';
       return withStyles(
-        `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}">${escapeHtmlText(field(block, 'LABEL'))}</a>\n`,
+        `${prefix}<a href="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"${targetAttr}>${escapeHtmlText(field(block, 'LABEL'))}</a>\n`,
         styleFragments,
       );
+    }
     case 'html_button':
       return withStyles(
         `${prefix}<button type="button">${textInput(block, 'TEXT')}</button>\n`,

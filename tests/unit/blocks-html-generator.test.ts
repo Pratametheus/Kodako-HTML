@@ -58,6 +58,14 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<h1>Judul</h1>\n');
   });
 
+  it.each(['h4', 'h5', 'h6'])('emits heading level %s', (level) => {
+    const heading = statement(workspace, 'html_heading');
+    heading.setFieldValue(level, 'LEVEL');
+    connectText(heading, 'Judul');
+
+    expect(generateHtml(workspace).bodyHtml).toBe(`<${level}>Judul</${level}>\n`);
+  });
+
   it('indents section children by two spaces', () => {
     const section = statement(workspace, 'html_section');
     const first = statement(workspace, 'html_paragraph');
@@ -180,6 +188,22 @@ describe('HTML block generator', () => {
     connectStatement(list, 'ITEMS', first);
 
     expect(generateHtml(workspace).bodyHtml).toBe('<ol>\n  <li>x</li>\n  <li>y</li>\n</ol>\n');
+  });
+
+  it('emits ordered list type and start attributes when non-default', () => {
+    const list = statement(workspace, 'html_list_ordered');
+    list.setFieldValue('A', 'TYPE');
+    list.setFieldValue(5, 'START');
+    const item = statement(workspace, 'html_list_item');
+    connectText(item, 'x');
+    connectStatement(list, 'ITEMS', item);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<ol type="A" start="5">\n  <li>x</li>\n</ol>\n');
+  });
+
+  it('omits type/start attributes at their defaults (angka/1)', () => {
+    const list = statement(workspace, 'html_list_ordered');
+    expect(generateHtml(workspace).bodyHtml).toBe('<ol>\n</ol>\n');
   });
 
   it.each(['html_header', 'html_main', 'html_footer'])(
@@ -338,6 +362,17 @@ describe('HTML block generator', () => {
     link.setFieldValue('klik', 'LABEL');
 
     expect(generateHtml(workspace).bodyHtml).toBe('<a href="https://a.b">klik</a>\n');
+  });
+
+  it('adds target="_blank" when the new-tab checkbox is checked', () => {
+    const link = statement(workspace, 'html_link');
+    link.setFieldValue('https://a.b', 'URL');
+    link.setFieldValue('klik', 'LABEL');
+    link.setFieldValue(true, 'NEW_TAB');
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<a href="https://a.b" target="_blank">klik</a>\n',
+    );
   });
 
   it.each([
