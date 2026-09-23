@@ -283,9 +283,9 @@ test('table blocks render a bordered table end to end', async ({ page }) => {
   await page.getByRole('button', { name: 'Jalankan' }).click();
   await page.getByRole('tab', { name: 'Lihat Kode' }).click();
   const code = page.locator('.html-mode__code, [class*="code"]').first();
-  await expect(code).toContainText('<table border="1">');
-  await expect(code).toContainText('<td>Senin</td>');
-  await expect(code).toContainText('<td>Selasa</td>');
+  await expect(code).toContainText('<table style="border-collapse:collapse;border:1px solid #000000">');
+  await expect(code).toContainText('<td style="border:1px solid #000000">Senin</td>');
+  await expect(code).toContainText('<td style="border:1px solid #000000">Selasa</td>');
 });
 
 test('quick-win blocks (ol, header/footer, image size, spacing styles) render end to end', async ({
