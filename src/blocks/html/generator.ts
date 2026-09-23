@@ -179,37 +179,106 @@ function tableBorderFragment(block: Blockly.Block): string {
   return `border:${w} ${s} ${c}`;
 }
 
-function emitTableCell(block: Blockly.Block, depth: number, cellBorder: string): string {
-  const prefix = indent(depth);
-  return withStyles(
-    `${prefix}<td>${textInput(block, 'TEXT')}</td>\n`,
-    cellBorder ? [cellBorder] : [],
-  );
-}
+const TABLE_STYLE_BLOCK_TYPES = new Set([
+  'html_style_color',
+  'html_style_bg',
+  'html_style_align',
+  'html_style_size',
+  'html_style_bold',
+  'html_style_italic',
+  'html_style_padding',
+  'html_style_margin',
+  'html_style_radius',
+  'html_style_shadow',
+  'html_style_font',
+]);
 
-function emitTableRow(block: Blockly.Block, depth: number, cellBorder: string): string {
-  const prefix = indent(depth);
-  let cells = '';
-  let cell = block.getInputTargetBlock('CELLS');
-  while (cell) {
-    cells += emitTableCell(cell, depth + 1, cellBorder);
-    cell = cell.getNextBlock();
+function emitTableCellChain(
+  block: Blockly.Block | null,
+  depth: number,
+  assetIds: string[],
+  cellBorder: string,
+  styleFragments: string[] = [],
+): string {
+  let html = '';
+  let current = block;
+  while (current) {
+    if (current.type === 'html_table_cell') {
+      const fragments = cellBorder ? [...styleFragments, cellBorder] : styleFragments;
+      html += withStyles(`${indent(depth)}<td>${textInput(current, 'TEXT')}</td>\n`, fragments);
+    } else if (TABLE_STYLE_BLOCK_TYPES.has(current.type)) {
+      const child = current.getInputTargetBlock('BODY');
+      if (child) {
+        html += emitTableCellChain(child, depth, assetIds, cellBorder, [
+          ...styleFragments,
+          styleFragment(current),
+        ]);
+      }
+    } else {
+      html += emitBlock(current, depth, assetIds, styleFragments);
+    }
+    current = current.getNextBlock();
   }
-  return `${prefix}<tr>\n${cells}${prefix}</tr>\n`;
+  return html;
 }
 
-function emitTable(block: Blockly.Block, depth: number, styleFragments: string[]): string {
+function emitTableRow(
+  block: Blockly.Block,
+  depth: number,
+  assetIds: string[],
+  cellBorder: string,
+  styleFragments: string[],
+): string {
+  const prefix = indent(depth);
+  const cells = emitTableCellChain(
+    block.getInputTargetBlock('CELLS'),
+    depth + 1,
+    assetIds,
+    cellBorder,
+  );
+  return withStyles(`${prefix}<tr>\n${cells}${prefix}</tr>\n`, styleFragments);
+}
+
+function emitTableRowChain(
+  block: Blockly.Block | null,
+  depth: number,
+  assetIds: string[],
+  cellBorder: string,
+  styleFragments: string[] = [],
+): string {
+  let html = '';
+  let current = block;
+  while (current) {
+    if (current.type === 'html_table_row') {
+      html += emitTableRow(current, depth, assetIds, cellBorder, styleFragments);
+    } else if (TABLE_STYLE_BLOCK_TYPES.has(current.type)) {
+      const child = current.getInputTargetBlock('BODY');
+      if (child) {
+        html += emitTableRowChain(child, depth, assetIds, cellBorder, [
+          ...styleFragments,
+          styleFragment(current),
+        ]);
+      }
+    } else {
+      html += emitBlock(current, depth, assetIds, styleFragments);
+    }
+    current = current.getNextBlock();
+  }
+  return html;
+}
+
+function emitTable(
+  block: Blockly.Block,
+  depth: number,
+  assetIds: string[],
+  styleFragments: string[],
+): string {
   const prefix = indent(depth);
   const border = tableBorderFragment(block);
   const tableFragments = border
     ? [...styleFragments, 'border-collapse:collapse', border]
     : styleFragments;
-  let rows = '';
-  let row = block.getInputTargetBlock('ROWS');
-  while (row) {
-    rows += emitTableRow(row, depth + 1, border);
-    row = row.getNextBlock();
-  }
+  const rows = emitTableRowChain(block.getInputTargetBlock('ROWS'), depth + 1, assetIds, border);
   return withStyles(`${prefix}<table>\n${rows}${prefix}</table>\n`, tableFragments);
 }
 
@@ -237,7 +306,7 @@ function emitBlock(
     case 'html_list':
       return emitContainer(block, 'ITEMS', 'ul', depth, assetIds, styleFragments);
     case 'html_table':
-      return emitTable(block, depth, styleFragments);
+      return emitTable(block, depth, assetIds, styleFragments);
     case 'html_table_row':
       return emitContainer(block, 'CELLS', 'tr', depth, assetIds, styleFragments);
     case 'html_table_cell':

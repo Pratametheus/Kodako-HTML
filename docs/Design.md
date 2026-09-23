@@ -256,7 +256,7 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | daftar bernomor [tipe/mulai] { item… } | `<ol type=… start=…>` (hanya ditulis bila bukan default) |
 | | `<header>`/`<main>`/`<footer>` { … } | tag sesuai nama |
 | Konten | teks [isi] | text node (di-*escape*) |
-| | gambar (aset [a] / URL [u]), teks alt [t] | `<img>` |
+| | gambar (aset [a] / URL [u]), teks alt [t], lebar [piksel] | `<img>` (+ `width="…"` bila lebar > 0) |
 | | tautan ke [url] tulisan [teks], tab baru? | `<a>` (+ `target="_blank"` bila dicentang) |
 | | tombol [teks] | `<button>` (tanpa aksi) |
 | | garis pemisah | `<hr>` |

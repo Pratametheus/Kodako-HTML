@@ -26,7 +26,7 @@ function migrateImageWidthField(node: BlockNode): BlockNode {
     (node.type === 'html_image_asset' || node.type === 'html_image_url') &&
     node.fields &&
     typeof node.fields.WIDTH === 'string' &&
-    node.fields.WIDTH in LEGACY_IMAGE_WIDTHS
+    Object.hasOwn(LEGACY_IMAGE_WIDTHS, node.fields.WIDTH)
   ) {
     return {
       ...node,
@@ -48,7 +48,7 @@ function migrateBlockNode(node: BlockNode | undefined): BlockNode | undefined {
   if (current.inputs) {
     const nextInputs: typeof current.inputs = {};
     for (const [key, value] of Object.entries(current.inputs)) {
-      nextInputs[key] = value.block ? { ...value, block: migrateBlockNode(value.block) } : value;
+      nextInputs[key] = value?.block ? { ...value, block: migrateBlockNode(value.block) } : value;
     }
     current = { ...current, inputs: nextInputs };
   }
@@ -67,8 +67,10 @@ function migrateBlockNode(node: BlockNode | undefined): BlockNode | undefined {
  * plain pixel number) to its numeric equivalent, anywhere in the block tree
  * (not just top-level).
  *
- * Pure and idempotent; any missing/oddly-shaped node is treated as "nothing
- * to migrate" and `raw` is returned untouched.
+ * Idempotent; the `html_page` lift mutates the lifted block's `x`/`y` in
+ * place (pre-existing behavior), everything else is pure. Any
+ * missing/oddly-shaped node is treated as "nothing to migrate" and `raw` is
+ * returned untouched.
  */
 export function migrateHtmlWorkspaceJson(raw: Record<string, unknown>): Record<string, unknown> {
   const blocksHolder = (raw as { blocks?: { blocks?: unknown } }).blocks;

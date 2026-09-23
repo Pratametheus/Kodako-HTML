@@ -178,6 +178,45 @@ describe('HTML block generator', () => {
     );
   });
 
+  it('composes a Gaya wrapper around a single table cell without losing its border', () => {
+    const table = statement(workspace, 'html_table');
+    const row = statement(workspace, 'html_table_row');
+    const color = statement(workspace, 'html_style_color');
+    const cell = statement(workspace, 'html_table_cell');
+    color.setFieldValue('#e53935', 'COLOR');
+    connectText(cell, 'Merah');
+    connectStatement(color, 'BODY', cell);
+    connectStatement(row, 'CELLS', color);
+    connectStatement(table, 'ROWS', row);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <tr>\n' +
+        '    <td style="color:#e53935;border:1px solid #000000">Merah</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('composes a Gaya wrapper around a whole table row', () => {
+    const table = statement(workspace, 'html_table');
+    const bold = statement(workspace, 'html_style_bold');
+    const row = statement(workspace, 'html_table_row');
+    const cell = statement(workspace, 'html_table_cell');
+    connectText(cell, 'B');
+    connectStatement(row, 'CELLS', cell);
+    connectStatement(bold, 'BODY', row);
+    connectStatement(table, 'ROWS', bold);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <tr style="font-weight:bold">\n' +
+        '    <td style="border:1px solid #000000">B</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
   it('emits an indented ordered list', () => {
     const list = statement(workspace, 'html_list_ordered');
     const first = statement(workspace, 'html_list_item');

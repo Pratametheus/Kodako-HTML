@@ -449,7 +449,7 @@ test('table border, numeric image width, ordered-list type/start, and link targe
   await page.getByRole('button', { name: 'Jalankan' }).click();
   await page.getByRole('tab', { name: 'Lihat Kode' }).click();
   const code = page.locator('.html-mode__code, [class*="code"]').first();
-  await expect(code).toContainText('border:2px dashed #1e88e5');
+  await expect(code).toContainText('<td style="border:2px dashed #1e88e5">A</td>');
   await expect(code).toContainText('width="300"');
   await expect(code).toContainText('<ol type="A" start="5">');
   await expect(code).toContainText('target="_blank"');

@@ -127,7 +127,7 @@ export function registerHtmlBlocks(): void {
     },
     {
       type: 'html_heading',
-      tooltip: 'Judul bagian dengan ukuran h1, h2, atau h3 (<h1>).',
+      tooltip: 'Judul bagian dengan ukuran h1 sampai h6 (<h1>).',
       message0: '%1 %2',
       args0: [
         {
