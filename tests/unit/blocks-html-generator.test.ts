@@ -84,7 +84,7 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<ul>\n  <li>x</li>\n  <li>y</li>\n</ul>\n');
   });
 
-  it('emits a table with border=1 and nested rows/cells', () => {
+  it('emits a table with the default thin black border, cascading onto every cell', () => {
     const table = statement(workspace, 'html_table');
     const row1 = statement(workspace, 'html_table_row');
     const cellA = statement(workspace, 'html_table_cell');
@@ -96,10 +96,10 @@ describe('HTML block generator', () => {
     connectStatement(table, 'ROWS', row1);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<table border="1">\n' +
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
         '  <tr>\n' +
-        '    <td>Senin</td>\n' +
-        '    <td>Selasa</td>\n' +
+        '    <td style="border:1px solid #000000">Senin</td>\n' +
+        '    <td style="border:1px solid #000000">Selasa</td>\n' +
         '  </tr>\n' +
         '</table>\n',
     );
@@ -119,20 +119,54 @@ describe('HTML block generator', () => {
     connectStatement(table, 'ROWS', row1);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<table border="1">\n' +
-        '  <tr>\n    <td>A</td>\n  </tr>\n' +
-        '  <tr>\n    <td>B</td>\n  </tr>\n' +
+      '<table style="border-collapse:collapse;border:1px solid #000000">\n' +
+        '  <tr>\n    <td style="border:1px solid #000000">A</td>\n  </tr>\n' +
+        '  <tr>\n    <td style="border:1px solid #000000">B</td>\n  </tr>\n' +
         '</table>\n',
     );
   });
 
-  it('applies a style wrapper to the whole table, not each row', () => {
+  it('customizes table border width, style, and color, cascading onto every cell', () => {
+    const table = statement(workspace, 'html_table');
+    table.setFieldValue('2px', 'BORDER_WIDTH');
+    table.setFieldValue('dashed', 'BORDER_STYLE');
+    table.setFieldValue('#1e88e5', 'BORDER_COLOR');
+    const row = statement(workspace, 'html_table_row');
+    const cell = statement(workspace, 'html_table_cell');
+    connectText(cell, 'A');
+    connectStatement(row, 'CELLS', cell);
+    connectStatement(table, 'ROWS', row);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table style="border-collapse:collapse;border:2px dashed #1e88e5">\n' +
+        '  <tr>\n' +
+        '    <td style="border:2px dashed #1e88e5">A</td>\n' +
+        '  </tr>\n' +
+        '</table>\n',
+    );
+  });
+
+  it('omits all border styling when width is set to "tidak ada"', () => {
+    const table = statement(workspace, 'html_table');
+    table.setFieldValue('0', 'BORDER_WIDTH');
+    const row = statement(workspace, 'html_table_row');
+    const cell = statement(workspace, 'html_table_cell');
+    connectText(cell, 'A');
+    connectStatement(row, 'CELLS', cell);
+    connectStatement(table, 'ROWS', row);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<table>\n  <tr>\n    <td>A</td>\n  </tr>\n</table>\n',
+    );
+  });
+
+  it('applies a style wrapper to the whole table only, not each cell', () => {
     const bold = statement(workspace, 'html_style_bold');
     const table = statement(workspace, 'html_table');
     connectStatement(bold, 'BODY', table);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<table border="1" style="font-weight:bold">\n</table>\n',
+      '<table style="font-weight:bold;border-collapse:collapse;border:1px solid #000000">\n</table>\n',
     );
   });
 

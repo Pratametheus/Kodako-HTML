@@ -175,8 +175,30 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_table',
       tooltip: 'Tabel untuk menyusun data dalam baris dan kolom (<table>), bergaris.',
-      message0: '<table> %1 </table>',
-      args0: [{ type: 'input_statement', name: 'ROWS' }],
+      message0: '<table> garis: %1 %2 %3 %4 </table>',
+      args0: [
+        {
+          type: 'field_dropdown',
+          name: 'BORDER_WIDTH',
+          options: [
+            ['tipis', '1px'],
+            ['sedang', '2px'],
+            ['tebal', '4px'],
+            ['tidak ada', '0'],
+          ],
+        },
+        {
+          type: 'field_dropdown',
+          name: 'BORDER_STYLE',
+          options: [
+            ['penuh', 'solid'],
+            ['putus-putus', 'dashed'],
+            ['titik-titik', 'dotted'],
+          ],
+        },
+        { type: 'field_dropdown', name: 'BORDER_COLOR', options: COLOR_OPTIONS },
+        { type: 'input_statement', name: 'ROWS' },
+      ],
       previousStatement: null,
       nextStatement: null,
       style: 'structure_blocks',

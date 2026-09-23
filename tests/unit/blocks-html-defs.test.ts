@@ -106,6 +106,26 @@ describe('HTML block labels use real tags', () => {
     expect(message0('html_table_row')).toContain('<tr>');
     expect(message0('html_table_cell')).toContain('<td>');
   });
+  it('table exposes border width/style/color controls defaulting to a visible thin black border', () => {
+    const ws = new Blockly.Workspace();
+    const table = ws.newBlock('html_table');
+    const width = table.getField('BORDER_WIDTH')!;
+    const widthOptions = (
+      width as unknown as { getOptions: () => [string, string][] }
+    ).getOptions();
+    expect(widthOptions.map((o) => o[1])).toEqual(['1px', '2px', '4px', '0']);
+    expect(width.getValue()).toBe('1px');
+
+    const style = table.getField('BORDER_STYLE')!;
+    const styleOptions = (
+      style as unknown as { getOptions: () => [string, string][] }
+    ).getOptions();
+    expect(styleOptions.map((o) => o[1])).toEqual(['solid', 'dashed', 'dotted']);
+    expect(style.getValue()).toBe('solid');
+
+    expect(table.getField('BORDER_COLOR')!.getValue()).toBe('#000000');
+    ws.dispose();
+  });
   it('ordered list shows <ol> … </ol>', () => {
     expect(message0('html_list_ordered')).toContain('<ol>');
     expect(message0('html_list_ordered')).toContain('</ol>');

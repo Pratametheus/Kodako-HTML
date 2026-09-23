@@ -33,6 +33,8 @@ const SPACING_SIZES = new Set(['8px', '16px', '32px']);
 const RADIUS_SIZES = new Set(['8px', '16px', '9999px']);
 const FONTS = new Set(['inherit', 'Georgia, serif', '"Courier New", monospace']);
 const IMAGE_WIDTHS = new Set(['120px', '240px', '480px']);
+const BORDER_WIDTHS = new Set(['1px', '2px', '4px', '0']);
+const BORDER_STYLES = new Set(['solid', 'dashed', 'dotted']);
 
 export function registerHtmlGenerator(): void {
   // Registration is intentionally a no-op: generateHtml is a tree walker.
@@ -165,15 +167,49 @@ function emitContainer(
   return withStyles(`${prefix}<${tag}>\n${children}${prefix}</${tag}>\n`, styleFragments);
 }
 
-function emitTable(
-  block: Blockly.Block,
-  depth: number,
-  assetIds: string[],
-  styleFragments: string[],
-): string {
+function tableBorderFragment(block: Blockly.Block): string {
+  const width = field(block, 'BORDER_WIDTH');
+  const w = BORDER_WIDTHS.has(width) ? width : '1px';
+  if (w === '0') return '';
+  const style = field(block, 'BORDER_STYLE');
+  const s = BORDER_STYLES.has(style) ? style : 'solid';
+  const color = field(block, 'BORDER_COLOR');
+  const c = COLORS.has(color) ? color : '#000000';
+  return `border:${w} ${s} ${c}`;
+}
+
+function emitTableCell(block: Blockly.Block, depth: number, cellBorder: string): string {
   const prefix = indent(depth);
-  const rows = emitChain(block.getInputTargetBlock('ROWS'), depth + 1, assetIds);
-  return withStyles(`${prefix}<table border="1">\n${rows}${prefix}</table>\n`, styleFragments);
+  return withStyles(
+    `${prefix}<td>${textInput(block, 'TEXT')}</td>\n`,
+    cellBorder ? [cellBorder] : [],
+  );
+}
+
+function emitTableRow(block: Blockly.Block, depth: number, cellBorder: string): string {
+  const prefix = indent(depth);
+  let cells = '';
+  let cell = block.getInputTargetBlock('CELLS');
+  while (cell) {
+    cells += emitTableCell(cell, depth + 1, cellBorder);
+    cell = cell.getNextBlock();
+  }
+  return `${prefix}<tr>\n${cells}${prefix}</tr>\n`;
+}
+
+function emitTable(block: Blockly.Block, depth: number, styleFragments: string[]): string {
+  const prefix = indent(depth);
+  const border = tableBorderFragment(block);
+  const tableFragments = border
+    ? [...styleFragments, 'border-collapse:collapse', border]
+    : styleFragments;
+  let rows = '';
+  let row = block.getInputTargetBlock('ROWS');
+  while (row) {
+    rows += emitTableRow(row, depth + 1, border);
+    row = row.getNextBlock();
+  }
+  return withStyles(`${prefix}<table>\n${rows}${prefix}</table>\n`, tableFragments);
 }
 
 function emitBlock(
@@ -200,7 +236,7 @@ function emitBlock(
     case 'html_list':
       return emitContainer(block, 'ITEMS', 'ul', depth, assetIds, styleFragments);
     case 'html_table':
-      return emitTable(block, depth, assetIds, styleFragments);
+      return emitTable(block, depth, styleFragments);
     case 'html_table_row':
       return emitContainer(block, 'CELLS', 'tr', depth, assetIds, styleFragments);
     case 'html_table_cell':
