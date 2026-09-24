@@ -51,6 +51,8 @@ function field(block: Blockly.Block, name: string): string {
 function textInput(block: Blockly.Block, inputName: string): string {
   const target = block.getInputTargetBlock(inputName);
   if (!target) return escapeHtmlText(field(block, inputName));
+  if (target.type === 'html_strong') return `<strong>${textInput(target, 'TEXT')}</strong>`;
+  if (target.type === 'html_em') return `<em>${textInput(target, 'TEXT')}</em>`;
   const value =
     target.type === 'html_text'
       ? field(target, 'VALUE')
