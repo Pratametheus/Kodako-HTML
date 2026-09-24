@@ -571,3 +571,43 @@ test('th/caption, nav, blockquote, figure/figcaption, and br render end to end',
   await expect(code).toContainText('<figure>');
   await expect(code).toContainText('<figcaption>Foto</figcaption>');
 });
+
+test('strong/em render as real inline tags inside a paragraph', async ({ page }) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_paragraph',
+              x: 20,
+              y: 20,
+              inputs: {
+                TEXT: {
+                  block: {
+                    type: 'html_strong',
+                    inputs: {
+                      TEXT: { shadow: { type: 'html_text', fields: { VALUE: 'Dunia' } } },
+                    },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      B.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('<p><strong>Dunia</strong></p>');
+});

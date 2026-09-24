@@ -261,6 +261,8 @@ blok kerangka dokumen untuk ditampilkan di tab).
 | | bungkus gambar { … } | `<figure>…</figure>` — isi dengan blok gambar lalu blok keterangan gambar |
 | | keterangan gambar [teks] | `<figcaption>` |
 | Konten | teks [isi] | text node (di-*escape*) |
+| | tebal [teks di dalam] | `<strong>…</strong>` — ditaruh di slot teks mana pun |
+| | miring [teks di dalam] | `<em>…</em>` — ditaruh di slot teks mana pun, bisa disusun bersarang dengan tebal |
 | | gambar (aset [a] / URL [u]), teks alt [t], lebar [piksel] | `<img>` (+ `width="…"` bila lebar > 0) |
 | | tautan ke [url] tulisan [teks], tab baru? | `<a>` (+ `target="_blank"` bila dicentang) |
 | | tombol [teks] | `<button>` (tanpa aksi) |
@@ -308,6 +310,26 @@ tidak diubah (di luar cakupan permintaan). Tujuh blok baru: `<th>`,
 `<caption>`, `<nav>`, `<blockquote>`, `<figure>`+`<figcaption>`, dan
 `<br>` — semuanya penambahan blok murni mengikuti pola yang sudah ada,
 tidak ada migrasi yang dibutuhkan.
+
+Fase I (2026-09-24): label `html_text` diganti dari `<>` jadi `" … "`
+(dia bukan tag HTML, cuma pembawa nilai string — labelnya sekarang tidak
+menyesatkan). Dua blok Konten baru, `html_strong`/`html_em`, menghasilkan
+tag literal `<strong>`/`<em>` — ini **bukan** blok berdiri sendiri,
+melainkan perluasan `textInput()` (helper generator yang dipakai semua
+slot `input_value TEXT` yang sudah ada) supaya mengenali kedua tipe blok
+ini secara **rekursif** dan membungkus hasilnya dengan tag literal,
+sehingga bisa ditaruh di slot teks mana pun (paragraf, heading, `<li>`,
+`<td>`/`<th>`, `<caption>`, `<figcaption>`, tombol, label tautan) tanpa
+menyentuh definisi blok-blok itu, dan bisa disusun bersarang
+(`<strong><em>teks</em></strong>`). Anak akhirnya tetap melewati
+`escapeHtmlText` di titik paling dalam — tidak ada pelonggaran keamanan.
+Blok Gaya `html_style_bold`/`html_style_italic` (pembungkus CSS untuk
+satu blok/section utuh) **tidak diubah** — keduanya kasus pakai yang
+beda dari blok inline baru ini. **Batasan yang disengaja**: belum ada
+mekanisme gabung-teks, jadi satu slot teks cuma bisa diisi teks polos
+ATAU `<strong>`/`<em>` (boleh bersarang), belum bisa mencampur keduanya
+dalam satu kalimat (mis. "Halo **Dunia**"). Lihat
+`docs/superpowers/specs/2026-09-23-inline-strong-em-blocks-design.md`.
 
 ### 4.4 Toolbox
 

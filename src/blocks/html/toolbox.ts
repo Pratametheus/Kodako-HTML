@@ -51,6 +51,8 @@ export const htmlToolbox: Blockly.utils.toolbox.ToolboxDefinition = {
       },
       contents: [
         { kind: 'block', type: 'html_text' },
+        { kind: 'block', type: 'html_strong', inputs: { TEXT: textShadow() } },
+        { kind: 'block', type: 'html_em', inputs: { TEXT: textShadow() } },
         { kind: 'block', type: 'html_image_asset' },
         { kind: 'block', type: 'html_image_url' },
         { kind: 'block', type: 'html_link' },

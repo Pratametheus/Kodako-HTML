@@ -230,6 +230,14 @@ sebelum diterapkan — supaya anak blok tersusun rapi ke bawah, bukan
 di samping header. Tujuh blok baru: `<th>`, `<caption>`, `<nav>`,
 `<blockquote>`, `<figure>`+`<figcaption>`, `<br>`.
 
+Fase I (2026-09-24) — label `html_text` diganti `<>` -> `" … "` (bukan
+tag HTML, jangan tampil seperti satu). Dua blok Konten baru
+`html_strong`/`html_em` menghasilkan tag literal `<strong>`/`<em>` lewat
+perluasan rekursif `textInput()`, bisa ditaruh di slot teks mana pun
+yang sudah ada dan disusun bersarang. Blok Gaya bold/italic (pembungkus
+CSS blok utuh) tidak diubah — kasus pakai beda. Lihat
+`docs/superpowers/specs/2026-09-23-inline-strong-em-blocks-design.md`.
+
 ---
 
 ## Fase 4 — Konten guru: TIDAK dikerjakan di proyek ini

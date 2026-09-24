@@ -296,6 +296,50 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<br>\n');
   });
 
+  it('emits a real <strong> tag around inline text inside a paragraph', () => {
+    const paragraph = statement(workspace, 'html_paragraph');
+    const strong = statement(workspace, 'html_strong');
+    const inner = text(workspace, 'Dunia');
+    strong.getInput('TEXT')!.connection!.connect(inner.outputConnection!);
+    paragraph.getInput('TEXT')!.connection!.connect(strong.outputConnection!);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<p><strong>Dunia</strong></p>\n');
+  });
+
+  it('emits a real <em> tag around inline text inside a list item', () => {
+    const item = statement(workspace, 'html_list_item');
+    const em = statement(workspace, 'html_em');
+    const inner = text(workspace, 'penting');
+    em.getInput('TEXT')!.connection!.connect(inner.outputConnection!);
+    item.getInput('TEXT')!.connection!.connect(em.outputConnection!);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<li><em>penting</em></li>\n');
+  });
+
+  it('nests <strong> and <em> inside each other', () => {
+    const cell = statement(workspace, 'html_table_cell');
+    const strong = statement(workspace, 'html_strong');
+    const em = statement(workspace, 'html_em');
+    const inner = text(workspace, 'Wow');
+    em.getInput('TEXT')!.connection!.connect(inner.outputConnection!);
+    strong.getInput('TEXT')!.connection!.connect(em.outputConnection!);
+    cell.getInput('TEXT')!.connection!.connect(strong.outputConnection!);
+
+    expect(generateHtml(workspace).bodyHtml).toBe('<td><strong><em>Wow</em></strong></td>\n');
+  });
+
+  it('escapes dangerous characters inside a nested <strong>/<em> text value', () => {
+    const paragraph = statement(workspace, 'html_paragraph');
+    const strong = statement(workspace, 'html_strong');
+    const inner = text(workspace, '<script>alert(1)</script>');
+    strong.getInput('TEXT')!.connection!.connect(inner.outputConnection!);
+    paragraph.getInput('TEXT')!.connection!.connect(strong.outputConnection!);
+
+    const result = generateHtml(workspace).bodyHtml;
+    expect(result).toBe('<p><strong>&lt;script&gt;alert(1)&lt;/script&gt;</strong></p>\n');
+    expect(result).not.toContain('<script>');
+  });
+
   it('emits an indented ordered list', () => {
     const list = statement(workspace, 'html_list_ordered');
     const first = statement(workspace, 'html_list_item');

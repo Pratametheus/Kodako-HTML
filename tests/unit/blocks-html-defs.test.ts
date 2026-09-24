@@ -228,4 +228,22 @@ describe('HTML block labels use real tags', () => {
   it('br shows <br>', () => {
     expect(message0('html_br')).toContain('<br>');
   });
+  it('text block shows a quoted-string label, not a fake tag', () => {
+    const m = message0('html_text');
+    expect(m).toContain('"');
+    expect(m).not.toContain('<>');
+  });
+  it('strong and em show their real tags and accept a nested text value', () => {
+    for (const [type, tag] of [
+      ['html_strong', 'strong'],
+      ['html_em', 'em'],
+    ] as const) {
+      const m = message0(type);
+      expect(m).toContain(`<${tag}>`);
+      expect(m).toContain(`</${tag}>`);
+      const ws = new Blockly.Workspace();
+      expect(ws.newBlock(type).getInput('TEXT')).toBeTruthy();
+      ws.dispose();
+    }
+  });
 });
