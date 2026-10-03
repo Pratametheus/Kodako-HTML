@@ -1,17 +1,22 @@
 import arrowSvg from './asset-library/arrow.svg?raw';
 import appleSvg from './asset-library/apple.svg?raw';
 import ballSvg from './asset-library/ball.svg?raw';
+import bookSvg from './asset-library/book.svg?raw';
 import bugSvg from './asset-library/bug.svg?raw';
+import cakeSvg from './asset-library/cake.svg?raw';
 import catSvg from './asset-library/cat.svg?raw';
 import circleSvg from './asset-library/circle.svg?raw';
 import cloudSvg from './asset-library/cloud.svg?raw';
+import computerSvg from './asset-library/computer.svg?raw';
 import fishSvg from './asset-library/fish.svg?raw';
 import flowerSvg from './asset-library/flower.svg?raw';
 import heartSvg from './asset-library/heart.svg?raw';
+import pencilSvg from './asset-library/pencil.svg?raw';
 import robotSvg from './asset-library/robot.svg?raw';
 import rocketSvg from './asset-library/rocket.svg?raw';
 import squareSvg from './asset-library/square.svg?raw';
 import starSvg from './asset-library/star.svg?raw';
+import sunSvg from './asset-library/sun.svg?raw';
 import triangleSvg from './asset-library/triangle.svg?raw';
 
 function svgToDataUrl(svg: string): string {
@@ -36,6 +41,11 @@ export const BUILTIN_IMAGES: readonly BuiltinAsset[] = [
   { id: 'builtin:fish', name: 'Ikan', url: svgToDataUrl(fishSvg) },
   { id: 'builtin:rocket', name: 'Roket', url: svgToDataUrl(rocketSvg) },
   { id: 'builtin:apple', name: 'Apel', url: svgToDataUrl(appleSvg) },
+  { id: 'builtin:book', name: 'Buku', url: svgToDataUrl(bookSvg) },
+  { id: 'builtin:pencil', name: 'Pensil', url: svgToDataUrl(pencilSvg) },
+  { id: 'builtin:cake', name: 'Kue', url: svgToDataUrl(cakeSvg) },
+  { id: 'builtin:computer', name: 'Komputer', url: svgToDataUrl(computerSvg) },
+  { id: 'builtin:sun', name: 'Matahari', url: svgToDataUrl(sunSvg) },
 ];
 
 export const BUILTIN_BY_ID: ReadonlyMap<string, BuiltinAsset> = new Map(

@@ -719,6 +719,21 @@ describe('HTML block generator', () => {
     );
   });
 
+  it('renders a flex row div with a gap setting', () => {
+    const row = statement(workspace, 'html_row');
+    row.setFieldValue('center', 'JUSTIFY');
+    row.setFieldValue('16px', 'GAP');
+    const first = statement(workspace, 'html_paragraph');
+    connectText(first, 'Teks');
+    connectStatement(row, 'BODY', first);
+
+    expect(generateHtml(workspace).bodyHtml).toBe(
+      '<div style="display:flex;justify-content:center;flex-wrap:wrap;gap:16px">\n' +
+        '  <p>Teks</p>\n' +
+        '</div>\n',
+    );
+  });
+
   it('renders mark and code inline inside a paragraph', () => {
     const p = statement(workspace, 'html_paragraph');
     const mark = statement(workspace, 'html_mark');

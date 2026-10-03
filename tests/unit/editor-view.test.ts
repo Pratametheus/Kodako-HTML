@@ -94,4 +94,14 @@ describe('renderEditor', () => {
     root.querySelector<HTMLButtonElement>('[data-help]')!.click();
     expect(dialog.hasAttribute('hidden')).toBe(false);
   });
+
+  it('clicking Buka imports project from file and opens it', async () => {
+    const onOpenProject = vi.fn();
+    storage.importFromFile = async () => createEmptyProject('Proyek Impor');
+    renderEditor(root, { id: 'p1', project, storage, onBack: vi.fn(), onOpenProject });
+
+    root.querySelector<HTMLButtonElement>('[data-open]')!.click();
+    await vi.waitFor(() => expect(onOpenProject).toHaveBeenCalledOnce());
+    expect(storage.saved.some((p) => p.meta.name === 'Proyek Impor')).toBe(true);
+  });
 });

@@ -52,7 +52,12 @@ function replaceProject(target: Project, next: Project): void {
   Object.assign(target, next);
 }
 
-export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => void {
+export type HtmlModeCleanup = (() => void) & {
+  undo: () => void;
+  redo: () => void;
+};
+
+export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): HtmlModeCleanup {
   installBlockly();
   const project = deps.project;
   let loadingWorkspace = true;
@@ -81,6 +86,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
               ${t('editor.html.uploadImage')}
               <input type="file" accept="image/*" data-upload-image>
             </label>
+            <button type="button" data-print-html>${t('editor.html.print')}</button>
             <button type="button" data-export-html>${t('editor.html.exportHtml')}</button>
           </div>
         </div>
@@ -259,6 +265,18 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   };
   for (const rb of runButtons) rb.addEventListener('click', onRun);
 
+  const printButton = host.querySelector<HTMLButtonElement>('[data-print-html]')!;
+  const onPrint = (): void => {
+    refresh();
+    preview.flush();
+    try {
+      iframe.contentWindow?.print();
+    } catch {
+      window.print();
+    }
+  };
+  printButton.addEventListener('click', onPrint);
+
   const exportButton = host.querySelector<HTMLButtonElement>('[data-export-html]')!;
   const onExport = (): void => {
     persist(false);
@@ -322,25 +340,34 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   };
   window.addEventListener('resize', onWindowResize);
 
-  return () => {
-    persist(false);
-    disposed = true;
-    workspace.removeChangeListener(onWorkspaceChange);
-    for (const button of tabButtons) button.removeEventListener('click', onTabClick);
-    for (const btn of mobileButtons) btn.removeEventListener('click', onMobileTabClick);
-    for (const rb of runButtons) rb.removeEventListener('click', onRun);
-    exportButton.removeEventListener('click', onExport);
-    uploadInput.removeEventListener('change', onUpload);
-    window.removeEventListener('resize', onWindowResize);
-    preview.dispose();
-    codePanel.dispose();
-    detachWash();
-    detachInfo();
-    detachSplit();
-    workspace.dispose();
-    setHtmlAssetOptionsProvider(() => [['(tidak ada gambar)', '']]);
-    delete debugWindow.__kodakoHtml;
-    __htmlModeHandle.current = null;
-    host.replaceChildren();
-  };
+  const cleanup = Object.assign(
+    () => {
+      persist(false);
+      disposed = true;
+      workspace.removeChangeListener(onWorkspaceChange);
+      for (const button of tabButtons) button.removeEventListener('click', onTabClick);
+      for (const btn of mobileButtons) btn.removeEventListener('click', onMobileTabClick);
+      for (const rb of runButtons) rb.removeEventListener('click', onRun);
+      printButton.removeEventListener('click', onPrint);
+      exportButton.removeEventListener('click', onExport);
+      uploadInput.removeEventListener('change', onUpload);
+      window.removeEventListener('resize', onWindowResize);
+      preview.dispose();
+      codePanel.dispose();
+      detachWash();
+      detachInfo();
+      detachSplit();
+      workspace.dispose();
+      setHtmlAssetOptionsProvider(() => [['(tidak ada gambar)', '']]);
+      delete debugWindow.__kodakoHtml;
+      __htmlModeHandle.current = null;
+      host.replaceChildren();
+    },
+    {
+      undo: () => workspace.undo(false),
+      redo: () => workspace.undo(true),
+    },
+  );
+
+  return cleanup;
 }

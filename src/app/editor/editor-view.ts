@@ -1,15 +1,19 @@
 import './editor.css';
+import { newId } from '../../core/ids';
 import type { Project } from '../../core/project';
 import type { Storage } from '../../core/storage';
 import { renderHeader } from './header';
 import { renderHtmlMode } from './html-mode/html-mode';
 import { renderHelpPanel } from '../help/help-panel';
+import { t } from '../i18n';
+import { showToast } from '../toast';
 
 export type EditorDeps = {
   id: string;
   project: Project;
   storage: Storage;
   onBack: () => void;
+  onOpenProject?: (id: string) => void;
 };
 
 const AUTOSAVE_MS = 300;
@@ -50,9 +54,27 @@ export function renderEditor(root: HTMLElement, deps: EditorDeps): () => void {
       project.meta.updatedAt = new Date().toISOString();
       scheduleSave();
     },
+    onUndo: () => cleanupMode.undo?.(),
+    onRedo: () => cleanupMode.redo?.(),
     onBack: deps.onBack,
     onSave: () => void storage.saveProject(id, project).catch((err) => console.error(err)),
-    onOpen: () => console.info('Buka project dari editor: menyusul pada fase berikutnya.'),
+    onOpen: async () => {
+      try {
+        const imported = await storage.importFromFile();
+        const newProjId = newId('proj');
+        await storage.saveProject(newProjId, imported);
+        if (deps.onOpenProject) {
+          deps.onOpenProject(newProjId);
+        } else {
+          window.location.hash = `#/editor/${newProjId}`;
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : t('error.importFile');
+        if (!msg.toLowerCase().includes('batal') && !msg.toLowerCase().includes('cancel')) {
+          showToast(msg, { kind: 'error' });
+        }
+      }
+    },
     onExport: () => void storage.exportToFile(project).catch((err) => console.error(err)),
     onHelp: () => helpPanel.open(),
   });

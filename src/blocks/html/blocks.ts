@@ -1,4 +1,5 @@
 import * as Blockly from 'blockly/core';
+import { BUILTIN_IMAGES } from '../../runtime/asset-library';
 
 const COLOR_OPTIONS: [string, string][] = [
   ['hitam', '#000000'],
@@ -13,7 +14,12 @@ const COLOR_OPTIONS: [string, string][] = [
   ['abu-abu', '#9e9e9e'],
 ];
 
-let getAssetOptions: () => [string, string][] = () => [['(tidak ada gambar)', '']];
+const defaultAssetOptions = (): [string, string][] => [
+  ['(tidak ada gambar)', ''],
+  ...BUILTIN_IMAGES.map((a): [string, string] => [a.name, a.id]),
+];
+
+let getAssetOptions: () => [string, string][] = defaultAssetOptions;
 
 export function setHtmlAssetOptionsProvider(fn: () => [string, string][]): void {
   getAssetOptions = fn;
@@ -185,7 +191,7 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_row',
       tooltip: 'Membuat isinya berjajar ke samping, bukan menumpuk ke bawah (<div> sejajar/flex).',
-      message0: '<div> berjajar: %1',
+      message0: '<div> berjajar: %1 jarak: %2',
       args0: [
         {
           type: 'field_dropdown',
@@ -196,6 +202,16 @@ export function registerHtmlBlocks(): void {
             ['rata kanan', 'flex-end'],
             ['renggang', 'space-between'],
             ['sebar rata', 'space-around'],
+          ],
+        },
+        {
+          type: 'field_dropdown',
+          name: 'GAP',
+          options: [
+            ['tanpa jarak', '0'],
+            ['kecil', '8px'],
+            ['sedang', '16px'],
+            ['lebar', '24px'],
           ],
         },
       ],

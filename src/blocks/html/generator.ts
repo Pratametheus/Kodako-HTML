@@ -29,6 +29,7 @@ const JUSTIFY_VALUES = new Set([
   'space-between',
   'space-around',
 ]);
+const GAP_VALUES = new Set(['0', '8px', '16px', '24px']);
 const SPACING_SIZES = new Set(['8px', '16px', '32px']);
 const RADIUS_SIZES = new Set(['8px', '16px', '9999px']);
 const FONTS = new Set(['inherit', 'Georgia, serif', '"Courier New", monospace']);
@@ -328,7 +329,9 @@ function emitBlock(
     case 'html_row': {
       const justify = field(block, 'JUSTIFY');
       const value = JUSTIFY_VALUES.has(justify) ? justify : 'flex-start';
-      const fragment = `display:flex;justify-content:${value};flex-wrap:wrap`;
+      const gapVal = field(block, 'GAP');
+      const gap = GAP_VALUES.has(gapVal) && gapVal !== '0' ? `;gap:${gapVal}` : '';
+      const fragment = `display:flex;justify-content:${value};flex-wrap:wrap${gap}`;
       return emitContainer(block, 'BODY', 'div', depth, assetIds, [...styleFragments, fragment]);
     }
     case 'html_list':

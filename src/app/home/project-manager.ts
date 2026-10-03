@@ -12,9 +12,12 @@ export class ProjectManager {
     return this.storage.listProjects();
   }
 
-  async create(name?: string): Promise<OpenedProject> {
+  async create(name?: string, initialWorkspace?: Record<string, unknown>): Promise<OpenedProject> {
     const id = newId('proj');
     const project = createEmptyProject(name ?? t('home.newProjectName'));
+    if (initialWorkspace) {
+      project.html.workspace = initialWorkspace;
+    }
     await this.storage.saveProject(id, project);
     return { id, project };
   }

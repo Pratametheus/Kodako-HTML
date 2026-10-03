@@ -65,6 +65,7 @@ describe('HTML mode view', () => {
     expect(host.querySelector('[data-tab="preview"]')).toBeTruthy();
     expect(host.querySelector('[data-tab="code"]')).toBeTruthy();
     expect(host.querySelector('[data-export-html]')).toBeTruthy();
+    expect(host.querySelector('[data-print-html]')).toBeTruthy();
     expect(host.querySelector('[data-run-html]')).toBeTruthy();
     cleanup();
   });
@@ -196,6 +197,24 @@ describe('HTML mode view', () => {
 
     host.querySelector<HTMLButtonElement>('[data-mobile-tab="blocks"]')!.click();
     expect(mode.getAttribute('data-mobile-view')).toBe('blocks');
+    cleanup();
+  });
+
+  it('exposes undo and redo functions on cleanup handle', () => {
+    const host = document.createElement('div');
+    const cleanup = renderHtmlMode(host, {
+      project: createEmptyProject('X'),
+      storage: new FakeStorage(),
+      markDirty: vi.fn(),
+    });
+    const workspace = __htmlModeHandle.current!.workspace;
+    const undoSpy = vi.spyOn(workspace, 'undo');
+
+    cleanup.undo();
+    expect(undoSpy).toHaveBeenCalledWith(false);
+
+    cleanup.redo();
+    expect(undoSpy).toHaveBeenCalledWith(true);
     cleanup();
   });
 

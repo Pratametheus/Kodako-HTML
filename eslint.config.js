@@ -11,4 +11,16 @@ export default tseslint.config(
     },
     rules: { '@typescript-eslint/consistent-type-imports': 'error' },
   },
+  {
+    files: ['public/sw.js'],
+    languageOptions: {
+      globals: {
+        self: 'readonly',
+        caches: 'readonly',
+        fetch: 'readonly',
+        Response: 'readonly',
+        URL: 'readonly',
+      },
+    },
+  },
 );

@@ -94,4 +94,26 @@ describe('renderHome', () => {
     root.querySelector<HTMLButtonElement>('[data-card] [data-action="open"]')!.click();
     expect(onOpen).toHaveBeenCalledWith(id);
   });
+
+  it('clicking "Contoh Project" opens templates dialog and choosing one creates template project', async () => {
+    const onOpen = vi.fn();
+    renderHome(root, { manager, onOpen });
+    await flush();
+
+    const dialog = root.querySelector<HTMLElement>('[data-templates-dialog]')!;
+    expect(dialog.hidden).toBe(true);
+
+    root.querySelector<HTMLButtonElement>('[data-action="templates"]')!.click();
+    expect(dialog.hidden).toBe(false);
+
+    const useBtn = root.querySelector<HTMLButtonElement>('[data-action="use-template"]')!;
+    useBtn.click();
+    await flush();
+
+    expect(dialog.hidden).toBe(true);
+    expect(onOpen).toHaveBeenCalledOnce();
+    const list = await manager.list();
+    expect(list).toHaveLength(1);
+    expect(list[0]?.name).toBe('Undangan Ulang Tahun');
+  });
 });

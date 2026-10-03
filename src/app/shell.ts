@@ -34,6 +34,7 @@ export function startApp(root: HTMLElement, storage: Storage): () => void {
           project,
           storage,
           onBack: () => navigate({ name: 'home' }),
+          onOpenProject: (id) => navigate({ name: 'editor', id }),
         });
       } catch (err) {
         if (myGeneration !== generation) return;

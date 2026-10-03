@@ -1,0 +1,19 @@
+{
+  "name": "Kodako HTML",
+  "short_name": "Kodako",
+  "description": "Editor blok visual untuk belajar membuat halaman web HTML, mirip Scratch.",
+  "start_url": "/editor.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#eef3ff",
+  "theme_color": "#1e88e5",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

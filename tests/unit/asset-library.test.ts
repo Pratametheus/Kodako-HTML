@@ -10,8 +10,8 @@ import {
 } from '../../src/runtime/asset-library';
 
 describe('built-in image library', () => {
-  it('contains 15 unique builtin images', () => {
-    expect(BUILTIN_IMAGES).toHaveLength(15);
+  it('contains 20 unique builtin images', () => {
+    expect(BUILTIN_IMAGES).toHaveLength(20);
     const ids = BUILTIN_IMAGES.map(({ id }) => id);
     expect(new Set(ids).size).toBe(ids.length);
     expect(ids.every((id) => id.startsWith('builtin:'))).toBe(true);
@@ -25,6 +25,11 @@ describe('built-in image library', () => {
     ['builtin:fish', 'Ikan'],
     ['builtin:rocket', 'Roket'],
     ['builtin:apple', 'Apel'],
+    ['builtin:book', 'Buku'],
+    ['builtin:pencil', 'Pensil'],
+    ['builtin:cake', 'Kue'],
+    ['builtin:computer', 'Komputer'],
+    ['builtin:sun', 'Matahari'],
   ])('resolves %s', (id, name) => {
     expect(BUILTIN_BY_ID.get(id)?.name).toBe(name);
     expect(resolveAssetUrl(id, {})).toBeTruthy();
@@ -47,6 +52,11 @@ describe('built-in image library', () => {
       'fish',
       'rocket',
       'apple',
+      'book',
+      'pencil',
+      'cake',
+      'computer',
+      'sun',
     ];
     for (const name of names) {
       const file = resolve(process.cwd(), 'src/runtime/asset-library', `${name}.svg`);
