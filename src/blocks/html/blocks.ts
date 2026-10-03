@@ -460,11 +460,10 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_color',
       tooltip: 'Mengubah warna teks isinya (CSS color).',
-      message0: 'color: %1 %2',
-      args0: [
-        { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
-        { type: 'input_statement', name: 'BODY' },
-      ],
+      message0: 'color: %1',
+      args0: [{ type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS }],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -472,11 +471,10 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_bg',
       tooltip: 'Mengubah warna latar isinya (CSS background).',
-      message0: 'background: %1 %2',
-      args0: [
-        { type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS },
-        { type: 'input_statement', name: 'BODY' },
-      ],
+      message0: 'background: %1',
+      args0: [{ type: 'field_dropdown', name: 'COLOR', options: COLOR_OPTIONS }],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -484,7 +482,7 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_align',
       tooltip: 'Mengatur perataan teks isinya: kiri, tengah, kanan (CSS text-align).',
-      message0: 'text-align: %1 %2',
+      message0: 'text-align: %1',
       args0: [
         {
           type: 'field_dropdown',
@@ -495,8 +493,9 @@ export function registerHtmlBlocks(): void {
             ['kanan', 'right'],
           ],
         },
-        { type: 'input_statement', name: 'BODY' },
       ],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -504,7 +503,7 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_size',
       tooltip: 'Mengubah ukuran teks isinya (CSS font-size).',
-      message0: 'font-size: %1 %2',
+      message0: 'font-size: %1',
       args0: [
         {
           type: 'field_dropdown',
@@ -515,8 +514,9 @@ export function registerHtmlBlocks(): void {
             ['besar', '1.5rem'],
           ],
         },
-        { type: 'input_statement', name: 'BODY' },
       ],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -524,8 +524,9 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_bold',
       tooltip: 'Menebalkan teks isinya (CSS font-weight: bold).',
-      message0: 'font-weight: bold %1',
-      args0: [{ type: 'input_statement', name: 'BODY' }],
+      message0: 'font-weight: bold',
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -533,8 +534,9 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_italic',
       tooltip: 'Memiringkan teks isinya (CSS font-style: italic).',
-      message0: 'font-style: italic %1',
-      args0: [{ type: 'input_statement', name: 'BODY' }],
+      message0: 'font-style: italic',
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -542,7 +544,7 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_padding',
       tooltip: 'Menambah jarak di dalam kotak isinya (CSS padding).',
-      message0: 'padding: %1 %2',
+      message0: 'padding: %1',
       args0: [
         {
           type: 'field_dropdown',
@@ -553,8 +555,9 @@ export function registerHtmlBlocks(): void {
             ['besar', '32px'],
           ],
         },
-        { type: 'input_statement', name: 'BODY' },
       ],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -562,7 +565,7 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_margin',
       tooltip: 'Menambah jarak di luar kotak isinya (CSS margin).',
-      message0: 'margin: %1 %2',
+      message0: 'margin: %1',
       args0: [
         {
           type: 'field_dropdown',
@@ -573,8 +576,9 @@ export function registerHtmlBlocks(): void {
             ['besar', '32px'],
           ],
         },
-        { type: 'input_statement', name: 'BODY' },
       ],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -582,7 +586,7 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_radius',
       tooltip: 'Melengkungkan sudut kotak isinya (CSS border-radius).',
-      message0: 'border-radius: %1 %2',
+      message0: 'border-radius: %1',
       args0: [
         {
           type: 'field_dropdown',
@@ -593,8 +597,9 @@ export function registerHtmlBlocks(): void {
             ['bulat', '9999px'],
           ],
         },
-        { type: 'input_statement', name: 'BODY' },
       ],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -602,8 +607,9 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_shadow',
       tooltip: 'Menambah bayangan lembut di sekitar isinya (CSS box-shadow).',
-      message0: 'box-shadow: lembut %1',
-      args0: [{ type: 'input_statement', name: 'BODY' }],
+      message0: 'box-shadow: lembut',
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
@@ -611,7 +617,7 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_style_font',
       tooltip: 'Mengubah jenis huruf isinya (CSS font-family).',
-      message0: 'font-family: %1 %2',
+      message0: 'font-family: %1',
       args0: [
         {
           type: 'field_dropdown',
@@ -622,8 +628,9 @@ export function registerHtmlBlocks(): void {
             ['mesin ketik', '"Courier New", monospace'],
           ],
         },
-        { type: 'input_statement', name: 'BODY' },
       ],
+      message1: '%1',
+      args1: [{ type: 'input_statement', name: 'BODY' }],
       previousStatement: null,
       nextStatement: null,
       style: 'style_blocks',
