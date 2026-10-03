@@ -2,12 +2,13 @@ import { describe, expect, it } from 'vitest';
 import { composeDisplayDocument, wrapBodyInDocument } from '../../src/runtime/html/document';
 
 describe('wrapBodyInDocument', () => {
-  it('keeps the CSP + charset meta and auto title when no headHtml', () => {
+  it('keeps the CSP + charset meta and auto title when no headHtml, formatted cleanly', () => {
     const doc = wrapBodyInDocument('Proyek', '<p>x</p>');
     expect(doc).toContain('Content-Security-Policy');
     expect(doc).toContain('<meta charset="utf-8">');
     expect(doc).toContain('<title>Proyek</title>');
-    expect(doc).toContain('<body><p>x</p></body>');
+    expect(doc).toContain('  <body>\n    <p>x</p>\n  </body>');
+    expect(doc.split('\n').length).toBeGreaterThan(10);
   });
 
   it('uses the block-provided <title> and drops the auto one', () => {

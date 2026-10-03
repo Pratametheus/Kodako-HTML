@@ -611,3 +611,42 @@ test('strong/em render as real inline tags inside a paragraph', async ({ page })
   const code = page.locator('.html-mode__code, [class*="code"]').first();
   await expect(code).toContainText('<p><strong>Dunia</strong></p>');
 });
+
+test('new semantic and form tags render into code panel and preview', async ({ page }) => {
+  await page.goto('/editor.html#/');
+  await page.getByRole('button', { name: 'Project Baru' }).click();
+  await expect(page.locator('#htmlBlocklyDiv')).toBeVisible();
+
+  await page.evaluate(() => {
+    const B = (window as any).__kodakoBlockly;
+    B.serialization.workspaces.load(
+      {
+        blocks: {
+          languageVersion: 0,
+          blocks: [
+            {
+              type: 'html_form',
+              x: 20,
+              y: 20,
+              inputs: {
+                BODY: {
+                  block: {
+                    type: 'html_input_text',
+                    fields: { PLACEHOLDER: 'Ketik nama' },
+                  },
+                },
+              },
+            },
+          ],
+        },
+      },
+      B.getMainWorkspace(),
+    );
+  });
+
+  await page.getByRole('button', { name: 'Jalankan' }).click();
+  await page.getByRole('tab', { name: 'Lihat Kode' }).click();
+  const code = page.locator('.html-mode__code, [class*="code"]').first();
+  await expect(code).toContainText('<form>');
+  await expect(code).toContainText('<input type="text" placeholder="Ketik nama">');
+});

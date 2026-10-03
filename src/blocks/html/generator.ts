@@ -418,27 +418,32 @@ function emitBlock(
         styleFragments,
       );
     }
-    case 'html_button':
+    case 'html_button': {
+      const type = field(block, 'TYPE') === 'submit' ? 'submit' : 'button';
       return withStyles(
-        `${prefix}<button type="button">${textInput(block, 'TEXT')}</button>\n`,
+        `${prefix}<button type="${type}">${textInput(block, 'TEXT')}</button>\n`,
         styleFragments,
       );
+    }
     case 'html_mark':
       return withStyles(`${prefix}<mark>${textInput(block, 'TEXT')}</mark>\n`, styleFragments);
     case 'html_code':
       return withStyles(`${prefix}<code>${textInput(block, 'TEXT')}</code>\n`, styleFragments);
     case 'html_pre':
       return emitContainer(block, 'BODY', 'pre', depth, assetIds, styleFragments);
-    case 'html_audio':
+    case 'html_audio': {
+      const loopAttr = field(block, 'LOOP') === 'TRUE' ? ' loop' : '';
       return withStyles(
-        `${prefix}<audio controls src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"></audio>\n`,
+        `${prefix}<audio controls src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"${loopAttr}></audio>\n`,
         styleFragments,
       );
+    }
     case 'html_video': {
       const width = Number(field(block, 'WIDTH'));
       const widthAttr = Number.isFinite(width) && width > 0 ? ` width="${width}"` : '';
+      const loopAttr = field(block, 'LOOP') === 'TRUE' ? ' loop' : '';
       return withStyles(
-        `${prefix}<video controls src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"${widthAttr}></video>\n`,
+        `${prefix}<video controls src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"${widthAttr}${loopAttr}></video>\n`,
         styleFragments,
       );
     }
@@ -451,16 +456,20 @@ function emitBlock(
         `${prefix}<input type="text" placeholder="${escapeHtmlAttr(field(block, 'PLACEHOLDER'))}">\n`,
         styleFragments,
       );
-    case 'html_input_checkbox':
+    case 'html_input_checkbox': {
+      const checkedAttr = field(block, 'CHECKED') === 'TRUE' ? ' checked' : '';
       return withStyles(
-        `${prefix}<label><input type="checkbox"> ${textInput(block, 'TEXT')}</label>\n`,
+        `${prefix}<label><input type="checkbox"${checkedAttr}> ${textInput(block, 'TEXT')}</label>\n`,
         styleFragments,
       );
-    case 'html_input_radio':
+    }
+    case 'html_input_radio': {
+      const checkedAttr = field(block, 'CHECKED') === 'TRUE' ? ' checked' : '';
       return withStyles(
-        `${prefix}<label><input type="radio" name="${escapeHtmlAttr(field(block, 'NAME'))}"> ${textInput(block, 'TEXT')}</label>\n`,
+        `${prefix}<label><input type="radio" name="${escapeHtmlAttr(field(block, 'NAME'))}"${checkedAttr}> ${textInput(block, 'TEXT')}</label>\n`,
         styleFragments,
       );
+    }
     case 'html_textarea': {
       const rows = Number(field(block, 'ROWS'));
       const rowsAttr = Number.isFinite(rows) && rows > 0 ? ` rows="${rows}"` : '';
@@ -476,8 +485,10 @@ function emitBlock(
         `${prefix}<option value="${escapeHtmlAttr(field(block, 'VALUE'))}">${textInput(block, 'TEXT')}</option>\n`,
         styleFragments,
       );
-    case 'html_details':
-      return emitContainer(block, 'BODY', 'details', depth, assetIds, styleFragments);
+    case 'html_details': {
+      const openAttr = field(block, 'OPEN') === 'TRUE' ? ' open' : '';
+      return emitContainer(block, 'BODY', 'details', depth, assetIds, styleFragments, openAttr);
+    }
     case 'html_summary':
       return withStyles(
         `${prefix}<summary>${textInput(block, 'TEXT')}</summary>\n`,

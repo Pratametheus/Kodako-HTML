@@ -495,8 +495,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_audio',
       tooltip: 'Pemutar suara/audio dengan kontrol (<audio>).',
-      message0: '<audio> sumber: %1',
-      args0: [{ type: 'field_input', name: 'URL', text: 'https://' }],
+      message0: '<audio> sumber: %1 berulang? %2',
+      args0: [
+        { type: 'field_input', name: 'URL', text: 'https://' },
+        { type: 'field_checkbox', name: 'LOOP', checked: false },
+      ],
       previousStatement: null,
       nextStatement: null,
       style: 'media_blocks',
@@ -504,10 +507,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_video',
       tooltip: 'Pemutar video dengan kontrol (<video>).',
-      message0: '<video> sumber: %1 lebar %2 px',
+      message0: '<video> sumber: %1 lebar %2 px berulang? %3',
       args0: [
         { type: 'field_input', name: 'URL', text: 'https://' },
         { type: 'field_number', name: 'WIDTH', value: 320, min: 1, precision: 1 },
+        { type: 'field_checkbox', name: 'LOOP', checked: false },
       ],
       previousStatement: null,
       nextStatement: null,
@@ -562,8 +566,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_input_checkbox',
       tooltip: 'Kotak centang centang/tidak (<input type="checkbox">).',
-      message0: '<input> centang: %1',
-      args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
+      message0: '<input> centang: %1 tercentang? %2',
+      args0: [
+        { type: 'input_value', name: 'TEXT', check: 'String' },
+        { type: 'field_checkbox', name: 'CHECKED', checked: false },
+      ],
       previousStatement: null,
       nextStatement: null,
       style: 'form_blocks',
@@ -571,10 +578,11 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_input_radio',
       tooltip: 'Pilihan radio tunggal dalam grup (<input type="radio">).',
-      message0: '<input> radio grup %1 : %2',
+      message0: '<input> radio grup %1 : %2 tercentang? %3',
       args0: [
         { type: 'field_input', name: 'NAME', text: 'pilihan' },
         { type: 'input_value', name: 'TEXT', check: 'String' },
+        { type: 'field_checkbox', name: 'CHECKED', checked: false },
       ],
       previousStatement: null,
       nextStatement: null,
@@ -618,8 +626,18 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_button',
       tooltip: 'Tombol yang bisa ditekan (<button>).',
-      message0: '<button> %1 </button>',
-      args0: [{ type: 'input_value', name: 'TEXT', check: 'String' }],
+      message0: '<button> tipe %1 : %2 </button>',
+      args0: [
+        {
+          type: 'field_dropdown',
+          name: 'TYPE',
+          options: [
+            ['tombol biasa', 'button'],
+            ['kirim formulir', 'submit'],
+          ],
+        },
+        { type: 'input_value', name: 'TEXT', check: 'String' },
+      ],
       previousStatement: null,
       nextStatement: null,
       style: 'form_blocks',
@@ -627,7 +645,8 @@ export function registerHtmlBlocks(): void {
     {
       type: 'html_details',
       tooltip: 'Kotak lipat / accordion buka-tutup interaktif (<details>).',
-      message0: '<details>',
+      message0: '<details> terbuka? %1',
+      args0: [{ type: 'field_checkbox', name: 'OPEN', checked: false }],
       message1: '%1',
       args1: [{ type: 'input_statement', name: 'BODY' }],
       message2: '</details>',

@@ -737,17 +737,19 @@ describe('HTML block generator', () => {
     expect(generateHtml(workspace).bodyHtml).toBe('<pre>\n  <p>kode baris</p>\n</pre>\n');
   });
 
-  it('renders audio and video elements with controls and safe URLs', () => {
+  it('renders audio and video elements with controls, loop, and safe URLs', () => {
     const audio = statement(workspace, 'html_audio');
     audio.setFieldValue('https://domain.com/lagu.mp3', 'URL');
+    audio.setFieldValue(true, 'LOOP');
     const video = statement(workspace, 'html_video');
     video.setFieldValue('https://domain.com/video.mp4', 'URL');
     video.setFieldValue(480, 'WIDTH');
+    video.setFieldValue(true, 'LOOP');
     append(audio, video);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<audio controls src="https://domain.com/lagu.mp3"></audio>\n' +
-        '<video controls src="https://domain.com/video.mp4" width="480"></video>\n',
+      '<audio controls src="https://domain.com/lagu.mp3" loop></audio>\n' +
+        '<video controls src="https://domain.com/video.mp4" width="480" loop></video>\n',
     );
   });
 
@@ -759,8 +761,10 @@ describe('HTML block generator', () => {
     input.setFieldValue('Masukkan nama', 'PLACEHOLDER');
     const check = statement(workspace, 'html_input_checkbox');
     connectText(check, 'Setuju S&K');
+    check.setFieldValue(true, 'CHECKED');
     const radio = statement(workspace, 'html_input_radio');
     radio.setFieldValue('gender', 'NAME');
+    radio.setFieldValue(true, 'CHECKED');
     connectText(radio, 'Pria');
     const textarea = statement(workspace, 'html_textarea');
     textarea.setFieldValue(3, 'ROWS');
@@ -770,30 +774,36 @@ describe('HTML block generator', () => {
     opt.setFieldValue('id', 'VALUE');
     connectText(opt, 'Indonesia');
     connectStatement(select, 'OPTIONS', opt);
+    const button = statement(workspace, 'html_button');
+    button.setFieldValue('submit', 'TYPE');
+    connectText(button, 'Kirim');
 
     append(label, input);
     append(input, check);
     append(check, radio);
     append(radio, textarea);
     append(textarea, select);
+    append(select, button);
     connectStatement(form, 'BODY', label);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
       '<form>\n' +
         '  <label>Nama:</label>\n' +
         '  <input type="text" placeholder="Masukkan nama">\n' +
-        '  <label><input type="checkbox"> Setuju S&amp;K</label>\n' +
-        '  <label><input type="radio" name="gender"> Pria</label>\n' +
+        '  <label><input type="checkbox" checked> Setuju S&amp;K</label>\n' +
+        '  <label><input type="radio" name="gender" checked> Pria</label>\n' +
         '  <textarea placeholder="Catatan..." rows="3"></textarea>\n' +
         '  <select>\n' +
         '    <option value="id">Indonesia</option>\n' +
         '  </select>\n' +
+        '  <button type="submit">Kirim</button>\n' +
         '</form>\n',
     );
   });
 
-  it('renders details and summary interactive block', () => {
+  it('renders details and summary interactive block with open attribute', () => {
     const details = statement(workspace, 'html_details');
+    details.setFieldValue(true, 'OPEN');
     const summary = statement(workspace, 'html_summary');
     connectText(summary, 'Pertanyaan');
     const p = statement(workspace, 'html_paragraph');
@@ -802,7 +812,10 @@ describe('HTML block generator', () => {
     connectStatement(details, 'BODY', summary);
 
     expect(generateHtml(workspace).bodyHtml).toBe(
-      '<details>\n' + '  <summary>Pertanyaan</summary>\n' + '  <p>Jawaban</p>\n' + '</details>\n',
+      '<details open>\n' +
+        '  <summary>Pertanyaan</summary>\n' +
+        '  <p>Jawaban</p>\n' +
+        '</details>\n',
     );
   });
 });

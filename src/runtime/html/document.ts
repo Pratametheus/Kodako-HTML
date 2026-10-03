@@ -9,19 +9,36 @@ export function wrapBodyInDocument(
   opts: { lang?: string; headHtml?: string } = {},
 ): string {
   const lang = escapeHtmlAttr(opts.lang ?? 'id');
-  const headHtml = opts.headHtml ?? '';
+  const headHtml = opts.headHtml ? opts.headHtml.trim() : '';
   const titleTag = /<title[\s>]/i.test(headHtml)
     ? headHtml
     : `<title>${escapeHtmlText(title)}</title>`;
-  return (
-    `<!doctype html><html lang="${lang}"><head>` +
-    '<meta charset="utf-8">' +
-    "<meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'none'; object-src 'none'; base-uri 'none'\">" +
-    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
-    titleTag +
-    `<style>${HTML_DOCUMENT_RESET}</style>` +
-    `</head><body>${bodyHtml}</body></html>`
-  );
+
+  const bodyLines = bodyHtml
+    ? bodyHtml
+        .trimEnd()
+        .split('\n')
+        .map((line) => (line.length > 0 ? `    ${line}` : ''))
+    : [];
+
+  return [
+    '<!doctype html>',
+    `<html lang="${lang}">`,
+    '  <head>',
+    '    <meta charset="utf-8">',
+    "    <meta http-equiv=\"Content-Security-Policy\" content=\"script-src 'none'; object-src 'none'; base-uri 'none'\">",
+    '    <meta name="viewport" content="width=device-width, initial-scale=1">',
+    `    ${titleTag}`,
+    '    <style>',
+    `      ${HTML_DOCUMENT_RESET}`,
+    '    </style>',
+    '  </head>',
+    '  <body>',
+    ...bodyLines,
+    '  </body>',
+    '</html>',
+    '',
+  ].join('\n');
 }
 
 export function composeDisplayDocument(input: {
@@ -34,15 +51,23 @@ export function composeDisplayDocument(input: {
   const titleLine = /<title[\s>]/i.test(input.headHtml)
     ? input.headHtml.trim()
     : `<title>${escapeHtmlText(input.fallbackTitle)}</title>`;
+
+  const bodyLines = input.bodyHtml
+    ? input.bodyHtml
+        .trimEnd()
+        .split('\n')
+        .map((line) => (line.length > 0 ? `    ${line}` : ''))
+    : [];
+
   return [
     '<!doctype html>',
     `<html lang="${lang}">`,
-    '<head>',
-    titleLine,
-    '</head>',
-    '<body>',
-    input.bodyHtml.replace(/\n$/, ''),
-    '</body>',
+    '  <head>',
+    `    ${titleLine}`,
+    '  </head>',
+    '  <body>',
+    ...bodyLines,
+    '  </body>',
     '</html>',
     '',
   ].join('\n');
