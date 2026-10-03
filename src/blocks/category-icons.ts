@@ -9,7 +9,7 @@
 // source of truth (the icon unit test reads it); keep the two in sync when a
 // glyph changes.
 
-export type IconKey = 'structure' | 'content' | 'style';
+export type IconKey = 'structure' | 'text' | 'table' | 'media' | 'form' | 'style';
 
 const svg = (body: string): string =>
   `data:image/svg+xml,${encodeURIComponent(
@@ -20,6 +20,13 @@ export const CATEGORY_ICON: Record<IconKey, string> = {
   structure: svg(
     '<path d="M8 4 3 10l5 6 1.5-1.5L6 10l3.5-4.5zM12 4l5 6-5 6-1.5-1.5L14 10l-3.5-4.5z"/>',
   ),
-  content: svg('<path d="M2 4h16v12H2zm2 10 4-5 3 3 3-4 4 6z"/><circle cx="7" cy="8" r="1.6"/>'),
+  text: svg('<path d="M3 4h14v3h-5.5v10h-3V7H3V4z"/>'),
+  table: svg(
+    '<path d="M2 3h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1zm2 2v3h5V5H4zm7 0v3h5V5h-5zm-7 5v5h5v-5H4zm7 0v5h5v-5h-5z"/>',
+  ),
+  media: svg('<path d="M2 4h16v12H2zm2 10 4-5 3 3 3-4 4 6z"/><circle cx="7" cy="8" r="1.6"/>'),
+  form: svg(
+    '<path d="M3 3h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm0 2v10h14V5H3zm2 3h10v2H5V8zm0 4h7v2H5v-2z"/>',
+  ),
   style: svg('<path d="M10 2s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/>'),
 };

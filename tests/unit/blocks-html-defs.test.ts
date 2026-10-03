@@ -45,9 +45,16 @@ describe('HTML block definitions', () => {
     workspace.dispose();
   });
 
-  it('exposes structure, content, and style toolbox categories', () => {
+  it('exposes the 6 toolbox categories', () => {
     const toolboxJson = JSON.stringify(htmlToolbox);
-    for (const category of ['structure_category', 'content_category', 'style_category']) {
+    for (const category of [
+      'structure_category',
+      'text_category',
+      'table_category',
+      'media_category',
+      'form_category',
+      'style_category',
+    ]) {
       expect(toolboxJson).toContain(category);
     }
   });

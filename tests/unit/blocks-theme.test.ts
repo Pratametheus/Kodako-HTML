@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { blocklyTheme, CATEGORY_COLORS } from '../../src/blocks/theme';
 
-const STYLE_NAMES = ['structure', 'content', 'style'] as const;
+const STYLE_NAMES = ['structure', 'text', 'table', 'media', 'form', 'style'] as const;
 
 describe('Blockly polish theme', () => {
   it('exports one registered theme with complete category shades', () => {

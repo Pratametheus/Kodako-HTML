@@ -70,9 +70,21 @@
   -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%204%203%2010l5%206%201.5-1.5L6%2010l3.5-4.5zM12%204l5%206-5%206-1.5-1.5L14%2010l-3.5-4.5z%22%2F%3E%3C%2Fsvg%3E');
   mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M8%204%203%2010l5%206%201.5-1.5L6%2010l3.5-4.5zM12%204l5%206-5%206-1.5-1.5L14%2010l-3.5-4.5z%22%2F%3E%3C%2Fsvg%3E');
 }
-.blocklyToolboxDiv .kodako-cat-icon--content {
+.blocklyToolboxDiv .kodako-cat-icon--text {
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%204h14v3h-5.5v10h-3V7H3V4z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%204h14v3h-5.5v10h-3V7H3V4z%22%2F%3E%3C%2Fsvg%3E');
+}
+.blocklyToolboxDiv .kodako-cat-icon--table {
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M2%203h16a1%201%200%200%201%201%201v12a1%201%200%200%201-1%201H2a1%201%200%200%201-1-1V4a1%201%200%200%201%201-1zm2%202v3h5V5H4zm7%200v3h5V5h-5zm-7%205v5h5v-5H4zm7%200v5h5v-5h-5z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M2%203h16a1%201%200%200%201%201%201v12a1%201%200%200%201-1%201H2a1%201%200%200%201-1-1V4a1%201%200%200%201%201-1zm2%202v3h5V5H4zm7%200v3h5V5h-5zm-7%205v5h5v-5H4zm7%200v5h5v-5h-5z%22%2F%3E%3C%2Fsvg%3E');
+}
+.blocklyToolboxDiv .kodako-cat-icon--media {
   -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M2%204h16v12H2zm2%2010%204-5%203%203%203-4%204%206z%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%228%22%20r%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
   mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M2%204h16v12H2zm2%2010%204-5%203%203%203-4%204%206z%22%2F%3E%3Ccircle%20cx%3D%227%22%20cy%3D%228%22%20r%3D%221.6%22%2F%3E%3C%2Fsvg%3E');
+}
+.blocklyToolboxDiv .kodako-cat-icon--form {
+  -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%203h14a2%202%200%200%201%202%202v10a2%202%200%200%201-2%202H3a2%202%200%200%201-2-2V5a2%202%200%200%201%202-2zm0%202v10h14V5H3zm2%203h10v2H5V8zm0%204h7v2H5v-2z%22%2F%3E%3C%2Fsvg%3E');
+  mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M3%203h14a2%202%200%200%201%202%202v10a2%202%200%200%201-2%202H3a2%202%200%200%201-2-2V5a2%202%200%200%201%202-2zm0%202v10h14V5H3zm2%203h10v2H5V8zm0%204h7v2H5v-2z%22%2F%3E%3C%2Fsvg%3E');
 }
 .blocklyToolboxDiv .kodako-cat-icon--style {
   -webkit-mask-image: url('data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M10%202s6%207%206%2011a6%206%200%200%201-12%200c0-4%206-11%206-11z%22%2F%3E%3C%2Fsvg%3E');
@@ -83,8 +95,17 @@
 .blocklyToolboxDiv .kodako-cat--structure .blocklyTreeRow {
   background: #1e88e5;
 }
-.blocklyToolboxDiv .kodako-cat--content .blocklyTreeRow {
+.blocklyToolboxDiv .kodako-cat--text .blocklyTreeRow {
+  background: #fb8c00;
+}
+.blocklyToolboxDiv .kodako-cat--table .blocklyTreeRow {
+  background: #00acc1;
+}
+.blocklyToolboxDiv .kodako-cat--media .blocklyTreeRow {
   background: #43a047;
+}
+.blocklyToolboxDiv .kodako-cat--form .blocklyTreeRow {
+  background: #7c3aed;
 }
 .blocklyToolboxDiv .kodako-cat--style .blocklyTreeRow {
   background: #8e24aa;

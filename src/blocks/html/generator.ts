@@ -53,6 +53,8 @@ function textInput(block: Blockly.Block, inputName: string): string {
   if (!target) return escapeHtmlText(field(block, inputName));
   if (target.type === 'html_strong') return `<strong>${textInput(target, 'TEXT')}</strong>`;
   if (target.type === 'html_em') return `<em>${textInput(target, 'TEXT')}</em>`;
+  if (target.type === 'html_mark') return `<mark>${textInput(target, 'TEXT')}</mark>`;
+  if (target.type === 'html_code') return `<code>${textInput(target, 'TEXT')}</code>`;
   const value =
     target.type === 'html_text'
       ? field(target, 'VALUE')
@@ -170,7 +172,11 @@ function emitContainer(
     | 'tr'
     | 'nav'
     | 'blockquote'
-    | 'figure',
+    | 'figure'
+    | 'pre'
+    | 'form'
+    | 'select'
+    | 'details',
   depth: number,
   assetIds: string[],
   styleFragments: string[],
@@ -415,6 +421,66 @@ function emitBlock(
     case 'html_button':
       return withStyles(
         `${prefix}<button type="button">${textInput(block, 'TEXT')}</button>\n`,
+        styleFragments,
+      );
+    case 'html_mark':
+      return withStyles(`${prefix}<mark>${textInput(block, 'TEXT')}</mark>\n`, styleFragments);
+    case 'html_code':
+      return withStyles(`${prefix}<code>${textInput(block, 'TEXT')}</code>\n`, styleFragments);
+    case 'html_pre':
+      return emitContainer(block, 'BODY', 'pre', depth, assetIds, styleFragments);
+    case 'html_audio':
+      return withStyles(
+        `${prefix}<audio controls src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"></audio>\n`,
+        styleFragments,
+      );
+    case 'html_video': {
+      const width = Number(field(block, 'WIDTH'));
+      const widthAttr = Number.isFinite(width) && width > 0 ? ` width="${width}"` : '';
+      return withStyles(
+        `${prefix}<video controls src="${escapeHtmlAttr(safeUrl(field(block, 'URL')))}"${widthAttr}></video>\n`,
+        styleFragments,
+      );
+    }
+    case 'html_form':
+      return emitContainer(block, 'BODY', 'form', depth, assetIds, styleFragments);
+    case 'html_label':
+      return withStyles(`${prefix}<label>${textInput(block, 'TEXT')}</label>\n`, styleFragments);
+    case 'html_input_text':
+      return withStyles(
+        `${prefix}<input type="text" placeholder="${escapeHtmlAttr(field(block, 'PLACEHOLDER'))}">\n`,
+        styleFragments,
+      );
+    case 'html_input_checkbox':
+      return withStyles(
+        `${prefix}<label><input type="checkbox"> ${textInput(block, 'TEXT')}</label>\n`,
+        styleFragments,
+      );
+    case 'html_input_radio':
+      return withStyles(
+        `${prefix}<label><input type="radio" name="${escapeHtmlAttr(field(block, 'NAME'))}"> ${textInput(block, 'TEXT')}</label>\n`,
+        styleFragments,
+      );
+    case 'html_textarea': {
+      const rows = Number(field(block, 'ROWS'));
+      const rowsAttr = Number.isFinite(rows) && rows > 0 ? ` rows="${rows}"` : '';
+      return withStyles(
+        `${prefix}<textarea placeholder="${escapeHtmlAttr(field(block, 'PLACEHOLDER'))}"${rowsAttr}></textarea>\n`,
+        styleFragments,
+      );
+    }
+    case 'html_select':
+      return emitContainer(block, 'OPTIONS', 'select', depth, assetIds, styleFragments);
+    case 'html_option':
+      return withStyles(
+        `${prefix}<option value="${escapeHtmlAttr(field(block, 'VALUE'))}">${textInput(block, 'TEXT')}</option>\n`,
+        styleFragments,
+      );
+    case 'html_details':
+      return emitContainer(block, 'BODY', 'details', depth, assetIds, styleFragments);
+    case 'html_summary':
+      return withStyles(
+        `${prefix}<summary>${textInput(block, 'TEXT')}</summary>\n`,
         styleFragments,
       );
     case 'html_hr':

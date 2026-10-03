@@ -1,9 +1,14 @@
 import * as Blockly from 'blockly/core';
 import './theme.css';
 
-export const CATEGORY_COLORS: Record<'structure' | 'content' | 'style', string> = {
+export type CategoryKey = 'structure' | 'text' | 'table' | 'media' | 'form' | 'style';
+
+export const CATEGORY_COLORS: Record<CategoryKey, string> = {
   structure: '#1E88E5',
-  content: '#43A047',
+  text: '#FB8C00',
+  table: '#00ACC1',
+  media: '#43A047',
+  form: '#7C3AED',
   style: '#8E24AA',
 };
 
@@ -31,12 +36,18 @@ export const blocklyTheme = Blockly.Theme.defineTheme('kodako-html', {
   base: Blockly.Themes.Classic,
   blockStyles: {
     structure_blocks: blockStyle('structure'),
-    content_blocks: blockStyle('content'),
+    text_blocks: blockStyle('text'),
+    table_blocks: blockStyle('table'),
+    media_blocks: blockStyle('media'),
+    form_blocks: blockStyle('form'),
     style_blocks: blockStyle('style'),
   },
   categoryStyles: {
     structure_category: { colour: CATEGORY_COLORS.structure },
-    content_category: { colour: CATEGORY_COLORS.content },
+    text_category: { colour: CATEGORY_COLORS.text },
+    table_category: { colour: CATEGORY_COLORS.table },
+    media_category: { colour: CATEGORY_COLORS.media },
+    form_category: { colour: CATEGORY_COLORS.form },
     style_category: { colour: CATEGORY_COLORS.style },
   },
   fontStyle: {
