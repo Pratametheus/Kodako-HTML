@@ -147,6 +147,31 @@
   content: '✨ ';
 }
 
+@media (max-width: 600px) {
+  .home {
+    padding: 16px 12px;
+  }
+  .home > h1 {
+    font-size: 1.4rem;
+    margin-bottom: 16px;
+  }
+  .home__actions {
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .home__actions .btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+  .home__list {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .card {
+    padding: 12px;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .home__actions .btn,
   .home__actions .btn:active,

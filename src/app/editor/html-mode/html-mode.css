@@ -336,25 +336,122 @@
   filter: brightness(0.95);
 }
 
-@media (max-width: 900px) {
+/* Mobile bottom bar hidden by default on desktop/large screens */
+.html-mode__mobile-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
   .html-mode {
-    grid-template-columns: 1fr;
-    grid-template-rows: minmax(440px, 1fr) minmax(440px, 1fr);
-    overflow: auto;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+    overflow: hidden;
   }
 
-  /* stacked layout — no horizontal split */
+  /* no horizontal split on mobile */
   .html-mode .ed-split-gutter {
-    display: none;
+    display: none !important;
   }
 
   .html-mode__blocks,
   .html-mode__output {
-    margin: 10px;
+    margin: 6px;
+    flex: 1;
+    min-height: 0;
+  }
+
+  .html-mode[data-mobile-view='blocks'] .html-mode__blocks {
+    display: block;
+    height: 100%;
+  }
+
+  .html-mode[data-mobile-view='blocks'] .html-mode__output {
+    display: none !important;
+  }
+
+  .html-mode[data-mobile-view='preview'] .html-mode__blocks,
+  .html-mode[data-mobile-view='code'] .html-mode__blocks {
+    display: none !important;
+  }
+
+  .html-mode[data-mobile-view='preview'] .html-mode__output,
+  .html-mode[data-mobile-view='code'] .html-mode__output {
+    display: grid;
+    height: 100%;
+  }
+
+  .html-mode .html-mode__tabs {
+    display: none; /* Mobile bar already switches views between preview and code */
   }
 
   .html-mode__browseraddr {
     display: none;
+  }
+
+  .html-mode__mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    height: 52px;
+    background: #ffffff;
+    border-top: 1px solid var(--ed-line);
+    padding: 2px 4px;
+    flex-shrink: 0;
+    box-shadow: 0 -2px 10px rgb(30 41 80 / 6%);
+    z-index: 10;
+  }
+
+  .html-mode__mobile-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    flex: 1;
+    height: 100%;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    color: #6b7280;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      color 0.1s ease,
+      background-color 0.1s ease;
+  }
+
+  .html-mode__mobile-btn[aria-pressed='true'] {
+    color: var(--html-blue);
+    background: #eef4ff;
+  }
+
+  .html-mode__mobile-icon {
+    font-size: 1.15rem;
+    line-height: 1;
+  }
+
+  .html-mode__mobile-btn--run {
+    color: #fff;
+    background: var(--html-green);
+    border-radius: 999px;
+    flex: 0 0 auto;
+    padding: 0 14px;
+    height: 38px;
+    flex-direction: row;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgb(46 139 87 / 30%);
+  }
+
+  .html-mode__mobile-btn--run .html-mode__mobile-icon {
+    font-size: 0.85rem;
+  }
+
+  .html-mode__mobile-btn--run:active {
+    transform: scale(0.96);
   }
 }
 

@@ -146,3 +146,30 @@
 .blocklyFlyoutButton {
   min-height: 40px;
 }
+
+@media (max-width: 768px) {
+  .blocklyToolboxDiv {
+    padding: 4px 2px;
+  }
+  .blocklyToolboxDiv .blocklyTreeRow {
+    min-height: 38px;
+    margin: 2px 2px;
+    border-radius: 9px;
+  }
+  .blocklyToolboxDiv .blocklyTreeRowContentContainer {
+    padding: 4px;
+    justify-content: center;
+  }
+  .blocklyToolboxDiv .blocklyTreeLabel {
+    display: none;
+  }
+  .blocklyToolboxDiv .kodako-cat-icon {
+    width: 22px;
+    height: 22px;
+    margin: 0 auto;
+  }
+  .blocklyToolboxDiv .kodako-cat--open .blocklyTreeRow {
+    margin-right: -4px;
+    transform: none;
+  }
+}

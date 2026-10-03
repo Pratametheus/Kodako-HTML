@@ -68,7 +68,7 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   setHtmlAssetOptionsProvider(assetOptions);
 
   host.innerHTML = `
-    <div class="html-mode">
+    <div class="html-mode" data-mobile-view="blocks">
       <section class="html-mode__blocks" aria-label="Area blok HTML">
         <div id="htmlBlocklyDiv"></div>
         <p class="html-mode__hint" data-html-hint>${t('editor.html.canvasHint')}</p>
@@ -107,6 +107,24 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
         <div class="html-mode__panel html-mode__code" id="html-panel-code" data-panel="code" role="tabpanel" aria-labelledby="html-tab-code" hidden></div>
         <p class="html-mode__infobar"><span class="html-mode__blockinfo" data-block-info></span></p>
       </aside>
+      <nav class="html-mode__mobile-bar" aria-label="${t('a11y.mobileNav')}">
+        <button type="button" class="html-mode__mobile-btn" data-mobile-tab="blocks" aria-label="${t('editor.mobile.blocks')}" aria-pressed="true">
+          <span class="html-mode__mobile-icon">🧩</span>
+          <span>${t('editor.mobile.blocks')}</span>
+        </button>
+        <button type="button" class="html-mode__mobile-btn html-mode__mobile-btn--run" data-run-html aria-label="${t('editor.html.run')}" title="${t('editor.html.run')}">
+          <span class="html-mode__mobile-icon">▶</span>
+          <span>${t('editor.mobile.run')}</span>
+        </button>
+        <button type="button" class="html-mode__mobile-btn" data-mobile-tab="preview" aria-label="${t('editor.mobile.preview')}" aria-pressed="false">
+          <span class="html-mode__mobile-icon">👁️</span>
+          <span>${t('editor.mobile.preview')}</span>
+        </button>
+        <button type="button" class="html-mode__mobile-btn" data-mobile-tab="code" aria-label="${t('editor.mobile.code')}" aria-pressed="false">
+          <span class="html-mode__mobile-icon">💻</span>
+          <span>${t('editor.mobile.code')}</span>
+        </button>
+      </nav>
     </div>
   `;
 
@@ -183,13 +201,23 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   };
   workspace.addChangeListener(onWorkspaceChange);
 
+  const modeContainer = host.querySelector<HTMLElement>('.html-mode')!;
   const tabButtons = [...host.querySelectorAll<HTMLButtonElement>('[data-tab]')];
   const panels = [...host.querySelectorAll<HTMLElement>('[data-panel]')];
+  const mobileButtons = [...host.querySelectorAll<HTMLButtonElement>('[data-mobile-tab]')];
+
+  const syncMobileButtons = (activeView: 'blocks' | 'preview' | 'code'): void => {
+    for (const btn of mobileButtons) {
+      btn.setAttribute('aria-pressed', String(btn.dataset.mobileTab === activeView));
+    }
+  };
+
   const activateTab = (tab: 'preview' | 'code'): void => {
     for (const button of tabButtons) {
       button.setAttribute('aria-selected', String(button.dataset.tab === tab));
     }
     for (const panel of panels) panel.hidden = panel.dataset.panel !== tab;
+    syncMobileButtons(tab);
   };
   const onTabClick = (event: Event): void => {
     const selected = event.currentTarget as HTMLButtonElement;
@@ -197,12 +225,39 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   };
   for (const button of tabButtons) button.addEventListener('click', onTabClick);
 
-  const runButton = host.querySelector<HTMLButtonElement>('[data-run-html]')!;
+  const safeSvgResize = (): void => {
+    if (
+      typeof (workspace as unknown as { getParentSvg?: () => unknown }).getParentSvg === 'function'
+    ) {
+      Blockly.svgResize(workspace);
+    }
+  };
+
+  const setMobileView = (view: 'blocks' | 'preview' | 'code'): void => {
+    modeContainer.setAttribute('data-mobile-view', view);
+    syncMobileButtons(view);
+    if (view === 'blocks') {
+      safeSvgResize();
+    } else {
+      activateTab(view === 'code' ? 'code' : 'preview');
+    }
+  };
+
+  const onMobileTabClick = (event: Event): void => {
+    const selected = event.currentTarget as HTMLButtonElement;
+    const view = selected.dataset.mobileTab as 'blocks' | 'preview' | 'code';
+    if (view) setMobileView(view);
+  };
+  for (const btn of mobileButtons) btn.addEventListener('click', onMobileTabClick);
+
+  const runButtons = [...host.querySelectorAll<HTMLButtonElement>('[data-run-html]')];
   const onRun = (): void => {
     refresh();
     activateTab('preview');
+    modeContainer.setAttribute('data-mobile-view', 'preview');
+    syncMobileButtons('preview');
   };
-  runButton.addEventListener('click', onRun);
+  for (const rb of runButtons) rb.addEventListener('click', onRun);
 
   const exportButton = host.querySelector<HTMLButtonElement>('[data-export-html]')!;
   const onExport = (): void => {
@@ -262,14 +317,21 @@ export function renderHtmlMode(host: HTMLElement, deps: HtmlModeDeps): () => voi
   __htmlModeHandle.current = { workspace };
   refresh();
 
+  const onWindowResize = (): void => {
+    safeSvgResize();
+  };
+  window.addEventListener('resize', onWindowResize);
+
   return () => {
     persist(false);
     disposed = true;
     workspace.removeChangeListener(onWorkspaceChange);
     for (const button of tabButtons) button.removeEventListener('click', onTabClick);
-    runButton.removeEventListener('click', onRun);
+    for (const btn of mobileButtons) btn.removeEventListener('click', onMobileTabClick);
+    for (const rb of runButtons) rb.removeEventListener('click', onRun);
     exportButton.removeEventListener('click', onExport);
     uploadInput.removeEventListener('change', onUpload);
+    window.removeEventListener('resize', onWindowResize);
     preview.dispose();
     codePanel.dispose();
     detachWash();

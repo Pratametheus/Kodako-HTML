@@ -92,6 +92,34 @@
     0 10px 22px rgb(30 41 80 / 8%);
 }
 
+@media (max-width: 768px) {
+  .editor__header {
+    padding: 6px 8px;
+    gap: 6px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .editor__header::-webkit-scrollbar {
+    display: none;
+  }
+  .editor__name {
+    min-width: 90px;
+    max-width: 140px;
+    flex: 1 1 auto;
+    padding: 4px 6px;
+    font-size: 0.85rem;
+  }
+  .editor .btn {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+    flex-shrink: 0;
+  }
+  .editor__spacer {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .editor .btn,
   .editor .btn:hover {

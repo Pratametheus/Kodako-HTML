@@ -177,6 +177,28 @@ describe('HTML mode view', () => {
     cleanup();
   });
 
+  it('switches views via the mobile bottom bar buttons', () => {
+    const host = document.createElement('div');
+    const cleanup = renderHtmlMode(host, {
+      project: createEmptyProject('X'),
+      storage: new FakeStorage(),
+      markDirty: vi.fn(),
+    });
+    const mode = host.querySelector<HTMLElement>('.html-mode')!;
+    expect(mode.getAttribute('data-mobile-view')).toBe('blocks');
+
+    host.querySelector<HTMLButtonElement>('[data-mobile-tab="preview"]')!.click();
+    expect(mode.getAttribute('data-mobile-view')).toBe('preview');
+
+    host.querySelector<HTMLButtonElement>('[data-mobile-tab="code"]')!.click();
+    expect(mode.getAttribute('data-mobile-view')).toBe('code');
+    expect(host.querySelector<HTMLElement>('[data-panel="code"]')!.hidden).toBe(false);
+
+    host.querySelector<HTMLButtonElement>('[data-mobile-tab="blocks"]')!.click();
+    expect(mode.getAttribute('data-mobile-view')).toBe('blocks');
+    cleanup();
+  });
+
   it('preserves blocks across cleanup and remount, then disposes fully', () => {
     const project = createEmptyProject('X');
     const host = document.createElement('div');
