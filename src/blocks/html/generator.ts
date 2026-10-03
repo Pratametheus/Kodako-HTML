@@ -457,7 +457,7 @@ function firstChildOfType(
 function emitHead(headBlock: Blockly.Block): string {
   const title = firstChildOfType(headBlock, 'CONTENT', 'html_title');
   if (!title) return '';
-  return `<title>${escapeHtmlText(textInput(title, 'TEXT'))}</title>\n`;
+  return `<title>${textInput(title, 'TEXT')}</title>\n`;
 }
 
 export function generateHtml(workspace: Blockly.Workspace): GeneratedHtml {

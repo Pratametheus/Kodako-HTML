@@ -638,6 +638,18 @@ describe('HTML block generator', () => {
     expect(out.bodyHtml).toBe('<p>Halo</p>\n');
   });
 
+  it('escapes characters in <title> exactly once (no double-escaping)', () => {
+    const doc = statement(workspace, 'html_document');
+    const head = statement(workspace, 'html_head');
+    const title = statement(workspace, 'html_title');
+    connectText(title, 'Tips & Trik <Keren>');
+    connectStatement(head, 'CONTENT', title);
+    connectStatement(doc, 'CONTENT', head);
+
+    const out = generateHtml(workspace);
+    expect(out.headHtml).toBe('<title>Tips &amp; Trik &lt;Keren&gt;</title>\n');
+  });
+
   it('ignores loose top-level blocks when an html_document is present', () => {
     const doc = statement(workspace, 'html_document');
     const body = statement(workspace, 'html_body');

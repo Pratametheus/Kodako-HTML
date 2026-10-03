@@ -1,8 +1,8 @@
 [package]
-name = "game-html"
+name = "kodako-html"
 version = "0.5.0"
-description = "Game HTML"
-authors = ["Game HTML"]
+description = "Kodako HTML"
+authors = ["Kodako HTML"]
 edition = "2021"
 rust-version = "1.77.2"
 
@@ -12,7 +12,7 @@ rust-version = "1.77.2"
 # The `_lib` suffix may seem redundant but it is necessary
 # to make the lib name unique and wouldn't conflict with the bin name.
 # This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
-name = "game_html_lib"
+name = "kodako_html_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

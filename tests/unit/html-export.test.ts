@@ -84,6 +84,12 @@ describe('standalone HTML export', () => {
     expect(html).not.toContain('asset:');
   });
 
+  it('inlines builtin SVG assets as data URLs for standalone offline portability', () => {
+    const html = buildStandaloneDocument('Judul', '<img src="asset:builtin:cat">', {});
+    expect(html).toMatch(/src="data:image\/svg\+xml,/);
+    expect(html).not.toContain('asset:builtin:cat');
+  });
+
   it('generates and exports the project workspace once', async () => {
     const project = projectWithParagraph('Hai');
     const storage = new FakeStorage();

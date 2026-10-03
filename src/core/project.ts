@@ -26,7 +26,7 @@ const CURRENT_VERSION = 1;
 
 export function migrate(input: unknown): unknown {
   if (typeof input !== 'object' || input === null || !('formatVersion' in input)) {
-    throw new Error('Format project tidak dikenal. File ini mungkin bukan project Game HTML.');
+    throw new Error('Format project tidak dikenal. File ini mungkin bukan project Kodako HTML.');
   }
   const version = (input as { formatVersion: unknown }).formatVersion;
   if (version === CURRENT_VERSION) return input;

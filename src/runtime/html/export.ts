@@ -8,7 +8,7 @@ import { escapeHtmlAttr } from './escape';
 
 function inlineAssetSources(bodyHtml: string, assets: Record<string, { ref: string }>): string {
   return bodyHtml.replace(/\bsrc=(["'])asset:([^"']*)\1/g, (_match, quote: string, id: string) => {
-    // Uploaded images resolve to data URLs. Builtins intentionally remain bundled URLs until Phase 3.
+    // Both uploaded images and builtins resolve to data URLs for standalone offline portability.
     const url = resolveAssetUrl(id, assets) ?? '';
     return `src=${quote}${escapeHtmlAttr(url)}${quote}`;
   });

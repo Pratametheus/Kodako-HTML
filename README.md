@@ -1,4 +1,4 @@
-# Game HTML
+# Kodako HTML
 
 Editor blok untuk belajar membuat halaman web (HTML), berbahasa Indonesia,
 mirip Scratch. Dibuat untuk modul ajar informatika tingkat SD dan bisa

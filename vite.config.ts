@@ -14,7 +14,6 @@ export default defineConfig({
           const normalized = id.replace(/\\/g, '/');
           if (normalized.includes('/node_modules/blockly/')) return 'vendor-blockly';
           if (normalized.includes('/node_modules/highlight.js/')) return 'vendor-hljs';
-          if (normalized.includes('/node_modules/js-interpreter/')) return 'vendor-interpreter';
           return undefined;
         },
       },
@@ -23,6 +22,7 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    setupFiles: ['tests/setup.ts'],
     include: ['tests/unit/**/*.test.ts'],
     alias: {
       '@tauri-apps/plugin-dialog': resolve(__dirname, 'tests/stubs/tauri-dialog.ts'),
